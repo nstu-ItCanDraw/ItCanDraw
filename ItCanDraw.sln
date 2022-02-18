@@ -11,6 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "Geometry\Geomet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IO", "IO\IO.csproj", "{AB6D733A-E55C-417E-A695-F64B77D5DDB5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{632073C6-602D-45F5-9815-21EF80FD02DD}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math", "Math\Math.csproj", "{EB090560-5D19-4482-9CA4-C60F4232243D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +40,10 @@ Global
 		{AB6D733A-E55C-417E-A695-F64B77D5DDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB6D733A-E55C-417E-A695-F64B77D5DDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB6D733A-E55C-417E-A695-F64B77D5DDB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB090560-5D19-4482-9CA4-C60F4232243D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB090560-5D19-4482-9CA4-C60F4232243D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB090560-5D19-4482-9CA4-C60F4232243D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB090560-5D19-4482-9CA4-C60F4232243D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
