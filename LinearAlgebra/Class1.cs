@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Geometry
+namespace LinearAlgebra
 {
     public class Class1
     {
