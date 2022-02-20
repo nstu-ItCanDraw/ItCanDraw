@@ -39,7 +39,7 @@ namespace Geometry
         (double left, double top, double right, double bottom) OBB { get; } // контур вокруг фигуры в локальной системе координат
         // List<string> FigureAsString { get; } // (может и не надо) возвращает набор строк, перая строка имя фигуры, дальше параметры в зависимости от типа фигуры
         bool PointInFigure(Vector2 position, double eps); // проверяет, что точка с координатами position внутри фигуры с точностью eps
-        List<Matrix3> Curves { get; } // возвращает кривые 2 порядка для описания фигуры
+        List<List<double>> Curves { get; } // возвращает кривые 2-ого порядка для описания фигуры a1*x^2 + a2*y^2 + a3*xy + a4*x + a5*y + a6 = 0
         bool FigureIsClosed { get; set; } // замкнута фигура (true) или нет (false)
     }
 }
