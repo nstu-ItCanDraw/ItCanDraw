@@ -4,4 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="IronPdf" Version="2022.2.4887" />
+    <PackageReference Include="Svg" Version="3.4.0" />
+  </ItemGroup>
+
 </Project>
