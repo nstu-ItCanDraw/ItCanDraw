@@ -11,33 +11,81 @@ using LinearAlgebra;
 
 namespace Logic
 {
+    /// <summary>
+    /// Contains compiled and linked pipeline identificator and uniform variables locations.
+    /// </summary>
     public class Pipeline
     {
-        public int id;
-        public Dictionary<string, int> locations;
-        public Pipeline(int id)
+        /// <summary>
+        /// Pipeline OpenGL identificator
+        /// </summary>
+        public int Id { get; private set; }
+        private Dictionary<string, int> locations;
+        /// <summary>
+        /// Uniform variables locations, where key is variable's name and value is it's location
+        /// </summary>
+        public ReadOnlyDictionary<string, int> Locations { get => new ReadOnlyDictionary<string, int>(locations); }
+        public Pipeline(params Shader[] shaders)
         {
-            this.id = id;
+            Id = GL.CreateProgram();
+            List<ShaderType> shaderTypes = new List<ShaderType>();
+            foreach (Shader shader in shaders)
+            {
+                GL.AttachShader(Id, shader.Id);
+                if (shaderTypes.Contains(shader.Type))
+                    throw new ArgumentException("Pipeline can have only one of each stage, but found more than one of \"" + shader.Type.ToString() + "\" stage.");
+                shaderTypes.Add(shader.Type);
+            }
+
+            if (!shaderTypes.Contains(ShaderType.VertexShader))
+                throw new ArgumentException("Vertex shader stage is neccesary for pipeline.");
+            if (!shaderTypes.Contains(ShaderType.FragmentShader))
+                throw new ArgumentException("Fragment shader stage is neccesary for pipeline.");
+
+            GL.LinkProgram(Id);
+            int result;
+            GL.GetProgram(Id, GetProgramParameterName.LinkStatus, out result);
+            if (result == 0)
+                throw new Exception("Program linking error: " + GL.GetProgramInfoLog(Id));
+
+            foreach (Shader shader in shaders)
+            {
+                GL.DetachShader(Id, shader.Id);
+                GL.DeleteShader(shader.Id);
+            }
+
             locations = new Dictionary<string, int>();
             int uniformsCount;
-            GL.GetProgram(id, GetProgramParameterName.ActiveUniforms, out uniformsCount);
+            GL.GetProgram(Id, GetProgramParameterName.ActiveUniforms, out uniformsCount);
             for (int i = 0; i < uniformsCount; i++)
             {
-                string uniformName = GL.GetActiveUniform(id, i, out _, out _);
+                string uniformName = GL.GetActiveUniform(Id, i, out _, out _);
                 if (uniformName.EndsWith("[0]"))
                     uniformName = uniformName.Substring(0, uniformName.Length - 3);
-                locations[uniformName] = GL.GetUniformLocation(id, uniformName);
+                locations[uniformName] = GL.GetUniformLocation(Id, uniformName);
             }
         }
     }
+    /// <summary>
+    /// Contains compiled shader information
+    /// </summary>
     public class Shader
     {
+        /// <summary>
+        /// Shader OpenGL identificator
+        /// </summary>
         public int Id { get; private set; }
+        /// <summary>
+        /// Shader type
+        /// </summary>
         public ShaderType Type { get; private set; }
+        /// <summary>
+        /// Loads and compiles shader from given path based on file extension: vsh - vertex shader, fsh - fragment shader, gsh - geometry shader, csh - compute shader
+        /// </summary>
         public Shader(string path)
         {
             if (!Directory.Exists(Path.GetDirectoryName(path)) || !File.Exists(path))
-                throw new FileNotFoundException("Vertex shader file not found", path);
+                throw new FileNotFoundException("Shader file not found", path);
 
             switch (Path.GetExtension(path))
             {
@@ -64,10 +112,13 @@ namespace Logic
             if (result == 0)
                 throw new Exception("Shader compilation error, shader type: " + Type.ToString() + ", error: " + GL.GetShaderInfoLog(Id));
         }
+        /// <summary>
+        /// Loads and compiles shader from given path based on given shader type
+        /// </summary>
         public Shader(ShaderType type, string path)
         {
             if (!Directory.Exists(Path.GetDirectoryName(path)) || !File.Exists(path))
-                throw new FileNotFoundException("Vertex shader file not found", path);
+                throw new FileNotFoundException("Shader file not found", path);
 
             Type = type;
             Id = GL.CreateShader(type);
@@ -79,9 +130,15 @@ namespace Logic
                 throw new Exception("Shader compilation error, shader type: " + Type.ToString() + ", error: " + GL.GetShaderInfoLog(Id));
         }
     }
+    /// <summary>
+    /// Loads and contains assets such as shader pipelines
+    /// </summary>
     public static class AssetsManager
     {
         private static Dictionary<string, Pipeline> pipelines = new Dictionary<string, Pipeline>();
+        /// <summary>
+        /// Loaded shader pipelines, where key is shader pipeline name and value is pipeline itself
+        /// </summary>
         public static ReadOnlyDictionary<string, Pipeline> Pipelines
         {
             get
@@ -89,24 +146,27 @@ namespace Logic
                 return new ReadOnlyDictionary<string, Pipeline>(pipelines);
             }
         }
+        /// <summary>
+        /// Links given shaders into pipeline and saves it with given name to dictionary
+        /// </summary>
         public static Pipeline LoadPipeline(string pipelineName, params Shader[] shaders)
         {
-            int program = GL.CreateProgram();
-            foreach (Shader shader in shaders)
-                GL.AttachShader(program, shader.Id);
-            GL.LinkProgram(program);
-            int result;
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out result);
-            if (result == 0)
-                throw new Exception("Program linking error: " + GL.GetProgramInfoLog(program));
+            if (pipelines.ContainsKey(pipelineName))
+                throw new ArgumentException("Pipeline with this name is already loaded.");
 
-            foreach (Shader shader in shaders)
-            {
-                GL.DetachShader(program, shader.Id);
-                GL.DeleteShader(shader.Id);
-            }
+            Pipeline pipeline = new Pipeline(shaders);
+            pipelines[pipelineName] = pipeline;
+            return pipeline;
+        }
+        /// <summary>
+        /// Compiles and links shaders from given paths into pipeline and saves it with given name to dictionary
+        /// </summary>
+        public static Pipeline LoadPipeline(string pipelineName, params string[] shaderPaths)
+        {
+            if (pipelines.ContainsKey(pipelineName))
+                throw new ArgumentException("Pipeline with this name is already loaded.");
 
-            Pipeline pipeline = new Pipeline(program);
+            Pipeline pipeline = new Pipeline(shaderPaths.Select(path => new Shader(path)).ToArray());
             pipelines[pipelineName] = pipeline;
             return pipeline;
         }
