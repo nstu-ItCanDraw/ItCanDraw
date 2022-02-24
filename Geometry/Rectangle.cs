@@ -14,12 +14,31 @@ namespace Geometry
     }
     class Rectangle : NotifyPropertyChanged, IRectangle
     {
-        public double Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        double width;
+        double height;
 
-        public List<List<double[]>> Curves => throw new NotImplementedException();
+        public double Width { get => width; set { width = value; OnPropertyChanged(); } }
+        public double Height { get => height; set { height = value; OnPropertyChanged(); } }
 
-        public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public List<List<double[]>> Curves {
+            get
+            {
+                // прямоугольник; 
+                // две кривые: коэф. при x^2 1/(width/2)^2,  свободный коэф. 1
+                //                   при у^2 1/(height/2)^2, свободный коэф. 1
+                double[] _first = { 4 / (width * width), 0, 0, 0, 0, 1 };
+                double[] _second = { 0, 4 / (height * height), 0, 0, 0, 1 };
+                List<double[]> _rect = new List<double[]>();
+                _rect.Add(_first);
+                _rect.Add(_second);
+                List<List<double[]>> _curves = new List<List<double[]>>();
+                _curves.Add(_rect);
+
+                return _curves;
+            }
+        }
+
+        public Transform Transform { get; set; }
 
         public (double left, double top, double right, double bottom) AABB => throw new NotImplementedException();
 
@@ -30,10 +49,10 @@ namespace Geometry
             throw new NotImplementedException();
         }
 
-        public Rectangle(double width, double height, Vector2 Position)
+        public Rectangle(double _width, double _height, Vector2 Position)
         {
-            Width = width;
-            Height = height;
+            Width = _width;
+            Height = _height;
             Transform = new Transform(Position, new Vector2(1,1), 0);
         }
     }

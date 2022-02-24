@@ -7,11 +7,13 @@ using LinearAlgebra;
 
 namespace Geometry
 {
-    public /*static*/ class FigureFabric
+    public abstract class FigureFabric
     {
-        //IGeometry CreateRectangle(double width, double height, Vector2 Position)
-        //{
-        //    return Rectangle(width, height, Position);
-        //}
+        public IGeometry CreateRectangle(double width, double height, Vector2 position)
+        {
+            return new Rectangle(width, height, position);
+        }
     }
+
+
 }
