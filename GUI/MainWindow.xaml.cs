@@ -20,25 +20,12 @@ namespace GUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        // commands don't work properly with GLWpfControl, so all viewmodel commands need to be triggered manually
-        private RenderViewModel renderViewModel = new RenderViewModel();
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void OpenTKControl_Render(TimeSpan obj)
-        {
-            if (renderViewModel.UpdateCommand.CanExecute(obj))
-                renderViewModel.UpdateCommand.Execute(obj);
-        }
-
-        private void OpenTKControl_Initialized(object sender, EventArgs e)
-        {
-            OpenTKControl.DataContext = renderViewModel;
-
-            if (renderViewModel.InitializedCommand.CanExecute(OpenTKControl))
-                renderViewModel.InitializedCommand.Execute(OpenTKControl);
+            renderControl.Focusable = true;
+            KeyDown += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyDown(sender, args); };
+            KeyUp += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyUp(sender, args); };
         }
     }
 }
