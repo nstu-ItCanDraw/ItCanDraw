@@ -15,6 +15,8 @@ namespace Geometry
         //private Matrix3x3 localView;
         //private Matrix3x3 localModel;
 
+        // Scale, Position, Angle по-идее доступны только внутри геометрии, а Model и View - везде
+        // но пока я не знаю, как это настроить
         public Vector2 LocalScale { get { return localScale; } set { localScale = value; RecalcMatrix(); OnPropertyChanged(); } }
         public Matrix3x3 LocalView { get; private set; }
         public Matrix3x3 LocalModel { get; private set; }
