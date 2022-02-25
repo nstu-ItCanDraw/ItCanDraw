@@ -83,6 +83,8 @@ namespace Logic
         {
             if (disposed)
                 throw new ObjectDisposedException("Pipeline");
+            if (!IsCurrent)
+                throw new Exception("Can't set uniform variables, this pipeline is not current.");
             if (!locations.ContainsKey(name))
                 throw new ArgumentException("This pipeline don't have uniform variable with name \"" + name + "\". If you are sure that it exists in shader, make sure it is used, GLSL compiler removes unused variables.");
         }
