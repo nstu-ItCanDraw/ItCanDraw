@@ -1,143 +1,252 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
 
 namespace Geometry
 {
-    public class Transform : NotifyPropertyChanged
+    /// <summary>
+    /// Represents local space in terms of position, rotation and scale
+    /// </summary>
+    public class Transform : INotifyPropertyChanged
     {
         private Vector2 localPosition;
+        private double localRotation;
         private Vector2 localScale;
-        private double angle; // в радианах
-        //private Matrix3x3 localView;
-        //private Matrix3x3 localModel;
-
-        // Scale, Position, Angle по-идее доступны только внутри геометрии, а Model и View - везде
-        // но пока я не знаю, как это настроить
-        public Vector2 LocalScale { get { return localScale; } set { localScale = value; RecalcMatrix(); OnPropertyChanged(); } }
-        public Matrix3x3 LocalView { get; private set; }
-        public Matrix3x3 LocalModel { get; private set; }
-        private void RecalcMatrix()
+        private Transform parent;
+        /// <summary>
+        /// Position of local space in parent space
+        /// </summary>
+        public Vector2 LocalPosition 
+        { 
+            get 
+            { 
+                return localPosition; 
+            } 
+            set 
+            { 
+                localPosition = value; 
+                recalculateMatrixes(); 
+                OnPropertyChanged("LocalPosition");
+                OnPropertyChanged("Position");
+            } 
+        }
+        /// <summary>
+        /// Rotation of local space in parent space in radians
+        /// </summary>
+        public double LocalRotation 
+        { 
+            get 
+            { 
+                return localRotation; 
+            } 
+            set 
+            {
+                localRotation = value; 
+                recalculateMatrixes(); 
+                OnPropertyChanged("LocalRotation");
+                OnPropertyChanged("LocalRotationDegrees");
+                OnPropertyChanged("Rotation");
+                OnPropertyChanged("RotationDegrees");
+            }
+        }
+        /// <summary>
+        /// Rotation of local space in parent space in degrees
+        /// </summary>
+        public double LocalRotationDegrees 
+        { 
+            get 
+            { 
+                return localRotation / Math.PI * 180.0; 
+            } 
+            set 
+            {
+                localRotation = value / 180.0 * Math.PI; 
+                recalculateMatrixes();
+                OnPropertyChanged("LocalRotation");
+                OnPropertyChanged("LocalRotationDegrees");
+                OnPropertyChanged("Rotation");
+                OnPropertyChanged("RotationDegrees");
+            } 
+        }
+        /// <summary>
+        /// Scale of local space in parent space
+        /// </summary>
+        public Vector2 LocalScale 
+        { 
+            get 
+            { 
+                return localScale; 
+            } 
+            set 
+            { 
+                localScale = value; 
+                recalculateMatrixes();
+                OnPropertyChanged("LocalScale");
+            }
+        }
+        /// <summary>
+        /// Position of local space in global space
+        /// </summary>
+        public Vector2 Position
         {
-            // Move Rotate Scale
-            Matrix3x3 mat = new Matrix3x3(Math.Cos(angle), -Math.Sin(angle), 0.0,
-                                       Math.Sin(angle), Math.Cos(angle), 0.0,
+            get
+            {
+                return parent == null ? localPosition : (parent.Model * new Vector3(localPosition, 1.0)).xy;
+            }
+            set
+            {
+                if (parent == null)
+                    localPosition = value;
+                else
+                    localPosition = (parent.View * new Vector3(value, 1.0)).xy;
+
+                recalculateMatrixes();
+                OnPropertyChanged("LocalPosition");
+                OnPropertyChanged("Position");
+            }
+        }
+        /// <summary>
+        /// Rotation of local space in global space in radians
+        /// </summary>
+        public double Rotation
+        {
+            get
+            {
+                return parent == null ? localRotation : parent.Rotation + localRotation;
+            }
+            set
+            {
+                localRotation = parent == null ? value : value - parent.Rotation;
+
+                recalculateMatrixes();
+                OnPropertyChanged("LocalRotation");
+                OnPropertyChanged("LocalRotationDegrees");
+                OnPropertyChanged("Rotation");
+                OnPropertyChanged("RotationDegrees");
+            }
+        }
+        /// <summary>
+        /// Rotation of local space in global space in degrees
+        /// </summary>
+        public double RotationDegrees
+        {
+            get
+            {
+                return (parent == null ? localRotation : parent.Rotation + localRotation) / Math.PI * 180.0;
+            }
+            set
+            {
+                localRotation = parent == null ? (value / 180.0 * Math.PI) : (value / 180.0 * Math.PI) - parent.Rotation;
+
+                recalculateMatrixes();
+                OnPropertyChanged("LocalRotation");
+                OnPropertyChanged("LocalRotationDegrees");
+                OnPropertyChanged("Rotation");
+                OnPropertyChanged("RotationDegrees");
+            }
+        }
+        /// <summary>
+        /// Transform of parent space
+        /// </summary>
+        public Transform Parent 
+        {
+            get
+            {
+                return parent;
+            }
+            set
+            {
+                parent = value;
+                recalculateMatrixes();
+                OnPropertyChanged("Parent");
+                OnPropertyChanged("Position");
+                OnPropertyChanged("Rotation");
+                OnPropertyChanged("RotationDegrees");
+            }
+        }
+        /// <summary>
+        /// Local-to-parent transformation matrix
+        /// </summary>
+        public Matrix3x3 LocalModel { get; private set; }
+        /// <summary>
+        /// Parent-to-local transformation matrix
+        /// </summary>
+        public Matrix3x3 LocalView { get; private set; }
+        /// <summary>
+        /// Local-to-global transformation matrix
+        /// </summary>
+        public Matrix3x3 Model
+        {
+            get
+            {
+                return parent == null ? LocalModel : parent.Model * LocalModel;
+            }
+        }
+        /// <summary>
+        /// Global-to-local transformation matrix
+        /// </summary>
+        public Matrix3x3 View
+        {
+            get
+            {
+                return parent == null ? LocalView : LocalView * parent.View;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+        private void recalculateMatrixes()
+        {
+            // Model * vec => Move^(-1) * Rotate^(-1) * Scale^(-1) * vec
+            double sin = Math.Sin(localRotation);
+            double cos = Math.Cos(localRotation);
+            LocalModel = new Matrix3x3(cos * localScale.x, -sin * localScale.y, localPosition.x,
+                                       sin * localScale.x, cos * localScale.y, localPosition.y,
                                        0.0, 0.0, 1.0);
-            mat.v02 = localPosition.x;
-            mat.v12 = localPosition.y;
 
-            mat.v00 *= LocalScale.x;
-            mat.v10 *= LocalScale.x;
-            mat.v01 *= LocalScale.y;
-            mat.v11 *= LocalScale.y;
-
-            LocalModel = mat;
-
-            // Scale^(-1) Rotate^(-1) Move^(-1)
-            mat = new Matrix3x3(Math.Cos(angle), Math.Sin(angle), 0.0,
-                                      -Math.Sin(angle), Math.Cos(angle), 0.0,
-                                      0.0, 0.0, 1.0);
-
-            mat.v00 *= 1.0 / LocalScale.x;
-            mat.v01 *= 1.0 / LocalScale.x;
-            mat.v10 *= 1.0 / LocalScale.y;
-            mat.v11 *= 1.0 / LocalScale.y;
+            // View * vec => Scale * Rotate * Move * vec
+            double invScaleX = 1.0 / localScale.x;
+            double invScaleY = 1.0 / localScale.y;
+            Matrix3x3 mat = new Matrix3x3(cos * invScaleX, sin * invScaleX, 0.0,
+                                          -sin * invScaleY, cos * invScaleY, 0.0,
+                                          0.0, 0.0, 1.0);
 
             mat.v02 = -mat.v00 * localPosition.x - mat.v01 * localPosition.y;
             mat.v12 = -mat.v10 * localPosition.x - mat.v11 * localPosition.y;
 
             LocalView = mat;
 
-            OnPropertyChanged("LocalView");
             OnPropertyChanged("LocalModel");
-        }
-        public Transform Parent { get; private set; }
-        public Vector2 GlobalPosition
-        {
-            get
-            {
-                return Parent == null ? localPosition : (Parent.Model * new Vector3(localPosition, 1.0)).xy;
-            }
-            set
-            {
-                if (Parent == null)
-                    localPosition = value;
-                else
-                    localPosition = (Parent.View * new Vector3(value, 1.0)).xy;
-
-                RecalcMatrix();
-                OnPropertyChanged();
-            }
-        }
-        //public Vector2 Scale // не сделан глобальный scale
-        //{
-        //    get
-        //    {
-        //        return Parent == null ? localScale : (Parent.Scale + localScale);
-        //    }
-        //    set
-        //    {
-        //        //if (Parent == null)
-        //        localPosition = value;
-        //        //else
-        //        //    localPosition = (Parent.View * new Vector3(value, 1.0)).xy;
-        //    }
-        //}
-        public double AngleDeg
-        {
-            get
-            {
-                double t = Parent == null ? angle : Parent.AngleDeg + (angle / Math.PI * 180.0); // учитываем угол поворота и родительского пространства
-                while (t > 360)  // угол от 0 до 360 градусов
-                    t -= 2 * Math.PI;
-                while (t < -360) // угол от -360 до 0 градусов
-                    t += 2 * Math.PI;
-                return t;
-            }
-            set
-            {
-                angle = value * Math.PI / 180.0;
-                if (Parent != null)
-                {
-                    angle -= Parent.AngleDeg; // ??? вроде так угол поворота родителя учитывается
-                }
-
-                RecalcMatrix();
-                OnPropertyChanged();
-            }
-        }
-        public Matrix3x3 Model
-        {
-            get
-            {
-                return Parent == null ? LocalModel : Parent.Model * LocalModel;
-            }
-        }
-        public Matrix3x3 View
-        {
-            get
-            {
-                return Parent == null ? LocalView : LocalView * Parent.View;
-            }
+            OnPropertyChanged("LocalView");
+            OnPropertyChanged("Model");
+            OnPropertyChanged("View");
         }
         public Transform()
         {
             localPosition = Vector2.Zero;
             localScale = new Vector2(1, 1);
-            angle = 0;
+            localRotation = 0;
         }
-        public Transform(Vector2 _pos, Vector2 _scale, double _angle)
+        public Transform(Vector2 localPosition, Vector2 localScale, double localRotation)
         {
-            localPosition = _pos;
-            localScale = _scale;
-            angle = _angle;
+            this.localPosition = localPosition;
+            this.localRotation = localRotation;
+            this.localScale = localScale;
         }
-        public void setParent(Transform transform)
+        public Transform(Vector2 localPosition, double localRotation, Vector2 localScale)
         {
-            Parent = transform;
+            this.localPosition = localPosition;
+            this.localRotation = localRotation;
+            this.localScale = localScale;
         }
     }
 }
