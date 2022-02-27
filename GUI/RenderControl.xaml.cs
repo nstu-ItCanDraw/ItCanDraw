@@ -25,6 +25,9 @@ namespace GUI
     /// </summary>
     public partial class RenderControl : UserControl
     {
+
+        private int VAO = 0;
+
         public RenderControl()
         {
             InitializeComponent();
@@ -34,6 +37,28 @@ namespace GUI
                 MinorVersion = 0
             };
             OpenTKControl.Start(settings);
+
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
+
+            int VBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * 4, 0);
+
+            GL.EnableVertexAttribArray(0);
+
+            GL.BufferData(BufferTarget.ArrayBuffer, 6 * 4, new float[6] { 1f, -1f, 0f, 1f, -1f, -1f }, BufferUsageHint.StaticDraw);
+            
+
+            int EBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, 3 * 4, new uint[3] {0, 1, 2 }, BufferUsageHint.StaticDraw);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+
         }
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -49,8 +74,13 @@ namespace GUI
         }
         private void Render(TimeSpan deltaTime)
         {
-            GL.ClearColor(Color4.Blue);
+            GL.ClearColor(Color4.Gray);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            AssetsManager.Pipelines["test"].Use();
+           
+            GL.BindVertexArray(VAO);
+            GL.DrawElements(PrimitiveType.Triangles, 3, DrawElementsType.UnsignedInt, 0);
         }
 
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)

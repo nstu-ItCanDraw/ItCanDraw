@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 
 using LinearAlgebra;
 
-namespace Logic
+namespace GUI
 {
     /// <summary>
     /// Contains compiled and linked pipeline identificator and uniform variables locations.

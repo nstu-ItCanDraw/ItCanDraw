@@ -16,4 +16,13 @@
     <ProjectReference Include="..\LinearAlgebra\LinearAlgebra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="shaders\frag.fsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="shaders\vertex.vsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
