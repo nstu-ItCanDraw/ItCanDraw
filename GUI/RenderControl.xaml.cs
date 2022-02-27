@@ -38,6 +38,8 @@ namespace GUI
             };
             OpenTKControl.Start(settings);
 
+            AssetsManager.LoadPipeline("test", new Shader("shaders/vertex.vsh"), new Shader("shaders/frag.fsh"));
+
             VAO = GL.GenVertexArray();
             GL.BindVertexArray(VAO);
 
@@ -49,7 +51,6 @@ namespace GUI
             GL.EnableVertexAttribArray(0);
 
             GL.BufferData(BufferTarget.ArrayBuffer, 6 * 4, new float[6] { 1f, -1f, 0f, 1f, -1f, -1f }, BufferUsageHint.StaticDraw);
-            
 
             int EBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
