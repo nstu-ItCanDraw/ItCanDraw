@@ -5,8 +5,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="1080" Width="1920">
+    <Grid Background ="#494848">
+        <Menu Height="1080" Width="39" HorizontalAlignment="Left" Background ="#2C2C2C">
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="39" Width="39" ></MenuItem>
+        </Menu>
+
+        <Menu Height="1080" Width="39" HorizontalAlignment="Right" Background ="#2C2C2C"></Menu>
+
+        <Menu Height="39" Width="1920" VerticalAlignment="Bottom" Background ="#2C2C2C"></Menu>
+
+        <Menu Height="39" VerticalAlignment="Top" Background ="#2C2C2C" Margin="39,0,-0.4,0">
+
+            <MenuItem Header="Файл" Foreground="#FCAEF6" Height="39" Width="39" >
+                <MenuItem Header="Новый Ctrl+N" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Открыть Ctrl+O" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Сохранить Ctrl+S" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Сохранить как... Shift+Ctr+S" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Экспорт Ctrl+E" Background ="#2C2C2C" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Редактирование"  Width="101" Foreground="#FCAEF6" >
+                <MenuItem Header="Отменить Ctrl+Z" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Повторить Shift+Ctrl+Z" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Вырезать Ctr+X" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Копировать Ctr+C" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Вставить Ctr+V" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Настройки" Background ="#2C2C2C" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Объект" Width="53" Foreground="#FCAEF6" >
+                <MenuItem Header="Перемещение..." Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Поворот..." Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Зеркальное отражение..." Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Наклон..." Background ="#2C2C2C" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Выделение" Width="75" Foreground="#FCAEF6" >
+                <MenuItem Header="Все" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Отменить выделение" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Выделить снова" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Инверсия" Background ="#2C2C2C" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Справка" Width="59" Foreground="#FCAEF6" >
+                <MenuItem Header="Справка программы ItCanDraw F1" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Руководство по ItCanDraw" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Информация о разработчиках" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Выйти..." Background ="#2C2C2C" ></MenuItem>
+            </MenuItem>
+        </Menu>
+
+
 
     </Grid>
 </Window>
