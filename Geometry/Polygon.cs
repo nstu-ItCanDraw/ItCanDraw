@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
@@ -11,7 +12,7 @@ namespace Geometry
     {
         List<Vector2> Points { get; set; }
     }
-    class Polygone : NotifyPropertyChanged, IPolygone
+    class Polygon : NotifyPropertyChanged, IPolygone
     {
         public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
