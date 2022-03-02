@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
@@ -13,6 +14,12 @@ namespace Geometry
     }
     class Polyline : NotifyPropertyChanged, IPolyline
     {
+        private static Dictionary<string, PropertyInfo> parameterDictionary;
+        Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => parameterDictionary;
+
+        static string name = "polyline";
+        public string Name => name;
+
         public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public List<List<double[]>> Curves => throw new NotImplementedException();
@@ -27,32 +34,15 @@ namespace Geometry
 
         IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
 
-        public Dictionary<string, object> GetParameters()
+        static Polyline()
         {
-            throw new NotImplementedException();
+            Type polylineType = typeof(Polyline);
+            parameterDictionary = new Dictionary<string, PropertyInfo>();
+            parameterDictionary.Add(nameof(Name).ToLower(), polylineType.GetProperty(nameof(Name)));
+            parameterDictionary.Add(nameof(Points).ToLower(), polylineType.GetProperty(nameof(Points)));
         }
 
         public bool PointInFigure(Vector2 position, double eps)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(string paramName, object paramValue)
         {
             throw new NotImplementedException();
         }

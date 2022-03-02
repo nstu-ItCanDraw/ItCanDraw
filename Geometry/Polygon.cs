@@ -14,6 +14,12 @@ namespace Geometry
     }
     class Polygon : NotifyPropertyChanged, IPolygone
     {
+        private static Dictionary<string, PropertyInfo> parameterDictionary;
+        Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => parameterDictionary;
+
+        static string name = "polygon";
+        public string Name => name;
+
         public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public List<List<double[]>> Curves => throw new NotImplementedException();
@@ -28,32 +34,15 @@ namespace Geometry
 
         IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
 
-        public Dictionary<string, object> GetParameters()
+        static Polygon()
         {
-            throw new NotImplementedException();
+            Type polygonType = typeof(Polygon);
+            parameterDictionary = new Dictionary<string, PropertyInfo>();
+            parameterDictionary.Add(nameof(Name).ToLower(), polygonType.GetProperty(nameof(Name)));
+            parameterDictionary.Add(nameof(Points).ToLower(), polygonType.GetProperty(nameof(Points)));
         }
 
         public bool PointInFigure(Vector2 position, double eps)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(string paramName, object paramValue)
         {
             throw new NotImplementedException();
         }

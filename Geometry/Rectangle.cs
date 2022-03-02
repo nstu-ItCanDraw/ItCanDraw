@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
@@ -14,6 +15,12 @@ namespace Geometry
     }
     class Rectangle : NotifyPropertyChanged, IRectangle
     {
+        private static Dictionary<string, PropertyInfo> parameterDictionary;
+        Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => parameterDictionary;
+
+        static string name = "rectangle";
+        public string Name => name;
+
         double width;
         double height;
 
@@ -49,41 +56,25 @@ namespace Geometry
 
         public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public bool PointInFigure(Vector2 position, double eps)
+        static Rectangle()
         {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Dictionary<string, object> GetParameters()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
+            Type rectangleType = typeof(Rectangle);
+            parameterDictionary = new Dictionary<string, PropertyInfo>();
+            parameterDictionary.Add(nameof(Name).ToLower(), rectangleType.GetProperty(nameof(Name)));
+            parameterDictionary.Add(nameof(Width).ToLower(), rectangleType.GetProperty(nameof(Width)));
+            parameterDictionary.Add(nameof(Height).ToLower(), rectangleType.GetProperty(nameof(Height)));
         }
 
         public Rectangle(double _width, double _height, Vector2 Position)
         {
             Width = _width;
             Height = _height;
-            Transform = new Transform(Position, new Vector2(1,1), 0);
+            Transform = new Transform(Position, new Vector2(1, 1), 0);
+        }
+
+        public bool PointInFigure(Vector2 position, double eps)
+        {
+            throw new NotImplementedException();
         }
     }
 }
