@@ -28,9 +28,9 @@ namespace Geometry
 
         public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public (Vector2 left_bottom, Vector2 right_top) AABB => throw new NotImplementedException();
+        public BoundingBox AABB => throw new NotImplementedException();
 
-        public (Vector2 left_bottom, Vector2 right_top) OBB => throw new NotImplementedException();
+        public BoundingBox OBB => throw new NotImplementedException();
 
         public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -52,7 +52,7 @@ namespace Geometry
             Transform = new Transform(Position, new Vector2(1, 1), 0);
         }
 
-        public bool PointInFigure(Vector2 position, double eps)
+        public bool IsPointInFigure(Vector2 position, double eps)
         {
             throw new NotImplementedException();
         }

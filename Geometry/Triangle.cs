@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
@@ -33,6 +34,25 @@ namespace Geometry
 
         IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
 
+        public string Name => throw new NotImplementedException();
+
+        double ITriangle.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        double ITriangle.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        List<Vector2> ITriangle.Points => throw new NotImplementedException();
+
+        IList<Vector2> IFigure.BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => throw new NotImplementedException();
+
+        string IGeometry.Name => throw new NotImplementedException();
+
+        Transform IGeometry.Transform => throw new NotImplementedException();
+
+        BoundingBox IGeometry.AABB => throw new NotImplementedException();
+
+        BoundingBox IGeometry.OBB => throw new NotImplementedException();
+
         public Dictionary<string, object> GetParameters()
         {
             throw new NotImplementedException();
@@ -59,6 +79,26 @@ namespace Geometry
         }
 
         public int SetParameters(string paramName, object paramValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IGeometry.IsPointInFigure(Vector2 position, double eps)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IGeometry.TrySetParameters(Dictionary<string, object> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        int IGeometry.SetParameters(Dictionary<string, object> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        Dictionary<string, object> IGeometry.GetParameters()
         {
             throw new NotImplementedException();
         }

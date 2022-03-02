@@ -10,15 +10,22 @@ using LinearAlgebra;
 
 namespace Geometry
 {
+    public struct BoundingBox
+    {
+        public Vector2 left_bottom;
+        public Vector2 right_top;
+    }
+
+
     public interface IGeometry : INotifyPropertyChanged
     {
         protected Dictionary<string, PropertyInfo> ParameterDictionary { get; }
         string Name { get; }
 
         Transform Transform { get; } // преобразование локальной системы координат
-        (Vector2 left_bottom, Vector2 right_top) AABB { get; } // контур вокруг фигуры, стороны прямоугольника параллельны осям
-        (Vector2 left_bottom, Vector2 right_top) OBB { get; }  // контур вокруг фигуры в локальной системе координат
-        bool PointInFigure(Vector2 position, double eps); // проверяет, что точка с координатами position внутри фигуры с точностью eps
+        BoundingBox AABB { get; } // контур вокруг фигуры, стороны прямоугольника параллельны осям
+        BoundingBox OBB { get; }  // контур вокруг фигуры в локальной системе координат
+        bool IsPointInFigure(Vector2 position, double eps); // проверяет, что точка с координатами position внутри фигуры с точностью eps
         bool TrySetParameters(Dictionary<string, object> parameters)
         {
             PropertyInfo propertyInfo;
