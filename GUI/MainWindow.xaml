@@ -56,20 +56,23 @@
 
         <Menu Height="39" VerticalAlignment="Top" Background ="#2C2C2C" Margin="39,0,-0.4,0">
 
-            <MenuItem Header="Файл" Foreground="#FCAEF6" Height="39" Width="39" >
-                <MenuItem Background ="#2C2C2C" >
-                    <MenuItem.Header>
-                        <StackPanel Orientation="Horizontal" Width="100">
-                            <TextBlock Width="60" Text="Новый" TextAlignment="Left"/>
-                            <TextBlock Width="40" Text="Ctrl+N" TextAlignment="Right"/>
-                        </StackPanel>
-                    </MenuItem.Header>
-                </MenuItem>
+            <MenuItem Header="Файл" Foreground="#FCAEF6" Height="39" Width="39" Background ="#2C2C2C" >
+                
+                <MenuItem Header="Новый Ctrl+N" Background ="#2C2C2C" ></MenuItem>               
                 <MenuItem Header="Открыть Ctrl+O" Background ="#2C2C2C" ></MenuItem>
                 <MenuItem Header="Сохранить Ctrl+S" Background ="#2C2C2C" ></MenuItem>
                 <MenuItem Header="Сохранить как... Shift+Ctr+S" Background ="#2C2C2C" ></MenuItem>
-                <MenuItem Header="Экспорт Ctrl+E" Background ="#2C2C2C" ></MenuItem>
+                <MenuItem Header="Экспорт в... Ctrl+E" Background ="#2C2C2C">
+                    <MenuItem Header="SVG" Background ="#2C2C2C"></MenuItem>
+                     <MenuItem Header="HTML" Background ="#2C2C2C"></MenuItem>
+                     <MenuItem Header="PDF" Background ="#2C2C2C" ></MenuItem>
+                     <MenuItem Header="PNG" Background ="#2C2C2C" ></MenuItem>
+                     <MenuItem Header="JPG" Background ="#2C2C2C"></MenuItem>
+                      
+                </MenuItem>
+                        
             </MenuItem>
+            
             <MenuItem Header="Редактирование"  Width="101" Foreground="#FCAEF6" >
                 <MenuItem Header="Отменить Ctrl+Z" Background ="#2C2C2C" ></MenuItem>
                 <MenuItem Header="Повторить Shift+Ctrl+Z" Background ="#2C2C2C" ></MenuItem>
@@ -96,6 +99,7 @@
                 <MenuItem Header="Информация о разработчиках" Background ="#2C2C2C" ></MenuItem>
                 <MenuItem Header="Выйти..." Background ="#2C2C2C" ></MenuItem>
             </MenuItem>
+            
         </Menu>
 
 
