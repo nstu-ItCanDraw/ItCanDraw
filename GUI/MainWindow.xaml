@@ -8,12 +8,46 @@
         Title="MainWindow" Height="1080" Width="1920">
     <Grid Background ="#494848">
         <Menu Height="1080" Width="39" HorizontalAlignment="Left" Background ="#2C2C2C">
-            <MenuItem  Height="39" Width="39" ></MenuItem>
-            <MenuItem  Height="39" Width="39" ></MenuItem>
-            <MenuItem  Height="39" Width="39" ></MenuItem>
-            <MenuItem  Height="39" Width="39" ></MenuItem>
-            <MenuItem  Height="39" Width="39" ></MenuItem>
-            <MenuItem  Height="39" Width="39" ></MenuItem>
+            <MenuItem  Height="30" Width="30"  Margin="5">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\icon_pinc_2.png" Margin="-3,-7,-8,-6"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24" Margin="8" >
+                <MenuItem.Icon>
+                    <Image Source="Pictures\i_выделения_НеАктивная.png" Margin="-4,-4,-4,-4" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\ii_квадрат.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\ii_треугольник.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\ii_круг.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\ii_линия.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\i_удаление_НеАктивная.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem  Height="24" Width="24"  Margin="8" MaxWidth="24">
+                <MenuItem.Icon>
+                    <Image Source="Pictures\i_зум_НеАктивная.png" Margin="-4,-4,-4,-5" />
+                </MenuItem.Icon>
+            </MenuItem>
         </Menu>
 
         <Menu Height="1080" Width="39" HorizontalAlignment="Right" Background ="#2C2C2C"></Menu>
