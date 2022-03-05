@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LinearAlgebra;
@@ -14,6 +15,12 @@ namespace Geometry
     }
     class Ellipse : NotifyPropertyChanged, IEllipse
     {
+        private static Dictionary<string, PropertyInfo> parameterDictionary;
+        Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => parameterDictionary;
+
+        static string name = "ellipse";
+        public string Name => name;
+
         public double RadiusX { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double RadiusY { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -21,42 +28,21 @@ namespace Geometry
 
         public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public (Vector2 left_bottom, Vector2 right_top) AABB => throw new NotImplementedException();
+        public BoundingBox AABB => throw new NotImplementedException();
 
-        public (Vector2 left_bottom, Vector2 right_top) OBB => throw new NotImplementedException();
+        public BoundingBox OBB => throw new NotImplementedException();
 
         public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
 
-        public Dictionary<string, object> GetParameters()
+        static Ellipse()
         {
-            throw new NotImplementedException();
-        }
-
-        public bool PointInFigure(Vector2 position, double eps)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TrySetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int SetParameters(string paramName, object paramValue)
-        {
-            throw new NotImplementedException();
+            Type ellipseType = typeof(Ellipse);
+            parameterDictionary = new Dictionary<string, PropertyInfo>();
+            parameterDictionary.Add(nameof(Name).ToLower(), ellipseType.GetProperty(nameof(Name)));
+            parameterDictionary.Add("radiusX", ellipseType.GetProperty(nameof(RadiusX)));
+            parameterDictionary.Add("radiusY", ellipseType.GetProperty(nameof(RadiusY)));
         }
 
         public Ellipse(double _radiusX, double _radiusY, Vector2 Position)
@@ -64,6 +50,11 @@ namespace Geometry
             RadiusX = _radiusX;
             RadiusX = _radiusY;
             Transform = new Transform(Position, new Vector2(1, 1), 0);
+        }
+
+        public bool IsPointInFigure(Vector2 position, double eps)
+        {
+            throw new NotImplementedException();
         }
     }
 }

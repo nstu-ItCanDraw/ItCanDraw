@@ -8,16 +8,16 @@ using LinearAlgebra;
 
 namespace Geometry
 {
-    interface IPolyline : IFigure
+    interface IPolygone : IFigure
     {
         List<Vector2> Points { get; set; }
     }
-    class Polyline : NotifyPropertyChanged, IPolyline
+    class Polygon : NotifyPropertyChanged, IPolygone
     {
         private static Dictionary<string, PropertyInfo> parameterDictionary;
         Dictionary<string, PropertyInfo> IGeometry.ParameterDictionary => parameterDictionary;
 
-        static string name = "polyline";
+        static string name = "polygon";
         public string Name => name;
 
         public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -34,12 +34,12 @@ namespace Geometry
 
         IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
 
-        static Polyline()
+        static Polygon()
         {
-            Type polylineType = typeof(Polyline);
+            Type polygonType = typeof(Polygon);
             parameterDictionary = new Dictionary<string, PropertyInfo>();
-            parameterDictionary.Add(nameof(Name).ToLower(), polylineType.GetProperty(nameof(Name)));
-            parameterDictionary.Add(nameof(Points).ToLower(), polylineType.GetProperty(nameof(Points)));
+            parameterDictionary.Add(nameof(Name).ToLower(), polygonType.GetProperty(nameof(Name)));
+            parameterDictionary.Add(nameof(Points).ToLower(), polygonType.GetProperty(nameof(Points)));
         }
 
         public bool IsPointInFigure(Vector2 position, double eps)
