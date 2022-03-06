@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Logic
 {
+    /// <summary>
+    /// Contains information about document
+    /// </summary>
     public interface IDocument : INotifyPropertyChanged
     {
         /// <summary>
