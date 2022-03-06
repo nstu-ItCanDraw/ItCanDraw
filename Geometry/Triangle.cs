@@ -107,7 +107,7 @@ namespace Geometry
             right_top = new Vector2(width / 2.0, height / 2.0)
         };
 
-        public List<List<double[]>> Curves
+        public IList<IList<double[]>> Curves
         {
             get
             {
@@ -118,15 +118,13 @@ namespace Geometry
                 double[] rightEdge = GetEdgeCoeffs(halfWidth, -halfHeight, 0.0, halfHeight);
                 double[] leftEdge = GetEdgeCoeffs(0.0, halfHeight, -halfWidth, -halfHeight);
 
-                return new List<List<double[]>>() { new List<double[]>() { bottomEdge, rightEdge, leftEdge } };
+                return new List<IList<double[]>>() { new List<double[]>() { bottomEdge, rightEdge, leftEdge } };
             }
         }
         
         public Transform Transform { get; set; }
 
         public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        IList<IList<double[]>> IFigure.Curves => (IList<IList<double[]>>) Curves;
 
         private double[] GetEdgeCoeffs(double x1, double y1, double x2, double y2)
         {
