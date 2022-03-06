@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -50,6 +51,13 @@ namespace Geometry
             RadiusX = _radiusX;
             RadiusX = _radiusY;
             Transform = new Transform(Position, new Vector2(1, 1), 0);
+
+            Transform.PropertyChanged += Transform_OnPropertyChanged;
+        }
+
+        protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IGeometry.Transform));
         }
 
         public bool IsPointInFigure(Vector2 position, double eps)

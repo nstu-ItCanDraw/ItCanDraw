@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,6 +41,11 @@ namespace Geometry
             parameterDictionary = new Dictionary<string, PropertyInfo>();
             parameterDictionary.Add(nameof(Name).ToLower(), polygonType.GetProperty(nameof(Name)));
             parameterDictionary.Add(nameof(Points).ToLower(), polygonType.GetProperty(nameof(Points)));
+        }
+
+        protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IGeometry.Transform));
         }
 
         public bool IsPointInFigure(Vector2 position, double eps)
