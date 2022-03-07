@@ -26,7 +26,7 @@ namespace GUI
     public partial class RenderControl : UserControl
     {
 
-        private int VAO = 0;
+        private int dummyVAO = 0;
         private bool initialized = false;
         public RenderControl()
         {
@@ -37,6 +37,8 @@ namespace GUI
                 MinorVersion = 0
             };
             OpenTKControl.Start(settings);
+
+            GL.Disable(EnableCap.DepthTest);
         }
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -48,27 +50,9 @@ namespace GUI
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
-            AssetsManager.LoadPipeline("test", new Shader("shaders/vertex.vsh"), new Shader("shaders/frag.fsh"));
+            AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
 
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
-
-            int VBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * 4, 0);
-
-            GL.EnableVertexAttribArray(0);
-
-            GL.BufferData(BufferTarget.ArrayBuffer, 6 * 4, new float[6] { 1f, -1f, 0f, 1f, -1f, -1f }, BufferUsageHint.StaticDraw);
-
-            int EBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, 3 * 4, new uint[3] { 0, 1, 2 }, BufferUsageHint.StaticDraw);
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            dummyVAO = GL.GenVertexArray();
 
             initialized = true;
         }
@@ -82,12 +66,14 @@ namespace GUI
         private void Render(TimeSpan deltaTime)
         {
             GL.ClearColor(Color4.Gray);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            AssetsManager.Pipelines["test"].Use();
-           
-            GL.BindVertexArray(VAO);
-            GL.DrawElements(PrimitiveType.Triangles, 3, DrawElementsType.UnsignedInt, 0);
+            Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
+            curveToTexture.Use();
+            curveToTexture.Uniform1("coeffs", new float[6] { 0f, 2f, 0f, 0f, 0f, -0.5f });
+
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
 
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
