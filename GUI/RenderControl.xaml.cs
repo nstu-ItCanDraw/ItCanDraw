@@ -27,7 +27,7 @@ namespace GUI
     {
 
         private int VAO = 0;
-
+        private bool initialized = false;
         public RenderControl()
         {
             InitializeComponent();
@@ -37,6 +37,18 @@ namespace GUI
                 MinorVersion = 0
             };
             OpenTKControl.Start(settings);
+        }
+        public void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+        public void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+        private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            AssetsManager.LoadPipeline("test", new Shader("shaders/vertex.vsh"), new Shader("shaders/frag.fsh"));
 
             VAO = GL.GenVertexArray();
             GL.BindVertexArray(VAO);
@@ -49,27 +61,22 @@ namespace GUI
             GL.EnableVertexAttribArray(0);
 
             GL.BufferData(BufferTarget.ArrayBuffer, 6 * 4, new float[6] { 1f, -1f, 0f, 1f, -1f, -1f }, BufferUsageHint.StaticDraw);
-            
 
             int EBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, 3 * 4, new uint[3] {0, 1, 2 }, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, 3 * 4, new uint[3] { 0, 1, 2 }, BufferUsageHint.StaticDraw);
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
-        }
-        public void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
-        }
-        public void OnKeyUp(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
+            initialized = true;
         }
         private void OpenTKControl_Update(TimeSpan deltaTime)
         {
+            if (!initialized)
+                return;
+
             Render(deltaTime);
         }
         private void Render(TimeSpan deltaTime)

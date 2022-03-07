@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
@@ -11,17 +13,213 @@ using LinearAlgebra;
 
 namespace GUI
 {
+    internal enum TextureType
+    {
+        RGBAColor,
+        FloatValue
+    }
     /// <summary>
-    /// Contains compiled and linked pipeline identificator and uniform variables locations.
+    /// Contains texture identificator and properties
     /// </summary>
-    public class Pipeline : IDisposable
+    internal class Texture2D : IDisposable
+    {
+        /// <summary>
+        /// OpenGL texture identificator
+        /// </summary>
+        public int Id { get; private set; }
+        /// <summary>
+        /// Width of the texture in pixels
+        /// </summary>
+        public int Width { get; private set; }
+        /// <summary>
+        /// Height of the texture in pixels
+        /// </summary>
+        public int Height { get; private set; }
+        /// <summary>
+        /// Texture type
+        /// </summary>
+        public TextureType Type { get; private set; }
+        private bool disposed;
+
+        /// <summary>
+        /// Creates empty texture with specified properties
+        /// </summary>
+        /// <param name="width">Width of the texture in pixels</param>
+        /// <param name="height">Height of the texture in pixels</param>
+        /// <param name="textureType">Type of the texture</param>
+        /// <param name="wrapMode">Wrapping mode in both U and V directions</param>
+        /// <param name="minFilter">Minification filter</param>
+        /// <param name="magFilter">Magnification filter</param>
+        public Texture2D(int width, int height, TextureType textureType = TextureType.RGBAColor, TextureWrapMode wrapMode = TextureWrapMode.Repeat, 
+            TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest)
+        {
+            Width = width;
+            Height = height;
+            Type = textureType;
+
+            Id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, Id);
+
+            if (textureType == TextureType.RGBAColor)
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
+            else
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, width, height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Red, PixelType.Float, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapMode);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+        /// <summary>
+        /// Creates texture from bitmap image
+        /// </summary>
+        /// <param name="image">Image to create texture from</param>
+        /// <param name="wrapMode">Wrapping mode in both U and V directions</param>
+        /// <param name="minFilter">Minification filter</param>
+        /// <param name="magFilter">Magnification filter</param>
+        public Texture2D(Bitmap image, TextureWrapMode wrapMode = TextureWrapMode.Repeat,
+            TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest)
+        {
+            Width = image.Width;
+            Height = image.Height;
+            Type = TextureType.RGBAColor;
+
+            Id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, Id);
+
+            BitmapData bitmapData = image.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, Width, Height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+            image.UnlockBits(bitmapData);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapMode);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+        /// <summary>
+        /// Bind this texture to uniform with specified name in current pipeline
+        /// </summary>
+        /// <param name="variableName">Name of the variable to bind texture to</param>
+        public void Bind(string variableName)
+        {
+            if (disposed)
+                throw new ObjectDisposedException("Texture2D");
+            if (Pipeline.Current == null)
+                throw new Exception("No pipeline is used, nothing to bind texture to.");
+
+            Pipeline.Current.BindTexture2D(variableName, this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                GL.DeleteTexture(Id);
+
+                disposed = true;
+            }
+        }
+        ~Texture2D()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+    /// <summary>
+    /// Represents frame buffer and contains binded texture
+    /// </summary>
+    internal class FrameBuffer : IDisposable
+    {
+        /// <summary>
+        /// Current frame buffer in use
+        /// </summary>
+        public static FrameBuffer Current { get; private set; } = null;
+        /// <summary>
+        /// Returns true if this frame buffer is current
+        /// </summary>
+        public bool IsCurrent { get => Current == this; }
+        /// <summary>
+        /// Binded color texture of this frame buffer
+        /// </summary>
+        public Texture2D ColorTexture { get; private set; }
+        private int id;
+        private bool disposed;
+        public FrameBuffer(Texture2D colorTexture)
+        {
+            ColorTexture = colorTexture;
+
+            id = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture.Id, 0);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+        ~FrameBuffer()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+        /// <summary>
+        /// Sets this frame buffer as current in OpenGL
+        /// </summary>
+        public void Use()
+        {
+            if (disposed)
+                throw new ObjectDisposedException("FrameBuffer");
+            Current = this;
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
+        }
+        /// <summary>
+        /// Sets default OpenGL frame buffer as current
+        /// </summary>
+        public static void UseDefault()
+        {
+            Current = null;
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 1);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (IsCurrent)
+                    UseDefault();
+
+                GL.DeleteFramebuffer(id);
+
+                disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+    /// <summary>
+    /// Represents compiled and linked pipeline and contains uniform variables locations.
+    /// </summary>
+    internal class Pipeline : IDisposable
     {
         /// <summary>
         /// Current pipeline in use
         /// </summary>
         public static Pipeline Current { get; private set; } = null;
         /// <summary>
-        /// Returns true, if this pipeline is current
+        /// Returns true if this pipeline is current
         /// </summary>
         public bool IsCurrent { get => this == Current; }
         private int id;
@@ -78,6 +276,15 @@ namespace GUI
             if (disposed)
                 throw new ObjectDisposedException("Pipeline");
             Current = this;
+            GL.UseProgram(id);
+        }
+        /// <summary>
+        /// Sets default OpenGL pipeline as current
+        /// </summary>
+        public static void UseDefault()
+        {
+            Current = null;
+            GL.UseProgram(0);
         }
         private void checkCanSetUniform(string name)
         {
@@ -726,12 +933,27 @@ namespace GUI
             GL.UniformMatrix4(locations[name], values.Length, rowMajor, data);
         }
         #endregion
+        /// <summary>
+        /// Binds specified texture to uniform variable with specified name
+        /// </summary>
+        /// <param name="variableName">Uniform variable name to bind texture to</param>
+        /// <param name="texture">Texture to bind</param>
+        public void BindTexture2D(string variableName, Texture2D texture)
+        {
+            checkCanSetUniform(variableName);
+
+            int location = locations[variableName];
+            GL.Uniform1(location, location);
+            GL.ActiveTexture(TextureUnit.Texture0 + location);
+            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+        }
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
             {
                 if (IsCurrent)
-                    GL.UseProgram(0);
+                    UseDefault();
+
                 GL.DeleteProgram(id);
 
                 disposed = true;
@@ -746,7 +968,7 @@ namespace GUI
     /// <summary>
     /// Contains compiled shader information
     /// </summary>
-    public class Shader
+    internal class Shader
     {
         /// <summary>
         /// Shader OpenGL identificator
@@ -810,7 +1032,7 @@ namespace GUI
     /// <summary>
     /// Loads and contains assets such as shader pipelines
     /// </summary>
-    public static class AssetsManager
+    internal static class AssetsManager
     {
         private static Dictionary<string, Pipeline> pipelines = new Dictionary<string, Pipeline>();
         /// <summary>
