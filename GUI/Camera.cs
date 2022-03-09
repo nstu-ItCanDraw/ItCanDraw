@@ -8,9 +8,15 @@ using LinearAlgebra;
 
 namespace GUI
 {
+    /// <summary>
+    /// Contains information about camera object
+    /// </summary>
     internal class Camera
     {
         private Vector2 position = Vector2.Zero;
+        /// <summary>
+        /// Camera position in global space
+        /// </summary>
         public Vector2 Position
         {
             get
@@ -24,6 +30,9 @@ namespace GUI
             }
         }
         private int screenWidth;
+        /// <summary>
+        /// Width of the render surface in pixels
+        /// </summary>
         public int ScreenWidth
         {
             get
@@ -39,6 +48,9 @@ namespace GUI
             }
         }
         private int screenHeight;
+        /// <summary>
+        /// Height of the render surface in pixels
+        /// </summary>
         public int ScreenHeight
         {
             get
@@ -54,6 +66,9 @@ namespace GUI
             }
         }
         private double width;
+        /// <summary>
+        /// Width of the camera in virtual space
+        /// </summary>
         public double Width
         {
             get
@@ -69,6 +84,9 @@ namespace GUI
             }
         }
         private double height;
+        /// <summary>
+        /// Height of the camera in virtual space
+        /// </summary>
         public double Height
         {
             get
@@ -83,7 +101,13 @@ namespace GUI
                 recalculateMatrixes();
             }
         }
+        /// <summary>
+        /// Matrix for transforming vectors from world space to NDC (Normalized Device Coordinates)
+        /// </summary>
         public Matrix3x3 View { get; private set; } = Matrix3x3.Identity;
+        /// <summary>
+        /// Matrix for transforming vectors from NDC (Normalized Device Coordinates) to world space
+        /// </summary>
         public Matrix3x3 Model { get; private set; } = Matrix3x3.Identity;
         private void recalculateMatrixes()
         {
@@ -98,6 +122,13 @@ namespace GUI
                                   0.0, halfHeight, position.y,
                                   0.0, 0.0, 1.0);
         }
+        /// <summary>
+        /// Creates camera with specified virtual and screen size
+        /// </summary>
+        /// <param name="screenWidth">Width of the render surface</param>
+        /// <param name="screenHeight">Height of the render surface</param>
+        /// <param name="width">Camera width in virtual space</param>
+        /// <param name="height">Camera height in virtual space</param>
         public Camera(int screenWidth, int screenHeight, double width, double height)
         {
             this.screenWidth = screenWidth;
@@ -106,10 +137,16 @@ namespace GUI
             this.height = height;
             recalculateMatrixes();
         }
+        /// <summary>
+        /// Transforms point from screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement)) to virtual space
+        /// </summary>
         public Vector2 ScreenToWorld(Vector2 point)
         {
             return new Vector2((point.x / screenWidth - 0.5) * width + position.x, -(point.y / screenHeight - 0.5) * height + position.y);
         }
+        /// <summary>
+        /// Transforms point from virtual space to screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement))
+        /// </summary>
         public Vector2 WorldToScreen(Vector2 point)
         {
             return new Vector2(((point.x - position.x) / width + 0.5) * screenWidth, (-(point.y - position.y) / height + 0.5) * screenHeight);
