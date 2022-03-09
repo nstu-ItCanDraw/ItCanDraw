@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="shaders\texturesIntersection.fsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\curveToTexture.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

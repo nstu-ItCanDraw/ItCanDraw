@@ -1,6 +1,7 @@
 #version 440 core
 
 layout(location = 0) in vec2 pos;
+layout(location = 1) in vec2 uv;
 
 out vec4 outColor;
 uniform float coeffs[6];
