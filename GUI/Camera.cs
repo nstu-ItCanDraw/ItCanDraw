@@ -29,7 +29,7 @@ namespace GUI
                 recalculateMatrixes();
             }
         }
-        private int screenWidth;
+        private int screenWidth = 1;
         /// <summary>
         /// Width of the render surface in pixels
         /// </summary>
@@ -47,7 +47,7 @@ namespace GUI
                 recalculateMatrixes();
             }
         }
-        private int screenHeight;
+        private int screenHeight = 1;
         /// <summary>
         /// Height of the render surface in pixels
         /// </summary>
@@ -65,27 +65,36 @@ namespace GUI
                 recalculateMatrixes();
             }
         }
-        private double width;
         /// <summary>
-        /// Width of the camera in virtual space
+        /// Width to Height (ScreenWidth to ScreenHeight) ratio
+        /// </summary>
+        public double Aspect
+        {
+            get
+            {
+                return screenWidth / screenHeight;
+            }
+        }
+        /// <summary>
+        /// Width of the camera in virtual space, changing it will change Height to preserve aspect
         /// </summary>
         public double Width
         {
             get
             {
-                return width;
+                return height * Aspect;
             }
             set
             {
                 if (value <= 0)
                     throw new ArgumentOutOfRangeException("Width", "Camera size must be positive.");
-                width = value;
+                height = value / Aspect;
                 recalculateMatrixes();
             }
         }
-        private double height;
+        private double height = 1.0;
         /// <summary>
-        /// Height of the camera in virtual space
+        /// Height of the camera in virtual space, changing it will change Width to preserve aspect
         /// </summary>
         public double Height
         {
@@ -111,7 +120,7 @@ namespace GUI
         public Matrix3x3 Model { get; private set; } = Matrix3x3.Identity;
         private void recalculateMatrixes()
         {
-            double halfWidth = width / 2.0;
+            double halfWidth = Width / 2.0;
             double halfHeight = height / 2.0;
             double invHalfWidth = 1.0 / halfWidth;
             double invHalfHeight = 1.0 / halfHeight;
@@ -123,33 +132,45 @@ namespace GUI
                                   0.0, 0.0, 1.0);
         }
         /// <summary>
-        /// Creates camera with specified virtual and screen size
+        /// Creates camera with specified screen size and virtual height (width is calculated from aspect ratio of screen size)
         /// </summary>
         /// <param name="screenWidth">Width of the render surface</param>
         /// <param name="screenHeight">Height of the render surface</param>
-        /// <param name="width">Camera width in virtual space</param>
         /// <param name="height">Camera height in virtual space</param>
-        public Camera(int screenWidth, int screenHeight, double width, double height)
+        public Camera(int screenWidth, int screenHeight, double height)
         {
-            this.screenWidth = screenWidth;
-            this.screenHeight = screenHeight;
-            this.width = width;
-            this.height = height;
-            recalculateMatrixes();
+            ScreenWidth = screenWidth;
+            ScreenHeight = screenHeight;
+            Height = height;
         }
         /// <summary>
         /// Transforms point from screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement)) to virtual space
         /// </summary>
         public Vector2 ScreenToWorld(Vector2 point)
         {
-            return new Vector2((point.x / screenWidth - 0.5) * width + position.x, -(point.y / screenHeight - 0.5) * height + position.y);
+            return new Vector2((point.x / screenWidth - 0.5) * Width + position.x, -(point.y / screenHeight - 0.5) * height + position.y);
         }
         /// <summary>
         /// Transforms point from virtual space to screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement))
         /// </summary>
         public Vector2 WorldToScreen(Vector2 point)
         {
-            return new Vector2(((point.x - position.x) / width + 0.5) * screenWidth, (-(point.y - position.y) / height + 0.5) * screenHeight);
+            return new Vector2(((point.x - position.x) / Width + 0.5) * screenWidth, (-(point.y - position.y) / height + 0.5) * screenHeight);
+        }
+        /// <summary>
+        /// Zooms camera for given delta, keeping given virtual point at the same place, delta > 1 means zoom in and delta < 0 means zoom out
+        /// </summary>
+        /// <param name="point">Point that will be the same in virtual space, pass camera's position too zoom into or out of camera center</param>
+        /// <param name="delta">Delta to zoom for, must be positive, value > 1 means zoom in and value < 1 means zoom out</param>
+        public void Zoom(Vector2 point, double delta)
+        {
+            if (delta <= 0)
+                throw new ArgumentOutOfRangeException("delta", "Zoom delta must be positive.");
+
+            position += (point - position) / delta;
+            height /= delta;
+
+            recalculateMatrixes();
         }
     }
 }
