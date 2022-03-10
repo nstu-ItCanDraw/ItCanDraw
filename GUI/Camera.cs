@@ -72,7 +72,7 @@ namespace GUI
         {
             get
             {
-                return screenWidth / screenHeight;
+                return screenWidth / (double)screenHeight;
             }
         }
         /// <summary>

@@ -18,6 +18,8 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
 
+using LinearAlgebra;
+
 namespace GUI
 {
     /// <summary>
@@ -25,7 +27,8 @@ namespace GUI
     /// </summary>
     public partial class RenderControl : UserControl
     {
-
+        private FrameBuffer FBO;
+        private Camera camera;
         private int dummyVAO = 0;
         private bool initialized = false;
         public RenderControl()
@@ -50,7 +53,11 @@ namespace GUI
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
+            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, 300);
+            FBO = new FrameBuffer(new Texture2D(200, 200, TextureType.FloatValue));
+
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
+            AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/coloring.fsh");
 
             dummyVAO = GL.GenVertexArray();
 
@@ -61,17 +68,35 @@ namespace GUI
             if (!initialized)
                 return;
 
-            Render(deltaTime);
+            render(deltaTime);
         }
-        private void Render(TimeSpan deltaTime)
+        private void render(TimeSpan deltaTime)
         {
-            GL.ClearColor(Color4.Gray);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            FBO.Use();
 
             Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
             curveToTexture.Use();
-            curveToTexture.Uniform1("coeffs", new float[6] { 0f, 2f, 0f, 0f, 0f, -0.5f });
+            curveToTexture.Uniform1("quadWidth", 200.0f);
+            curveToTexture.Uniform1("quadHeight", 200.0f);
+            curveToTexture.Uniform1("coeffs", new float[6] { 0f, 1f, 0f, 0f, 0f, -2500f });
 
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
+            FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+
+            GL.ClearColor(Color4.Gray);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            Pipeline coloring = AssetsManager.Pipelines["Coloring"];
+            coloring.Use();
+            coloring.Uniform1("documentWidth", 200.0f);
+            coloring.Uniform1("documentHeight", 200.0f);
+            coloring.Uniform4("color", 1.0f, 1.0f, 1.0f, 1.0f);
+            coloring.Uniform4("backgroundColor", 0.0f, 0.0f, 0.0f, 1.0f);
+            coloring.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            FBO.ColorTexture.Bind("tex");
+            
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }

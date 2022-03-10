@@ -3,8 +3,9 @@
 layout(location = 0) out vec2 pos;
 layout(location = 1) out vec2 uv;
 
-uniform float quadWidth;
-uniform float quadHeight;
+uniform mat3 view;
+uniform float documentWidth;
+uniform float documentHeight;
 
 void main()
 {
@@ -12,7 +13,7 @@ void main()
     float y = float(((uint(gl_VertexID)+1u) / 3u) % 2u);
 
     uv = vec2(x, y);
-    pos = (uv - 0.5f) * vec2(quadWidth, quadHeight);
+    pos = (uv - 0.5f) * vec2(documentWidth, documentHeight);
 
-    gl_Position = vec4(uv * 2.0f - 1.0f, 0.0f, 1.0f);
+    gl_Position = vec4((view * vec3(pos, 1.0f)).xy, 0.0f, 1.0f);
 }

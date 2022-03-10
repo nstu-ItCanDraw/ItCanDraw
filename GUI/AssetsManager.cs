@@ -180,14 +180,16 @@ namespace GUI
                 throw new ObjectDisposedException("FrameBuffer");
             Current = this;
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
+            GL.Viewport(0, 0, ColorTexture.Width, ColorTexture.Height);
         }
         /// <summary>
-        /// Sets default OpenGL frame buffer as current
+        /// Sets default OpenGL frame buffer as current and resizes viewport to given render surface width and height in pixels
         /// </summary>
-        public static void UseDefault()
+        public static void UseDefault(int screenWidth, int screenHeight)
         {
             Current = null;
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 1);
+            GL.Viewport(0, 0, screenWidth, screenHeight);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -195,7 +197,7 @@ namespace GUI
             if (!disposed)
             {
                 if (IsCurrent)
-                    UseDefault();
+                    Current = null;
 
                 GL.DeleteFramebuffer(id);
 
