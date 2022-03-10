@@ -50,7 +50,44 @@
             </MenuItem>
         </Menu>
 
-        <Menu Height="1080" Width="39" HorizontalAlignment="Right" Background ="#2C2C2C"></Menu>
+        <Menu Width="297" HorizontalAlignment="Right" Background ="#2C2C2C" Margin="0,39,0,10">
+            <TextBlock HorizontalAlignment="Center" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Foreground="#FFFCAEF6"><Run/><LineBreak/><Run Text="     Свойства"/><LineBreak/></TextBlock>
+            <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="18" TextWrapping="Wrap" Width="119" Foreground="#FFFCAEF6" FontSize="14"><Run Text="  "/><Run Text=" "/><Run Text=" Имя "/><Run Text="объекта"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="27" TextWrapping="Wrap" Width="239" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="  "/><Run Text="Трансформирование"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="26" Foreground="#FFFCAEF6"><Run Text="   X:"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="32" Foreground="#FFFCAEF6"><Run Text="  "/><Run Language="ru-ru" Text="  "/><Run Text=" "/><Run Text="Ш"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="56" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text="  "/><Run Text=" "/><Run Language="ru-ru" Text="   "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="27" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" Y:"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="32" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text="  "/><Run Text=" "/><Run Language="ru-ru" Text="В"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+            <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="Угол"/><Run Language="ru-ru" Text=" поворота"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+            <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="  "/><Run Text="Оформление"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="166" Foreground="#FFFCAEF6" Text=""/>
+            <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <Rectangle Height="24" Stroke="Black" Width="24" Fill="White"/>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="Заливка"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <Rectangle Height="24" Stroke="Black" Width="24" StrokeThickness="7"/>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Language="ru-ru" Text="   Обводка"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="17" TextWrapping="Wrap" Width="225" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="  "/><Run Text="О"/><Run Language="ru-ru" Text="бозреватель"/><LineBreak/><Run Language="ru-ru"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+            <TreeView Height="294" Width="284" Background="#FF2F2F2F" BorderBrush="#FFFCAEF6" Foreground="Black"/>
+
+        </Menu>
 
         <Menu Height="39" Width="1920" VerticalAlignment="Bottom" Background ="#2C2C2C"></Menu>
 
@@ -90,6 +127,9 @@
                 <MenuItem Header="Выйти..." Background ="#2C2C2C" ></MenuItem>
             </MenuItem>
         </Menu>
+        <TextBlock TextWrapping="Wrap" Foreground="#FFFCAEF6" Margin="0,0,1888,1047"><Run Text="  "/><Run Language="ru-ru" Text="  "/><Run Text=" "/><Run Text="Ш"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+        <TextBlock TextWrapping="Wrap" Foreground="#FFFCAEF6" Margin="0,0,1634,1054"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+        <TextBlock TextWrapping="Wrap" Foreground="#FFFCAEF6" Margin="0,0,1634,1058"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
 
 
 
