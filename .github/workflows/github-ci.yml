@@ -38,4 +38,4 @@ jobs:
       run: dotnet tool install --global dotnet-format --version ${{ env.DOTNET_FORMAT }}
 
     - name: Format
-      run: dotnet-format
+      run: dotnet-format --severity info
