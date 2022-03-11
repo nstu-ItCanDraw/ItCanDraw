@@ -21,6 +21,10 @@ namespace Geometry
         {
             return new Triangle(width, height, position);
         }
+        public static IFigure CreatePolyline(IList<Vector2> points)
+        {
+            return new Polyline(points);
+        }
     }
 
 
