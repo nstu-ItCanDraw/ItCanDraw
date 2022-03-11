@@ -19,6 +19,7 @@ using OpenTK.Mathematics;
 using OpenTK.Wpf;
 
 using LinearAlgebra;
+using Geometry;
 
 namespace GUI
 {
@@ -74,15 +75,6 @@ namespace GUI
         {
             FBO.Use();
 
-            Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
-            curveToTexture.Use();
-            curveToTexture.Uniform1("quadWidth", 200.0f);
-            curveToTexture.Uniform1("quadHeight", 200.0f);
-            curveToTexture.Uniform1("coeffs", new float[6] { 0f, 1f, 0f, 0f, 0f, -2500f });
-
-            GL.BindVertexArray(dummyVAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
             FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
 
             GL.ClearColor(Color4.Gray);
@@ -92,15 +84,29 @@ namespace GUI
             coloring.Use();
             coloring.Uniform1("documentWidth", 200.0f);
             coloring.Uniform1("documentHeight", 200.0f);
-            coloring.Uniform4("color", 1.0f, 1.0f, 1.0f, 1.0f);
-            coloring.Uniform4("backgroundColor", 0.0f, 0.0f, 0.0f, 1.0f);
+            coloring.Uniform4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+            coloring.Uniform4("backgroundColor", 1.0f, 1.0f, 1.0f, 1.0f);
             coloring.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
             FBO.ColorTexture.Bind("tex");
             
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
+        private void renderFigure(IFigure figure)
+        {
+            Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
+            curveToTexture.Use();
+            curveToTexture.Uniform1("quadWidth", 200.0f);
+            curveToTexture.Uniform1("quadHeight", 200.0f);
+            int curvesCount = figure.Curves[0].Count;
+            for (int i = 0; i < curvesCount; i++)
+                curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(figure.Curves[0][i], new Converter<double, float>(val => (float)val)));
+            curveToTexture.Uniform1("curvesCount", curvesCount);
+            curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)figure.Transform.View);
 
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+        }
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
