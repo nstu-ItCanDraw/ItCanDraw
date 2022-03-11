@@ -21,7 +21,18 @@ namespace Geometry
         static string name = "polygon";
         public string Name => name;
 
-        public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private List<Vector2> points;
+        public List<Vector2> Points 
+        {
+            get 
+            {
+                return points;
+            }
+            set 
+            {
+
+            } 
+        }
 
         public List<List<double[]>> Curves => throw new NotImplementedException();
 
