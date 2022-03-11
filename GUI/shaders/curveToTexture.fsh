@@ -1,17 +1,25 @@
 #version 440 core
 
+struct Curve
+{
+    float coeffs[6];
+};
+
 layout(location = 0) in vec2 pos;
 layout(location = 1) in vec2 uv;
 
 out float outValue;
-uniform float coeffs[6];
+uniform Curve curves[16];
+uniform int curvesCount;
 
 void main()
 {
-	outValue = float(coeffs[0] * pos.x * pos.x + 
-                     coeffs[1] * pos.y * pos.y + 
-                     coeffs[2] * pos.x * pos.y + 
-                     coeffs[3] * pos.x + 
-                     coeffs[4] * pos.y + 
-                     coeffs[5] < 0.0f);
+    outValue = float(curvesCount > 0);
+    for (int i = 0; i < curvesCount; i++)
+        outValue *= float(curves[i].coeffs[0] * pos.x * pos.x + 
+                          curves[i].coeffs[1] * pos.y * pos.y + 
+                          curves[i].coeffs[2] * pos.x * pos.y + 
+                          curves[i].coeffs[3] * pos.x + 
+                          curves[i].coeffs[4] * pos.y + 
+                          curves[i].coeffs[5] < 0.0f);
 }
