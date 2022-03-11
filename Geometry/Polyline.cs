@@ -49,32 +49,14 @@ namespace Geometry
         public Transform Transform { get; }
 
         BoundingBox aabb;
-        public BoundingBox AABB
-        {
-            get
-            {
-                return aabb;
-            }
-        }
+        public BoundingBox AABB => aabb;
         BoundingBox obb;
-        public BoundingBox OBB
-        {
-            get
-            {
-                return obb;
-            }
-        }
+        public BoundingBox OBB => obb;
 
         public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set => throw new NotImplementedException(); }
 
         List<List<double[]>> coeficients;
-        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves
-        {
-            get
-            {
-                return coeficients;
-            }
-        }
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
 
         private void RecalcBoundingBox()
         {
@@ -125,10 +107,10 @@ namespace Geometry
                 double vx = Points[i].x - Points[i - 1].x;
                 double vy = Points[i].y - Points[i - 1].y;
                 double w = -Points[i - 1].x * vy + Points[i - 1].y * vx;
-                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2;
+                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2.0;
 
-                double[] bound = { 1, 0, 0, -2 * a, 0, a * a - (vx * vx) / 4 };
-                double[] line = { vy * vy, vx * vx, -2 * vx * vy, 2 * w * vy, -2 * w * vx, w * w };
+                double[] bound = { 1.0, 0, 0, -2.0 * a, 0, a * a - (vx * vx) / 4.0 };
+                double[] line = { vy * vy, vx * vx, -2.0 * vx * vy, 2.0 * w * vy, -2.0 * w * vx, w * w };
 
                 coeficients[i - 1] = new List<double[]>() { bound, line };
             }
@@ -141,10 +123,10 @@ namespace Geometry
                 double vx = Points[i].x - Points[i - 1].x;
                 double vy = Points[i].y - Points[i - 1].y;
                 double w = -Points[i - 1].x * vy + Points[i - 1].y * vx;
-                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2;
+                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2.0;
 
-                double[] bound = { 1, 0, 0, -2 * a, 0, a * a - (vx * vx) / 4 };
-                double[] line = { vy * vy, vx * vx, -2 * vx * vy, 2 * w * vy, -2 * w * vx, w * w };
+                double[] bound = { 1.0, 0, 0, -2.0 * a, 0, a * a - (vx * vx) / 4.0 };
+                double[] line = { vy * vy, vx * vx, -2.0 * vx * vy, 2.0 * w * vy, -2.0 * w * vx, w * w };
 
                 coeficients.Add(new List<double[]>() { bound, line });
             }
@@ -167,7 +149,7 @@ namespace Geometry
             points = new List<Vector2>();
             foreach (var _point in globalpoints)
             {
-                points.Add((Transform.View * new Vector3(_point, 1)).xy);
+                points.Add((Transform.View * new Vector3(_point, 1.0)).xy);
             }
         }
 
@@ -183,6 +165,12 @@ namespace Geometry
         {
             Transform = new Transform();
             ChangePoints(_points);
+            RecalcCurves();
+            RecalcBoundingBox();
+
+            OnPropertyChanged("Curves");
+            OnPropertyChanged("OBB");
+            OnPropertyChanged("AABB");
         }
 
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -192,13 +180,15 @@ namespace Geometry
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
+            Vector2 localPosition = (Transform.View * new Vector3(position, 1.0)).xy;
+
             for (int i = 1; i < Points.Count; i++)
             {
-                if (Math.Min(Points[i - 1].x, Points[i].x) - eps < position.x &&
-                   Math.Max(Points[i - 1].x, Points[i].x) + eps > position.x &&
-                   Math.Min(Points[i - 1].y, Points[i].y) - eps < position.y &&
-                   Math.Max(Points[i - 1].y, Points[i].y) + eps > position.y)
-                    if (GetValue(position, coeficients[i - 1][1]) < eps)
+                if (Math.Min(Points[i - 1].x, Points[i].x) - eps < localPosition.x &&
+                   Math.Max(Points[i - 1].x, Points[i].x) + eps > localPosition.x &&
+                   Math.Min(Points[i - 1].y, Points[i].y) - eps < localPosition.y &&
+                   Math.Max(Points[i - 1].y, Points[i].y) + eps > localPosition.y)
+                    if (GetValue(localPosition, coeficients[i - 1][1]) < eps)
                         return true;
             }
             return false;
