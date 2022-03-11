@@ -21,17 +21,112 @@ namespace Geometry
         static string name = "polyline";
         public string Name => name;
 
-        public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private List<Vector2> points;
+        private List<Vector2> globalpoints;
 
-        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
+        public List<Vector2> Points 
+        {
+            get
+            {
+                return points;
+            }
+            set
+            {
+                if (!globalpoints.SequenceEqual(value)) // ? как Vector2 переварится
+                    ChangePoints(value);
+            }
+        }
 
-        public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Transform Transform { get; }
 
-        public BoundingBox AABB => throw new NotImplementedException();
+        public BoundingBox AABB
+        {
+            get
+            {
+                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
 
-        public BoundingBox OBB => throw new NotImplementedException();
+                foreach (var point in globalpoints)
+                {
+                    if (point.x < left_bottom.x)
+                        left_bottom.x = point.x;
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+                    if (point.x > right_top.x)
+                        right_top.x = point.x;
+
+                    if (point.y < left_bottom.y)
+                        left_bottom.y = point.y;
+
+                    if (point.y > right_top.y)
+                        right_top.y = point.y;
+                }
+
+                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+            }
+        }
+
+        public BoundingBox OBB
+        {
+            get
+            {
+                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+                foreach (var point in Points)
+                {
+                    if (point.x < left_bottom.x)
+                        left_bottom.x = point.x;
+
+                    if (point.x > right_top.x)
+                        right_top.x = point.x;
+
+                    if (point.y < left_bottom.y)
+                        left_bottom.y = point.y;
+
+                    if (point.y > right_top.y)
+                        right_top.y = point.y;
+                }
+
+                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+            }
+        }
+
+        public IList<Vector2> BasicPoints { get => Points; set => throw new NotImplementedException(); }
+
+        IList<IList<double[]>> IFigure.Curves
+        {
+            get
+            {
+                foreach(var point in Points)
+                {
+
+                }
+
+                return new List<IList<double[]>>() { new List<double[]>() { bottomEdge, rightEdge, leftEdge } };
+            }
+        }
+
+        private void ChangePoints(IList<Vector2> _points)
+        {
+            Vector2 centre = new Vector2();
+            int n = 0;
+            foreach (var _point in _points)
+            {
+                centre += _point;
+                n++;
+            }
+            centre /= n;
+
+            Transform.Position = centre;
+            Transform.PropertyChanged += Transform_OnPropertyChanged;
+
+            globalpoints = new List<Vector2>(_points);
+            points = new List<Vector2>();
+            foreach (var _point in globalpoints)
+            {
+                points.Add((Transform.View * new Vector3(_point, 1)).xy);
+            }
+        }
 
         static Polyline()
         {
@@ -39,6 +134,12 @@ namespace Geometry
             parameterDictionary = new Dictionary<string, PropertyInfo>();
             parameterDictionary.Add(nameof(Name).ToLower(), polylineType.GetProperty(nameof(Name)));
             parameterDictionary.Add(nameof(Points).ToLower(), polylineType.GetProperty(nameof(Points)));
+        }
+
+        public Polyline(IList<Vector2> _points)
+        {
+            Transform = new Transform();
+            ChangePoints(_points);
         }
 
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)

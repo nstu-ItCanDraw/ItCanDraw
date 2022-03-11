@@ -69,9 +69,9 @@ namespace Geometry
 
                 return new List<Vector2>()
                 {
-                    (globalMatrix * new Vector3(-width / 2.0, -height / 2.0)).xy,
-                    (globalMatrix * new Vector3(width / 2.0, -height / 2.0)).xy,
-                    (globalMatrix * new Vector3(0.0, height / 2.0)).xy,
+                    (globalMatrix * new Vector3(-width / 2.0, -height / 2.0, 1.0)).xy,
+                    (globalMatrix * new Vector3(width / 2.0, -height / 2.0, 1.0)).xy,
+                    (globalMatrix * new Vector3(0.0, height / 2.0, 1.0)).xy,
                 };
             }
         }
@@ -137,7 +137,7 @@ namespace Geometry
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
-            Vector2 localPosition = (Transform.View * new Vector3(position)).xy;
+            Vector2 localPosition = (Transform.View * new Vector3(position, 1.0)).xy;
 
             double halfWidth = width / 2.0;
             double halfHeight = height / 2.0;
