@@ -24,7 +24,7 @@ namespace Geometry
         private List<Vector2> points;
         private List<Vector2> globalpoints;
 
-        public List<Vector2> Points 
+        public List<Vector2> Points
         {
             get
             {
@@ -32,80 +32,123 @@ namespace Geometry
             }
             set
             {
+
                 if (!globalpoints.SequenceEqual(value)) // ? как Vector2 переварится
+                {
                     ChangePoints(value);
+                    RecalcCurves();
+                    RecalcBoundingBox();
+
+                    OnPropertyChanged("Curves");
+                    OnPropertyChanged("OBB");
+                    OnPropertyChanged("AABB");
+                }
             }
         }
 
         public Transform Transform { get; }
 
+        BoundingBox aabb;
         public BoundingBox AABB
         {
             get
             {
-                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
-                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
-
-                foreach (var point in globalpoints)
-                {
-                    if (point.x < left_bottom.x)
-                        left_bottom.x = point.x;
-
-                    if (point.x > right_top.x)
-                        right_top.x = point.x;
-
-                    if (point.y < left_bottom.y)
-                        left_bottom.y = point.y;
-
-                    if (point.y > right_top.y)
-                        right_top.y = point.y;
-                }
-
-                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+                return aabb;
             }
         }
-
+        BoundingBox obb;
         public BoundingBox OBB
         {
             get
             {
-                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
-                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
-
-                foreach (var point in Points)
-                {
-                    if (point.x < left_bottom.x)
-                        left_bottom.x = point.x;
-
-                    if (point.x > right_top.x)
-                        right_top.x = point.x;
-
-                    if (point.y < left_bottom.y)
-                        left_bottom.y = point.y;
-
-                    if (point.y > right_top.y)
-                        right_top.y = point.y;
-                }
-
-                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+                return obb;
             }
         }
 
-        public IList<Vector2> BasicPoints { get => Points; set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set => throw new NotImplementedException(); }
 
-        IList<IList<double[]>> IFigure.Curves
+        List<List<double[]>> coeficients;
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves
         {
             get
             {
-                foreach(var point in Points)
-                {
-
-                }
-
-                return new List<IList<double[]>>() { new List<double[]>() { bottomEdge, rightEdge, leftEdge } };
+                return coeficients;
             }
         }
 
+        private void RecalcBoundingBox()
+        {
+            Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+            foreach (var point in globalpoints)
+            {
+                if (point.x < left_bottom.x)
+                    left_bottom.x = point.x;
+
+                if (point.x > right_top.x)
+                    right_top.x = point.x;
+
+                if (point.y < left_bottom.y)
+                    left_bottom.y = point.y;
+
+                if (point.y > right_top.y)
+                    right_top.y = point.y;
+            }
+
+            aabb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+
+            left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            right_top = new Vector2(double.MinValue, double.MinValue);
+
+            foreach (var point in Points)
+            {
+                if (point.x < left_bottom.x)
+                    left_bottom.x = point.x;
+
+                if (point.x > right_top.x)
+                    right_top.x = point.x;
+
+                if (point.y < left_bottom.y)
+                    left_bottom.y = point.y;
+
+                if (point.y > right_top.y)
+                    right_top.y = point.y;
+            }
+
+            obb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+        }
+        private void RecalcCurves(int pos) // пересчитать для определенной точки
+        {
+            for (int i = pos; i < pos + 1 && i < Points.Count; i++)
+            {
+                double vx = Points[i].x - Points[i - 1].x;
+                double vy = Points[i].y - Points[i - 1].y;
+                double w = -Points[i - 1].x * vy + Points[i - 1].y * vx;
+                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2;
+
+                double[] bound = { 1, 0, 0, -2 * a, 0, a * a - (vx * vx) / 4 };
+                double[] line = { vy * vy, vx * vx, -2 * vx * vy, 2 * w * vy, -2 * w * vx, w * w };
+
+                coeficients[i - 1] = new List<double[]>() { bound, line };
+            }
+        }
+        private void RecalcCurves() // пересчитать все
+        {
+            coeficients = new List<List<double[]>>();
+            for (int i = 1; i < Points.Count; i++)
+            {
+                double vx = Points[i].x - Points[i - 1].x;
+                double vy = Points[i].y - Points[i - 1].y;
+                double w = -Points[i - 1].x * vy + Points[i - 1].y * vx;
+                double a = Math.Min(Points[i].x, Points[i - 1].x) + vx / 2;
+
+                double[] bound = { 1, 0, 0, -2 * a, 0, a * a - (vx * vx) / 4 };
+                double[] line = { vy * vy, vx * vx, -2 * vx * vy, 2 * w * vy, -2 * w * vx, w * w };
+
+                coeficients.Add(new List<double[]>() { bound, line });
+            }
+        }
         private void ChangePoints(IList<Vector2> _points)
         {
             Vector2 centre = new Vector2();
@@ -149,7 +192,21 @@ namespace Geometry
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
-            throw new NotImplementedException();
+            for (int i = 1; i < Points.Count; i++)
+            {
+                if (Math.Min(Points[i - 1].x, Points[i].x) - eps < position.x &&
+                   Math.Max(Points[i - 1].x, Points[i].x) + eps > position.x &&
+                   Math.Min(Points[i - 1].y, Points[i].y) - eps < position.y &&
+                   Math.Max(Points[i - 1].y, Points[i].y) + eps > position.y)
+                    if (GetValue(position, coeficients[i - 1][1]) < eps)
+                        return true;
+            }
+            return false;
+        }
+        private double GetValue(Vector2 point, double[] coef)
+        {
+            return coef[0] * point.x * point.x + coef[1] * point.y * point.y + coef[2] * point.x * point.y +
+                coef[3] * point.x + coef[4] * point.y + coef[5];
         }
     }
 }
