@@ -211,6 +211,41 @@ namespace GUI
             GC.SuppressFinalize(this);
         }
     }
+    internal class FrameBufferPool
+    {
+        private readonly int _frameBufferAmmount;
+        private int _maxCapacity;
+        private TextureType _textureType;
+        private List<FrameBuffer> _pool = new List<FrameBuffer>();
+
+        public FrameBufferPool(int frameBufferAmmount, int maxCapacity, TextureType textureType)
+        {
+            _frameBufferAmmount = frameBufferAmmount;
+            _maxCapacity = maxCapacity;
+            _textureType = textureType;
+            for(int i = 0; i < maxCapacity; i++)
+               _pool.Add(new FrameBuffer(new Texture2D(200, 200, _textureType)));
+        }
+
+        public FrameBuffer PoolGetFreeFrameBuffer()
+        {
+            if (_frameBufferAmmount > _maxCapacity)
+                _maxCapacity *= 2;
+
+            FrameBuffer freeFrameBuffer = new FrameBuffer(new Texture2D(200, 200, _textureType));
+
+            return freeFrameBuffer;
+        }
+
+        public void PoolDisposeFrameBuffer(FrameBuffer curFrameBuffer)
+        {
+            foreach (FrameBuffer fb in _pool)
+                if (fb == curFrameBuffer)
+                    throw new ArgumentException("This FrameBuffer does not exist in FrameBufferPool");
+
+            curFrameBuffer.Dispose();
+        }
+    }
     /// <summary>
     /// Represents compiled and linked pipeline and contains uniform variables locations.
     /// </summary>
