@@ -14,7 +14,8 @@ namespace GUI
     internal class Camera
     {
         private Vector2 position = Vector2.Zero;
-        private readonly double zoomRegressionCoefficient = 0.1;
+        private readonly double ZoomMinPosition = -1e6;
+        private readonly double ZoomMaxPosition = 1e6;
         /// <summary>
         /// Camera position in global space
         /// </summary>
@@ -169,26 +170,16 @@ namespace GUI
                 throw new ArgumentOutOfRangeException("delta", "Zoom delta must be positive.");
 
             double newHeight = height / delta;
-            
-            if (1e-6 < newHeight && newHeight < 1e6)
-            {
-                position = point + (position - point) / delta;
 
-                if (position.x < -newHeight)
-                    position.x = -newHeight * zoomRegressionCoefficient;
+            if (newHeight < 1e-6 || 1e6 < newHeight)
+                return;
 
-                if (position.x > newHeight)
-                    position.x = newHeight * zoomRegressionCoefficient;
+            position = point + (position - point) / delta;
 
-                if (position.y < -newHeight)
-                    position.y = -newHeight * zoomRegressionCoefficient;
+            position.x = Math.Min(this.ZoomMaxPosition, Math.Max(this.ZoomMinPosition, position.x));
 
-                if (position.y > newHeight)
-                    position.y = newHeight * zoomRegressionCoefficient;
-
-                height = newHeight;
-                recalculateMatrixes();
-            }
+            height = newHeight;
+            recalculateMatrixes();
         }
     }
 }
