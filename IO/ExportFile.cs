@@ -61,9 +61,57 @@ namespace IO
             // Никита: сохранить в PNG и прочие растровые форматы
         }
 
+        public static void ToJPEG(string filename, object document)
+        {
+            var svgDoc = SVG.GetSvgDocumentFromDocument(document);
+
+            svgDoc.Draw().Save(filename, ImageFormat.Jpeg);
+        }
+
+        public static void ToBMP(string filename, object document)
+        {
+            var svgDoc = SVG.GetSvgDocumentFromDocument(document);
+
+            svgDoc.Draw().Save(filename, ImageFormat.Bmp);
+        }
+
+        public static void ToGIF(string filename, object document)
+        {
+            var svgDoc = SVG.GetSvgDocumentFromDocument(document);
+
+            svgDoc.Draw().Save(filename, ImageFormat.Gif);
+        }
+
+        public static void ToTIFF(string filename, object document)
+        {
+            var svgDoc = SVG.GetSvgDocumentFromDocument(document);
+
+            svgDoc.Draw().Save(filename, ImageFormat.Tiff);
+        }
+
         public static void ToPNGFromBitmap(string filename, Bitmap bitmap)
         {
             bitmap.Save(filename, ImageFormat.Png);
+        }
+
+        public static void ToJPEGFromBitmap(string filename, Bitmap bitmap)
+        {
+            bitmap.Save(filename, ImageFormat.Jpeg);
+        }
+
+        public static void ToBMPFromBitmap(string filename, Bitmap bitmap)
+        {
+            bitmap.Save(filename, ImageFormat.Bmp);
+        }
+
+        public static void ToGIFFromBitmap(string filename, Bitmap bitmap)
+        {
+            bitmap.Save(filename, ImageFormat.Gif);
+        }
+
+        public static void ToTIFFFromBitmap(string filename, Bitmap bitmap)
+        {
+            bitmap.Save(filename, ImageFormat.Tiff);
         }
     }
 }
