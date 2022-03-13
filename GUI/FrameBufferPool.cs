@@ -60,9 +60,8 @@ namespace GUI
                 if (fb == curFrameBuffer)
                 {
                     freeFrameBuffers.Push(curFrameBuffer);
-                    break;
+                    return;
                 }
-           
             throw new ArgumentException("This FrameBuffer does not exist in this FrameBufferPool");
         }
     }
