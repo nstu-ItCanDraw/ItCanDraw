@@ -4,20 +4,32 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace IO
 {
     public static class ExportFile
     {
-        public static object FromXML(string filename)
+        public static object FromJSON(string filename)
         {
-            // Катя: Открыть файл в формате XML и считать в IDocument
-            return null;
+            string json_string;
+
+            using (StreamReader reader = new StreamReader(filename))
+            {
+                json_string = reader.ReadToEnd();
+            }
+
+            return JsonConvert.DeserializeObject<object>(json_string);
         }
 
-        public static void ToXML(string filename, object document)
+        public static void ToJSON(string filename, object document)
         {
-            // Катя: сохранить IDocument в XML файл
+            string json_string = JsonConvert.SerializeObject(document);
+
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                writer.Write(json_string);
+            }
         }
 
         public static void ToSVG(string filename, object document)
