@@ -6,8 +6,9 @@ namespace GUI
 {
     internal class FrameBufferPool
     {       
-        private List<FrameBuffer> inUseFrameBuffers = new List<FrameBuffer>();
+        private List<FrameBuffer> frameBuffers = new List<FrameBuffer>();
         private Stack<FrameBuffer> freeFrameBuffers = new Stack<FrameBuffer>();
+        public int PoolCapacity { get; private set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -16,9 +17,10 @@ namespace GUI
         public TextureMinFilter MinFilter { get; private set; }
         public TextureMagFilter MagFilter { get; private set; }
 
-        public FrameBufferPool(int frameBufferAmmount, int width, int height, TextureType textureType = TextureType.RGBAColor, TextureWrapMode wrapMode = TextureWrapMode.Repeat,
+        public FrameBufferPool(int capacity, int width, int height, TextureType textureType = TextureType.RGBAColor, TextureWrapMode wrapMode = TextureWrapMode.Repeat,
             TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest)
         {
+            PoolCapacity = capacity;
             Width = width;
             Height = height;
             TextureType = textureType;
@@ -26,37 +28,35 @@ namespace GUI
             MinFilter = minFilter;
             MagFilter = magFilter;
 
-            for (int i = 0; i < frameBufferAmmount; i++)
+            for (int i = 0; i < PoolCapacity; i++)
             { 
-                inUseFrameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
-                freeFrameBuffers.Push(inUseFrameBuffers[i]);
+                frameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
+                freeFrameBuffers.Push(frameBuffers[i]);
             }
         }
-        public FrameBuffer PoolGetFreeFrameBuffer()
+        public FrameBuffer Get()
         {
             if (freeFrameBuffers.Count == 0)
             {
-                for (int i = 0; i < inUseFrameBuffers.Count; i++)
+                for (int i = 0; i < PoolCapacity; i++)
                 {
-                    inUseFrameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
-                    freeFrameBuffers.Push(inUseFrameBuffers[i]);
+                    frameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
+                    freeFrameBuffers.Push(frameBuffers[^1]);
                 }
             }
 
             return freeFrameBuffers.Pop();
         }
-        public void PoolReleaseFrameBuffer(FrameBuffer curFrameBuffer)
+        public void Release(FrameBuffer curFrameBuffer)
         {
-            bool exists = false;
-            foreach (FrameBuffer fb in inUseFrameBuffers)
+            foreach (FrameBuffer fb in frameBuffers)
                 if (fb == curFrameBuffer)
                 {
                     freeFrameBuffers.Push(curFrameBuffer);
-                    exists = true;
                     break;
                 }
-            if (!exists)
-                throw new ArgumentException("This FrameBuffer does not exist in FrameBufferPool");
+           
+            throw new ArgumentException("This FrameBuffer does not exist in this FrameBufferPool");
         }
     }
 }
