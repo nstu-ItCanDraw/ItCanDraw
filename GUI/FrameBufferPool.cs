@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenTK.Graphics.OpenGL4;
 
 namespace GUI
@@ -8,7 +9,13 @@ namespace GUI
     {       
         private List<FrameBuffer> frameBuffers = new List<FrameBuffer>();
         private Stack<FrameBuffer> freeFrameBuffers = new Stack<FrameBuffer>();
-        public int PoolCapacity { get; private set; }
+        public int PoolCapacity 
+        { 
+            get
+            {
+                return frameBuffers.Count();
+            }
+        }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -20,7 +27,6 @@ namespace GUI
         public FrameBufferPool(int capacity, int width, int height, TextureType textureType = TextureType.RGBAColor, TextureWrapMode wrapMode = TextureWrapMode.Repeat,
             TextureMinFilter minFilter = TextureMinFilter.Nearest, TextureMagFilter magFilter = TextureMagFilter.Nearest)
         {
-            PoolCapacity = capacity;
             Width = width;
             Height = height;
             TextureType = textureType;
@@ -28,7 +34,7 @@ namespace GUI
             MinFilter = minFilter;
             MagFilter = magFilter;
 
-            for (int i = 0; i < PoolCapacity; i++)
+            for (int i = 0; i < capacity; i++)
             { 
                 frameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
                 freeFrameBuffers.Push(frameBuffers[i]);
@@ -38,7 +44,8 @@ namespace GUI
         {
             if (freeFrameBuffers.Count == 0)
             {
-                for (int i = 0; i < PoolCapacity; i++)
+                int capacity = PoolCapacity;
+                for (int i = 0; i < capacity; i++)
                 {
                     frameBuffers.Add(new FrameBuffer(new Texture2D(Width, Height, TextureType, WrapMode, MinFilter, MagFilter)));
                     freeFrameBuffers.Push(frameBuffers[^1]);
