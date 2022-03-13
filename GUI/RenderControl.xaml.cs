@@ -32,6 +32,7 @@ namespace GUI
         private Camera camera;
         private int dummyVAO = 0;
         private bool initialized = false;
+        private readonly double ZoomDelta = 1.1;
         public RenderControl()
         {
             InitializeComponent();
@@ -112,6 +113,14 @@ namespace GUI
             e.Handled = true;
             if (!IsFocused)
                 Focus();
+        }
+        private void UserControl_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Point position = e.GetPosition(this);
+            LinearAlgebra.Vector2 point = camera.ScreenToWorld(new LinearAlgebra.Vector2(position.X, position.Y));
+            double delta = e.Delta > 0 ? this.ZoomDelta : 1 / this.ZoomDelta;
+
+            camera.Zoom(point, delta);
         }
     }
 }
