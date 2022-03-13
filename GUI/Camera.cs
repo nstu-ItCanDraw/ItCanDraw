@@ -14,6 +14,7 @@ namespace GUI
     internal class Camera
     {
         private Vector2 position = Vector2.Zero;
+        private readonly double zoomRegressionCoefficient = 0.1;
         /// <summary>
         /// Camera position in global space
         /// </summary>
@@ -167,10 +168,27 @@ namespace GUI
             if (delta <= 0)
                 throw new ArgumentOutOfRangeException("delta", "Zoom delta must be positive.");
 
-            position = point + (position - point) / delta;
-            height /= delta;
+            double newHeight = height / delta;
+            
+            if (1e-6 < newHeight && newHeight < 1e6)
+            {
+                position = point + (position - point) / delta;
 
-            recalculateMatrixes();
+                if (position.x < -newHeight)
+                    position.x = -newHeight * zoomRegressionCoefficient;
+
+                if (position.x > newHeight)
+                    position.x = newHeight * zoomRegressionCoefficient;
+
+                if (position.y < -newHeight)
+                    position.y = -newHeight * zoomRegressionCoefficient;
+
+                if (position.y > newHeight)
+                    position.y = newHeight * zoomRegressionCoefficient;
+
+                height = newHeight;
+                recalculateMatrixes();
+            }
         }
     }
 }

@@ -113,5 +113,13 @@ namespace GUI
             if (!IsFocused)
                 Focus();
         }
+        private void UserControl_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Point position = e.GetPosition(this);
+            LinearAlgebra.Vector2 point = camera.ScreenToWorld(new LinearAlgebra.Vector2(position.X, position.Y));
+            double delta = e.Delta > 0 ? 1.5 : 0.5;
+
+            camera.Zoom(point, delta);
+        }
     }
 }
