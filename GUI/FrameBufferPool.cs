@@ -10,7 +10,7 @@ namespace GUI
         private int _frameBufferAmmount;
         private List<FrameBuffer> inUseFrameBuffers = new List<FrameBuffer>();
         private Stack<FrameBuffer> freeFrameBuffers = new Stack<FrameBuffer>();
-        private int FrameBufferAmmount
+        public int FrameBufferAmmount
         {
             get
             {
@@ -61,7 +61,10 @@ namespace GUI
             bool exists = false;
             foreach (FrameBuffer fb in inUseFrameBuffers)
                 if (fb == curFrameBuffer)
+                {
                     exists = true;
+                    break;
+                }
             if (!exists)
                 throw new ArgumentException("This FrameBuffer does not exist in FrameBufferPool");
 
