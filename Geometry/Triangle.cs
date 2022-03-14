@@ -65,13 +65,12 @@ namespace Geometry
         {
             get
             {
-                Matrix3x3 globalMatrix = Transform.Model;
-
+                
                 return new List<Vector2>()
                 {
-                    (globalMatrix * new Vector3(-width / 2.0, -height / 2.0, 1.0)).xy,
-                    (globalMatrix * new Vector3(width / 2.0, -height / 2.0, 1.0)).xy,
-                    (globalMatrix * new Vector3(0.0, height / 2.0, 1.0)).xy,
+                    (new Vector3(-width / 2.0, -height / 2.0, 1.0)).xy,
+                    (new Vector3(width / 2.0, -height / 2.0, 1.0)).xy,
+                    (new Vector3(0.0, height / 2.0, 1.0)).xy,
                 };
             }
         }
