@@ -49,6 +49,23 @@ namespace IO
 
         public static IDocument GetDocumentFromSvgDocument(SvgDocument svgString)
         {
+            // План:
+            // 1) Создать нужный нам IDocument из модуля Logic (файл DocumentFactory.cs)
+            //       var document = DocumentFactory.CreateDocument(name, width, height);
+            //      имя наверное нужно взять из имени файла и передать в эту функцию
+            //
+            // 2) Начать в цикле разбирать SVG файл и получать SVG фигуры
+            //
+            // 3) Нужно создать наши фигуры, эквивалентные SVG фигурам, которые мы определили.
+            //       Фигуры создаются в модуле Geometry. В файле FigureFactory.cs
+            //     Пример:
+            //    if (element == elipse)
+            //    {
+            //        var elipse = FigureFactory.CreateEllipse(element.rx, element.ry, new Vector2(element.cx, element.cy));
+            //        var visual_elipse = VisualGeometryFactory.CreateVisualGeometry(elipse);
+            //        document.AddVisualGeometry(visual_elipse);
+            //    }
+
             return null;
         }
 
