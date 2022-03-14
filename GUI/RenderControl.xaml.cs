@@ -20,6 +20,7 @@ using OpenTK.Wpf;
 
 using LinearAlgebra;
 using Geometry;
+using Logic;
 
 namespace GUI
 {
@@ -28,11 +29,13 @@ namespace GUI
     /// </summary>
     public partial class RenderControl : UserControl
     {
-        private FrameBuffer FBO;
         private Camera camera;
         private int dummyVAO = 0;
         private bool initialized = false;
         private readonly double ZoomDelta = 1.1;
+        private DocumentViewModel viewModel;
+        internal DocumentViewModel ViewModel { get => viewModel; }
+        private FrameBufferPool FBP;
         public RenderControl()
         {
             InitializeComponent();
@@ -44,6 +47,9 @@ namespace GUI
             OpenTKControl.Start(settings);
 
             GL.Disable(EnableCap.DepthTest);
+
+            viewModel = new DocumentViewModel();
+            viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
         }
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -55,8 +61,8 @@ namespace GUI
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
-            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, 300);
-            FBO = new FrameBuffer(new Texture2D(200, 200, TextureType.FloatValue));
+            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument.Height * 1.2);
+            FBP = new FrameBufferPool(8, viewModel.CurrentDocument.Width, viewModel.CurrentDocument.Height, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/coloring.fsh");
@@ -74,22 +80,50 @@ namespace GUI
         }
         private void render(TimeSpan deltaTime)
         {
-            FBO.Use();
-
             FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
-
             GL.ClearColor(Color4.Gray);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            renderTextureWithBrush(null, null);
+
+            foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
+            {
+                if (vg.Geometry is IFigure)
+                {
+                    FrameBuffer fbo = FBP.Get();
+                    fbo.Use();
+
+                    renderFigure(vg.Geometry as IFigure);
+
+                    FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+                    renderTextureWithBrush(fbo.ColorTexture, vg.BackgroundBrush);
+                    FBP.Release(fbo);
+                }
+                else
+                    throw new NotImplementedException("Non-figures are not implemented yet.");
+            }
+        }
+        private void renderTextureWithBrush(Texture2D tex, IBrush brush)
+        {
             Pipeline coloring = AssetsManager.Pipelines["Coloring"];
             coloring.Use();
-            coloring.Uniform1("documentWidth", 200.0f);
-            coloring.Uniform1("documentHeight", 200.0f);
-            coloring.Uniform4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+            coloring.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
+            coloring.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
+            if (brush != null)
+            {
+                if (brush is Logic.SolidColorBrush)
+                {
+                    Logic.SolidColorBrush scb = (Logic.SolidColorBrush)brush;
+                    coloring.Uniform4("color", scb.Color.r / 255f, scb.Color.g / 255f, scb.Color.b / 255f, (float)scb.Opacity);
+                }
+                else
+                    throw new NotImplementedException("Types other than SolidColorBrush are not implemented yet.");
+            }
+
             coloring.Uniform4("backgroundColor", 1.0f, 1.0f, 1.0f, 1.0f);
             coloring.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
-            FBO.ColorTexture.Bind("tex");
-            
+            tex?.Bind("tex");
+
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
