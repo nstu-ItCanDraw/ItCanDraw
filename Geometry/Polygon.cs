@@ -30,7 +30,7 @@ namespace Geometry
             }
             set 
             {
-
+                throw new NotImplementedException();
             } 
         }
 
