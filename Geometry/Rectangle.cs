@@ -25,10 +25,38 @@ namespace Geometry
         double width;
         double height;
 
-        public double Width { get => width; set { width = value; OnPropertyChanged(); } }
-        public double Height { get => height; set { height = value; OnPropertyChanged(); } }
+        public double Width
+        {
+            get => width;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Rectangle width must be greater or equal 1E-5.");
 
-        public Transform Transform { get; set; }
+                if (value != width)
+                {
+                    width = value;
+                    OnPropertyChanged("Width");
+                }
+            }
+        }
+        public double Height
+        {
+            get => height;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Rectangle height must be greater or equal 1E-5.");
+
+                if (value != height)
+                {
+                    height = value;
+                    OnPropertyChanged("Height");
+                }
+            }
+        }
+
+        public Transform Transform { get; }
 
         // в глобальных
         public BoundingBox AABB => throw new NotImplementedException();
@@ -37,7 +65,12 @@ namespace Geometry
 
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints 
+        { 
+            get => new List<Vector2>() { new Vector2(-width/2, -height /2), new Vector2(width / 2, -height / 2),
+             new Vector2(-width/2, height /2),  new Vector2(width/2, height /2)}; 
+            set => throw new NotImplementedException(); 
+        }
 
         static Rectangle()
         {
