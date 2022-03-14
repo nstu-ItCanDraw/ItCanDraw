@@ -47,7 +47,7 @@ namespace Logic
         {
             get
             {
-                return width;
+                return height;
             }
             set
             {
