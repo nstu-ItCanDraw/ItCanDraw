@@ -2,11 +2,13 @@
 
 using Newtonsoft.Json;
 
+using Logic;
+
 namespace IO
 {
     public static class OpenFile
     {
-        public static object FromJSON(string filename)
+        public static IDocument FromJSON(string filename)
         {
             string json_string;
 
@@ -15,7 +17,7 @@ namespace IO
                 json_string = reader.ReadToEnd();
             }
 
-            return JsonConvert.DeserializeObject<object>(json_string);
+            return JsonConvert.DeserializeObject<IDocument>(json_string);
         }
     }
 }

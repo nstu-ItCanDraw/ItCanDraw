@@ -2,23 +2,25 @@
 
 using Svg;
 
+using Logic;
+
 namespace IO
 {
     public static class ImportFile
     {
-        public static object FromSVG(string filename)
+        public static IDocument FromSVG(string filename)
         {
             var svgDoc = SvgDocument.Open(filename);
 
             return SVG.GetDocumentFromSvgDocument(svgDoc);
         }
 
-        public static object FromHTML(string filename)
+        public static IDocument FromHTML(string filename)
         {
             return null;
         }
 
-        public static object FromPDF(string filename)
+        public static IDocument FromPDF(string filename)
         {
             return null;
         }

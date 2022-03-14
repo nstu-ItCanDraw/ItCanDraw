@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.Serialization;
 
+using Logic;
+
 namespace IO
 {
     [Serializable]
@@ -18,10 +20,10 @@ namespace IO
 
     public static class ExportFile
     {
-        public static void ToSVG(string filename, object document)
+        public static void ToSVG(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
-            string svgString = SVG.GetStringFromSvgDocument(svgDoc);
+            string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
 
             using (StreamWriter writer = new StreamWriter(filename))
             {
@@ -29,7 +31,7 @@ namespace IO
             }
         }
 
-        public static void ToHTML(string filename, object document)
+        public static void ToHTML(string filename, IDocument document)
         {
             // TODO: не использовать строки для работы с путями
             // TODO: валидировать путь нормально
@@ -39,7 +41,7 @@ namespace IO
             }
 
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
-            string svgString = SVG.GetStringFromSvgDocument(svgDoc);
+            string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
             var htmlstring = HTML.GetHTMLStringFromSVGString(svgString, filename);
 
             using (StreamWriter writer = new StreamWriter(filename))
@@ -48,7 +50,7 @@ namespace IO
             }
         }
 
-        public static void ToPDF(string filename, object document)
+        public static void ToPDF(string filename, IDocument document)
         {
             if (!filename.EndsWith(".pdf"))
             {
@@ -56,7 +58,7 @@ namespace IO
             }
 
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
-            string svgString = SVG.GetStringFromSvgDocument(svgDoc);
+            string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
             var htmlstring = HTML.GetHTMLStringFromSVGString(svgString, filename);
 
             var renderer = new IronPdf.ChromePdfRenderer();
@@ -65,35 +67,35 @@ namespace IO
             pdf.SaveAs(filename);
         }
 
-        public static void ToPNG(string filename, object document)
+        public static void ToPNG(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Png);
         }
 
-        public static void ToJPEG(string filename, object document)
+        public static void ToJPEG(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Jpeg);
         }
 
-        public static void ToBMP(string filename, object document)
+        public static void ToBMP(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Bmp);
         }
 
-        public static void ToGIF(string filename, object document)
+        public static void ToGIF(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Gif);
         }
 
-        public static void ToTIFF(string filename, object document)
+        public static void ToTIFF(string filename, IDocument document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 

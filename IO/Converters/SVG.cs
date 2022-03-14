@@ -1,9 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
 using System.IO;
 using System.Text;
 
 using Svg;
 using Svg.Transforms;
+
+using Logic;
 
 namespace IO
 {
@@ -14,7 +16,7 @@ namespace IO
         /// </summary>
         /// <param name="document">документ в формате IDocument</param>
         /// <returns>SvgDoc</returns>
-        public static SvgDocument GetSvgDocumentFromDocument(object document)
+        public static SvgDocument GetSvgDocumentFromDocument(IDocument document)
         {
             // Создадим документ
             SvgDocument svgDoc = GenerateDocument(document);
@@ -34,7 +36,7 @@ namespace IO
                 Y = 100,                                 // исправить
                 Width = 200,                             // исправить
                 Height = 50,                             // исправить
-                Fill = new SvgColourServer(Color.Red),   // исправить
+                Fill = new SvgColourServer(System.Drawing.Color.Red),   // исправить
                 Transforms = new SvgTransformCollection()// исправить
             };                                           // исправить
                                                          // исправить
@@ -45,7 +47,7 @@ namespace IO
             return svgDoc;
         }
 
-        public static object GetDocumentFromSvgDocument(SvgDocument svgString)
+        public static IDocument GetDocumentFromSvgDocument(SvgDocument svgString)
         {
             return null;
         }
@@ -55,7 +57,7 @@ namespace IO
         /// </summary>
         /// <param name="svgDoc"></param>
         /// <returns></returns>
-        public static string GetStringFromSvgDocument(SvgDocument svgDoc)
+        public static string GetSvgStringFromSvgDocument(SvgDocument svgDoc)
         {
             MemoryStream stream = new MemoryStream();
             svgDoc.Write(stream);
@@ -67,7 +69,7 @@ namespace IO
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        private static SvgDocument GenerateDocument(object document)
+        private static SvgDocument GenerateDocument(IDocument document)
         {
             return new SvgDocument
             {

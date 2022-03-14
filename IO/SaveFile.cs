@@ -2,11 +2,13 @@
 
 using Newtonsoft.Json;
 
+using Logic;
+
 namespace IO
 {
     public static class SaveFile
     {
-        public static void ToJSON(string filename, object document)
+        public static void ToJSON(string filename, IDocument document)
         {
             string json_string = JsonConvert.SerializeObject(document);
 
