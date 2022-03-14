@@ -22,8 +22,37 @@ namespace Geometry
         static string name = "ellipse";
         public string Name => name;
 
-        public double RadiusX { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double RadiusY { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        double radiusX, radiusY;
+        public double RadiusX
+        {
+            get => radiusX;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Ellipse radiusX must be greater or equal 1E-5.");
+
+                if (value != radiusX)
+                {
+                    radiusX = value;
+                    OnPropertyChanged("RadiusX");
+                }
+            }
+        }
+        public double RadiusY
+        {
+            get => radiusY;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Ellipse radiusY must be greater or equal 1E-5.");
+
+                if (value != radiusY)
+                {
+                    radiusY = value;
+                    OnPropertyChanged("RadiusY");
+                }
+            }
+        }
 
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
@@ -33,7 +62,11 @@ namespace Geometry
 
         public BoundingBox OBB => throw new NotImplementedException();
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints 
+        { 
+            get => throw new NotImplementedException(); 
+            set => throw new NotImplementedException(); 
+        }
 
         static Ellipse()
         {
