@@ -26,7 +26,7 @@ namespace Geometry
         {
             get 
             {
-                return points;
+                throw new NotImplementedException();
             }
             set 
             {
