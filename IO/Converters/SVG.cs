@@ -1,10 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
 using Svg;
 using Svg.Transforms;
 
@@ -46,6 +43,11 @@ namespace IO
             group.Children.Add(asdf);                    // исправить
                                                          // исправить
             return svgDoc;
+        }
+
+        public static object GetDocumentFromSvgDocument(SvgDocument svgString)
+        {
+            return null;
         }
 
         /// <summary>

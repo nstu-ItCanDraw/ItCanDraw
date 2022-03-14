@@ -2,7 +2,6 @@
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace IO
@@ -19,28 +18,6 @@ namespace IO
 
     public static class ExportFile
     {
-        public static object FromJSON(string filename)
-        {
-            string json_string;
-
-            using (StreamReader reader = new StreamReader(filename))
-            {
-                json_string = reader.ReadToEnd();
-            }
-
-            return JsonConvert.DeserializeObject<object>(json_string);
-        }
-
-        public static void ToJSON(string filename, object document)
-        {
-            string json_string = JsonConvert.SerializeObject(document);
-
-            using (StreamWriter writer = new StreamWriter(filename))
-            {
-                writer.Write(json_string);
-            }
-        }
-
         public static void ToSVG(string filename, object document)
         {
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
@@ -93,7 +70,6 @@ namespace IO
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Png);
-            // Никита: сохранить в PNG и прочие растровые форматы
         }
 
         public static void ToJPEG(string filename, object document)
