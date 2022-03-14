@@ -13,7 +13,7 @@ namespace IO
             FileValidator.CheckParentDirectory(filename);
             FileValidator.CheckExtension(filename, FileValidator.JSON_EXTENSION);
 
-            string json_string = JsonConvert.SerializeObject(document);
+            string json_string = JsonConvert.SerializeObject(document, Formatting.Indented);
 
             using (StreamWriter writer = new StreamWriter(filename))
             {
