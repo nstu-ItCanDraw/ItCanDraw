@@ -133,9 +133,9 @@ namespace GUI
             curveToTexture.Use();
             curveToTexture.Uniform1("quadWidth", 200.0f);
             curveToTexture.Uniform1("quadHeight", 200.0f);
-            int curvesCount = figure.Curves[0].Count;
+            int curvesCount = figure.Curves.ElementAt(0).Count;
             for (int i = 0; i < curvesCount; i++)
-                curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(figure.Curves[0][i], new Converter<double, float>(val => (float)val)));
+                curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(figure.Curves.ElementAt(0).ElementAt(i), new Converter<double, float>(val => (float)val)));
             curveToTexture.Uniform1("curvesCount", curvesCount);
             curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)figure.Transform.View);
 
