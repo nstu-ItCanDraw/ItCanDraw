@@ -51,7 +51,6 @@ namespace GUI
 
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
-            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero)));
         }
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
