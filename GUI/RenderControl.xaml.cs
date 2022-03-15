@@ -51,6 +51,7 @@ namespace GUI
 
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
+            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero)));
         }
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -66,6 +67,7 @@ namespace GUI
             FBP = new FrameBufferPool(8, viewModel.CurrentDocument.Width, viewModel.CurrentDocument.Height, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
+            AssetsManager.LoadPipeline("TextureUnion", "shaders/fullscreenQuad.vsh", "shaders/textureUnion.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/floatTextureColoring.fsh");
             AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/fullscreenColoring.fsh");
 
@@ -96,15 +98,13 @@ namespace GUI
             {
                 if (vg.Geometry is IFigure)
                 {
-                    FrameBuffer fbo = FBP.Get();
-                    fbo.Use();
-
                     GL.Disable(EnableCap.Blend);
-                    renderFigure(vg.Geometry as IFigure);
+
+                    FrameBuffer fbo = FBP.Get();
+                    renderFigureTo(fbo, vg.Geometry as IFigure);
 
                     GL.Enable(EnableCap.Blend);
-                    FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
-                    renderFloatTextureWithBrush(fbo.ColorTexture, vg.BackgroundBrush);
+                    renderFloatTextureWithBrushTo(null, fbo.ColorTexture, vg.BackgroundBrush);
                     FBP.Release(fbo);
                 }
                 else
@@ -124,8 +124,13 @@ namespace GUI
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
-        private void renderFloatTextureWithBrush(Texture2D tex, IBrush brush)
+        private void renderFloatTextureWithBrushTo(FrameBuffer fbo, Texture2D tex, IBrush brush)
         {
+            if (fbo == null)
+                FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+            else
+                fbo.Use();
+
             Pipeline coloring = AssetsManager.Pipelines["Coloring"];
             coloring.Use();
             coloring.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
@@ -144,18 +149,81 @@ namespace GUI
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
-        private void renderFigure(IFigure figure)
+        private void renderFigureTo(FrameBuffer fbo, IFigure figure)
         {
+            int figuresCount = figure.Curves.Count;
+
+            if (figuresCount == 1)
+            {
+                renderCurvesTo(fbo, figure.Curves.ElementAt(0), figure.Transform.View);
+                return;
+            }
+
+            Stack<FrameBuffer> stack = new Stack<FrameBuffer>();
+
+            for (int i = 0; i < figuresCount; i++)
+            {
+                FrameBuffer frameBuffer = FBP.Get();
+
+                renderCurvesTo(frameBuffer, figure.Curves.ElementAt(i), figure.Transform.View);
+
+                stack.Push(frameBuffer);
+            }
+
+            while (stack.Count > 1)
+            {
+                FrameBuffer result;
+                if (stack.Count > 2)
+                    result = FBP.Get();
+                else
+                    result = null;
+
+                FrameBuffer source1 = stack.Pop();
+                FrameBuffer source2 = stack.Pop();
+
+                unionTexturesTo(result, source1.ColorTexture, source2.ColorTexture);
+
+                FBP.Release(source1);
+                FBP.Release(source2);
+
+                stack.Push(result);
+            }
+        }
+        private void unionTexturesTo(FrameBuffer fbo, Texture2D tex1, Texture2D tex2)
+        {
+            if (fbo == null)
+                FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+            else
+                fbo.Use();
+
+            Pipeline union = AssetsManager.Pipelines["TextureUnion"];
+            union.Use();
+            union.Uniform1("quadWidth", (float)viewModel.CurrentDocument.Width);
+            union.Uniform1("quadHeight", (float)viewModel.CurrentDocument.Height);
+
+            tex1.Bind("tex1");
+            tex2.Bind("tex2");
+
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+        }
+        private void renderCurvesTo(FrameBuffer fbo, IReadOnlyCollection<double[]> curves, Matrix3x3 view)
+        {
+            if (fbo == null)
+                FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+            else
+                fbo.Use();
+
             Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
             curveToTexture.Use();
             curveToTexture.Uniform1("quadWidth", (float)viewModel.CurrentDocument.Width);
             curveToTexture.Uniform1("quadHeight", (float)viewModel.CurrentDocument.Height);
+            curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)view);
 
-            int curvesCount = figure.Curves.ElementAt(0).Count;
+            int curvesCount = curves.Count;
             for (int i = 0; i < curvesCount; i++)
-                curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(figure.Curves.ElementAt(0).ElementAt(i), new Converter<double, float>(val => (float)val)));
+                curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(curves.ElementAt(i), new Converter<double, float>(val => (float)val)));
             curveToTexture.Uniform1("curvesCount", curvesCount);
-            curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)figure.Transform.View);
 
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
