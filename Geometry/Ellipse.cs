@@ -25,39 +25,39 @@ namespace Geometry
         private double rx;
         private double ry;
 
-        public double RadiusX 
-        { 
-            get => rx; 
+        public double RadiusX
+        {
+            get => rx;
             set
             {
-                if(value < 1E-5)
+                if (value < 1E-5)
                     throw new ArgumentException("Ellipse width must be greater or equal 1E-5.");
 
-                if(value != rx)
+                if (value != rx)
                 {
-                    radiusx = value;
+                    rx = value;
                     OnPropertyChanged("RadiusX");
                 }
             }
         }
 
-        public double RadiusY 
-        { 
-            get => ry; 
+        public double RadiusY
+        {
+            get => ry;
             set
             {
-                if(value < 1E-5)
+                if (value < 1E-5)
                     throw new ArgumentException("Ellipse width must be greater or equal 1E-5.");
 
-                if(value != ry)
+                if (value != ry)
                 {
-                    radiusx = value;
+                    ry = value;
                     OnPropertyChanged("RadiusY");
                 }
             }
         }
 
-        public List<Vector2> Points
+        /*public List<Vector2> Points
         {
             get
             {
@@ -74,87 +74,85 @@ namespace Geometry
         }
         //ввести поинт
         //перебор точек
-        //тоже самое 
+        //тоже самое */
 
 
 
-        public BoundingBox AABB 
+        public BoundingBox AABB
         {
             get
             {
                 Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
                 Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
 
-                foreach (var point in Points)
-                {
-                    if (point.x < left_bottom.x)
-                        left_bottom.x = point.x;
+                /*foreach (var point in Points)
+                  {
+                      if (point.x < left_bottom.x)
+                          left_bottom.x = point.x;
 
-                    if (point.x > right_top.x)
-                        right_top.x = point.x;
+                      if (point.x > right_top.x)
+                          right_top.x = point.x;
 
-                    if (point.y < left_bottom.y)
-                        left_bottom.y = point.y;
+                      if (point.y < left_bottom.y)
+                          left_bottom.y = point.y;
 
-                    if (point.y > right_top.y)
-                        right_top.y = point.y;
-                }
-
+                      if (point.y > right_top.y)
+                          right_top.y = point.y;
+                  }
+                 */
                 return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+
             }
         }
 
-        public BoundingBox OBB 
+        private BoundingBox obb;
+        public BoundingBox OBB => obb;
+
+
+        private void UpdateOBB()
         {
-            get
+            obb = new BoundingBox()
             {
                 left_bottom = new Vector2(-rx, -ry),
                 right_top = new Vector2(rx, ry)
-            }
+            };
         }
 
         //тут должны быть коэф для прямой
         //массив массивов
+        List<List<double[]>> curves;
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => curves;
 
-        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
-
-        public IList<IList<double[]>> IGeometry.Curves 
+        void UpdateCurvers()
         {
-            get => curves;
-
-        }
-
-        void UpdateCurvers ()
-        {
-            double [] CurveEllips = {1/rx/rx, 1/ry/ry, 0, 0, 0, -1};
-            curves = new List<IList<double[]>>() { new List<double[]>() {CurveEllips} };
+            double[] CurveEllips = { 1 / rx / rx, 1 / ry / ry, 0, 0, 0, -1 };
+            curves = new List<List<double[]>>() { new List<double[]>() { CurveEllips } };
         }
 
         // 
-        public Transform Transform { get; set; }       
-        public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        // центральная или 4 крайние 
+        public Transform Transform { get; set; }
         
+        IReadOnlyCollection<Vector2> IFigure.BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        
+        // центральная или 4 крайние 
+
+
+
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
             Vector2 localPosition = (Transform.View * new Vector3(position)).xy;
 
-            if ((localPosition.x^2/rx^2 + localPosition.y^2/ry^2) -1 <= eps)
-            { 
+            if ((localPosition.x * localPosition.x / rx / rx + localPosition.y * localPosition.y / ry /ry) - 1 <= eps)
+            {
                 return (true);
             }
             else
-            { 
+            {
                 return (false);
             }
         }
 
-
-
-        
         static Ellipse()
         {
             Type ellipseType = typeof(Ellipse);
