@@ -47,6 +47,7 @@ namespace GUI
             OpenTKControl.Start(settings);
 
             GL.Disable(EnableCap.DepthTest);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
@@ -65,8 +66,8 @@ namespace GUI
             FBP = new FrameBufferPool(8, viewModel.CurrentDocument.Width, viewModel.CurrentDocument.Height, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
-            AssetsManager.LoadPipeline("TextureUnion", "shaders/fullscreenQuad.vsh", "shaders/textureUnion.fsh");
-            AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/coloring.fsh");
+            AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/floatTextureColoring.fsh");
+            AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/fullscreenColoring.fsh");
 
             dummyVAO = GL.GenVertexArray();
 
@@ -85,7 +86,11 @@ namespace GUI
             GL.ClearColor(Color4.Gray);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            renderTextureWithBrush(null, null);
+            renderDocumentViewModel(viewModel);
+        }
+        private void renderDocumentViewModel(DocumentViewModel document)
+        {
+            renderDocumentBackground(document.CurrentDocument, Logic.Color.White);
 
             foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
             {
@@ -94,36 +99,47 @@ namespace GUI
                     FrameBuffer fbo = FBP.Get();
                     fbo.Use();
 
+                    GL.Disable(EnableCap.Blend);
                     renderFigure(vg.Geometry as IFigure);
 
+                    GL.Enable(EnableCap.Blend);
                     FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
-                    renderTextureWithBrush(fbo.ColorTexture, vg.BackgroundBrush);
+                    renderFloatTextureWithBrush(fbo.ColorTexture, vg.BackgroundBrush);
                     FBP.Release(fbo);
                 }
                 else
                     throw new NotImplementedException("Non-figures are not implemented yet.");
             }
         }
-        private void renderTextureWithBrush(Texture2D tex, IBrush brush)
+        private void renderDocumentBackground(IDocument document, Logic.Color color)
+        {
+            Pipeline background = AssetsManager.Pipelines["DocumentBackground"];
+            background.Use();
+            background.Uniform1("documentWidth", (float)document.Width);
+            background.Uniform1("documentHeight", (float)document.Height);
+            background.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+
+            background.Uniform4("color", color.r / 255f, color.g / 255f, color.b / 255f, 1.0f);
+
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+        }
+        private void renderFloatTextureWithBrush(Texture2D tex, IBrush brush)
         {
             Pipeline coloring = AssetsManager.Pipelines["Coloring"];
             coloring.Use();
             coloring.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
             coloring.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
-            if (brush != null)
+            if (brush is Logic.SolidColorBrush)
             {
-                if (brush is Logic.SolidColorBrush)
-                {
-                    Logic.SolidColorBrush scb = (Logic.SolidColorBrush)brush;
-                    coloring.Uniform4("color", scb.Color.r / 255f, scb.Color.g / 255f, scb.Color.b / 255f, (float)scb.Opacity);
-                }
-                else
-                    throw new NotImplementedException("Types other than SolidColorBrush are not implemented yet.");
+                Logic.SolidColorBrush scb = (Logic.SolidColorBrush)brush;
+                coloring.Uniform4("color", scb.Color.r / 255f, scb.Color.g / 255f, scb.Color.b / 255f, (float)scb.Opacity);
             }
+            else
+                throw new NotImplementedException("Types other than SolidColorBrush are not implemented yet.");
 
-            coloring.Uniform4("backgroundColor", 1.0f, 1.0f, 1.0f, 1.0f);
             coloring.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
-            tex?.Bind("tex");
+            tex.Bind("tex");
 
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
@@ -132,8 +148,9 @@ namespace GUI
         {
             Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
             curveToTexture.Use();
-            curveToTexture.Uniform1("quadWidth", 200.0f);
-            curveToTexture.Uniform1("quadHeight", 200.0f);
+            curveToTexture.Uniform1("quadWidth", (float)viewModel.CurrentDocument.Width);
+            curveToTexture.Uniform1("quadHeight", (float)viewModel.CurrentDocument.Height);
+
             int curvesCount = figure.Curves.ElementAt(0).Count;
             for (int i = 0; i < curvesCount; i++)
                 curveToTexture.Uniform1($"curves[{i}].coeffs", Array.ConvertAll(figure.Curves.ElementAt(0).ElementAt(i), new Converter<double, float>(val => (float)val)));
@@ -156,6 +173,15 @@ namespace GUI
             double delta = e.Delta > 0 ? this.ZoomDelta : 1 / this.ZoomDelta;
 
             camera.Zoom(point, delta);
+        }
+
+        private void OpenTKControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!initialized)
+                return;
+
+            camera.ScreenWidth = (int)e.NewSize.Width;
+            camera.ScreenHeight = (int)e.NewSize.Height;
         }
     }
 }
