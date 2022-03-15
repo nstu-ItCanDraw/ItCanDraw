@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,10 +22,39 @@ namespace Geometry
         static string name = "ellipse";
         public string Name => name;
 
-        public double RadiusX { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double RadiusY { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        double radiusX, radiusY;
+        public double RadiusX
+        {
+            get => radiusX;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Ellipse radiusX must be greater or equal 1E-5.");
 
-        public List<List<double[]>> Curves => throw new NotImplementedException();
+                if (value != radiusX)
+                {
+                    radiusX = value;
+                    OnPropertyChanged("RadiusX");
+                }
+            }
+        }
+        public double RadiusY
+        {
+            get => radiusY;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Ellipse radiusY must be greater or equal 1E-5.");
+
+                if (value != radiusY)
+                {
+                    radiusY = value;
+                    OnPropertyChanged("RadiusY");
+                }
+            }
+        }
+
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
         public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -32,9 +62,11 @@ namespace Geometry
 
         public BoundingBox OBB => throw new NotImplementedException();
 
-        public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
+        public IReadOnlyCollection<Vector2> BasicPoints 
+        { 
+            get => throw new NotImplementedException(); 
+            set => throw new NotImplementedException(); 
+        }
 
         static Ellipse()
         {
@@ -50,6 +82,13 @@ namespace Geometry
             RadiusX = _radiusX;
             RadiusX = _radiusY;
             Transform = new Transform(Position, new Vector2(1, 1), 0);
+
+            Transform.PropertyChanged += Transform_OnPropertyChanged;
+        }
+
+        protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IGeometry.Transform));
         }
 
         public bool IsPointInFigure(Vector2 position, double eps)
