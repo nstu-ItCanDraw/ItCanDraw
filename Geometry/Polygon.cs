@@ -21,9 +21,20 @@ namespace Geometry
         static string name = "polygon";
         public string Name => name;
 
-        public List<Vector2> Points { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private List<Vector2> points;
+        public List<Vector2> Points 
+        {
+            get 
+            {
+                throw new NotImplementedException();
+            }
+            set 
+            {
+                throw new NotImplementedException();
+            } 
+        }
 
-        public List<List<double[]>> Curves => throw new NotImplementedException();
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
         public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -31,9 +42,7 @@ namespace Geometry
 
         public BoundingBox OBB => throw new NotImplementedException();
 
-        public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
+        public IReadOnlyCollection<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         static Polygon()
         {

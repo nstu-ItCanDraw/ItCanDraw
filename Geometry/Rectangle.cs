@@ -25,37 +25,52 @@ namespace Geometry
         double width;
         double height;
 
-        public double Width { get => width; set { width = value; OnPropertyChanged(); } }
-        public double Height { get => height; set { height = value; OnPropertyChanged(); } }
-
-        public List<List<double[]>> Curves {
-            get
+        public double Width
+        {
+            get => width;
+            set
             {
-                // прямоугольник; 
-                // две кривые: коэф. при x^2 1/(width/2)^2,  свободный коэф. 1
-                //                   при у^2 1/(height/2)^2, свободный коэф. 1
-                double[] _first = { 4 / (width * width), 0, 0, 0, 0, 1 };
-                double[] _second = { 0, 4 / (height * height), 0, 0, 0, 1 };
-                List<double[]> _rect = new List<double[]>();
-                _rect.Add(_first);
-                _rect.Add(_second);
-                List<List<double[]>> _curves = new List<List<double[]>>();
-                _curves.Add(_rect);
+                if (value < 1E-5)
+                    throw new ArgumentException("Rectangle width must be greater or equal 1E-5.");
 
-                return _curves;
+                if (value != width)
+                {
+                    width = value;
+                    OnPropertyChanged("Width");
+                }
+            }
+        }
+        public double Height
+        {
+            get => height;
+            set
+            {
+                if (value < 1E-5)
+                    throw new ArgumentException("Rectangle height must be greater or equal 1E-5.");
+
+                if (value != height)
+                {
+                    height = value;
+                    OnPropertyChanged("Height");
+                }
             }
         }
 
-        public Transform Transform { get; set; }
+        public Transform Transform { get; }
 
         // в глобальных
         public BoundingBox AABB => throw new NotImplementedException();
         // в локальных
         public BoundingBox OBB => throw new NotImplementedException();
 
-        IList<IList<double[]>> IFigure.Curves => throw new NotImplementedException();
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
-        public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints 
+        { 
+            get => new List<Vector2>() { new Vector2(-width/2, -height /2), new Vector2(width / 2, -height / 2),
+             new Vector2(-width/2, height /2),  new Vector2(width/2, height /2)}; 
+            set => throw new NotImplementedException(); 
+        }
 
         static Rectangle()
         {

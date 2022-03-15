@@ -116,7 +116,7 @@ namespace Geometry
         //тут должны быть коэф для прямой
         //массив массивов
 
-        List <List<double[]>> curves;
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
 
         public IList<IList<double[]>> IGeometry.Curves 
         {

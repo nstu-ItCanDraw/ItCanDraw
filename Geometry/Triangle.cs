@@ -25,8 +25,6 @@ namespace Geometry
         public string Name => name;
 
         private double width;
-        private double height;
-
         public double Width 
         {
             get => width; 
@@ -38,14 +36,16 @@ namespace Geometry
                 if(value != width)
                 {
                     width = value;
+                    Update();
                     OnPropertyChanged("Width");
                 }
             }
         }
 
-        public double Height 
-        { 
-            get => height; 
+        private double height;
+        public double Height
+        {
+            get => height;
             set
             {
                 if(value < 1E-5)
@@ -56,76 +56,27 @@ namespace Geometry
                 if(value != height)
                 {
                     height = value;
+                    Update();
                     OnPropertyChanged("Height");
                 }
             }
         }
 
-        public List<Vector2> Points
-        {
-            get
-            {
-                Matrix3x3 globalMatrix = Transform.Model;
+        private List<Vector2> points;
+        public List<Vector2> Points => points;
 
-                return new List<Vector2>()
-                {
-                    (globalMatrix * new Vector3(-width / 2.0, -height / 2.0)).xy,
-                    (globalMatrix * new Vector3(width / 2.0, -height / 2.0)).xy,
-                    (globalMatrix * new Vector3(0.0, height / 2.0)).xy,
-                };
-            }
-        }
+        private BoundingBox aabb;
+        public BoundingBox AABB => aabb;
 
-        public BoundingBox AABB
-        {
-            get
-            {
-                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
-                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+        private BoundingBox obb;
+        public BoundingBox OBB => obb;
 
-                foreach (var point in Points)
-                {
-                    if (point.x < left_bottom.x)
-                        left_bottom.x = point.x;
-
-                    if (point.x > right_top.x)
-                        right_top.x = point.x;
-
-                    if (point.y < left_bottom.y)
-                        left_bottom.y = point.y;
-
-                    if (point.y > right_top.y)
-                        right_top.y = point.y;
-                }
-
-                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
-            }
-        }
-
-        public BoundingBox OBB => new BoundingBox()
-        {
-            left_bottom = new Vector2(-width / 2.0, -height / 2.0),
-            right_top = new Vector2(width / 2.0, height / 2.0)
-        };
-
-        public IList<IList<double[]>> Curves
-        {
-            get
-            {
-                double halfWidth = width / 2.0;
-                double halfHeight = height / 2.0;
-
-                double[] bottomEdge = GetEdgeCoeffs(-halfWidth, -halfHeight, halfWidth, -halfHeight);
-                double[] rightEdge = GetEdgeCoeffs(halfWidth, -halfHeight, 0.0, halfHeight);
-                double[] leftEdge = GetEdgeCoeffs(0.0, halfHeight, -halfWidth, -halfHeight);
-
-                return new List<IList<double[]>>() { new List<double[]>() { bottomEdge, rightEdge, leftEdge } };
-            }
-        }
+        private IReadOnlyCollection<IReadOnlyCollection<double[]>> curves;
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => curves;
         
         public Transform Transform { get; set; }
 
-        public IList<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints { get => points.AsReadOnly(); set => throw new NotImplementedException(); }
 
         private double[] GetEdgeCoeffs(double x1, double y1, double x2, double y2)
         {
@@ -137,7 +88,7 @@ namespace Geometry
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
-            Vector2 localPosition = (Transform.View * new Vector3(position)).xy;
+            Vector2 localPosition = (Transform.View * new Vector3(position, 1.0)).xy;
 
             double halfWidth = width / 2.0;
             double halfHeight = height / 2.0;
@@ -176,8 +127,74 @@ namespace Geometry
             Transform.PropertyChanged += Transform_OnPropertyChanged;
         }
 
+        private void UpdatePoints()
+        {
+            points = new List<Vector2>()
+            {
+                new Vector2(-width / 2.0, -height / 2.0),
+                new Vector2(width / 2.0, -height / 2.0),
+                new Vector2(0.0, height / 2.0),
+            };
+        }
+
+        private void UpdateAABB()
+        {
+            Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+            Matrix3x3 globalMatrix = Transform.Model;
+            IEnumerable<Vector2> globalPoints = points.Select(point => (globalMatrix * new Vector3(point, 1)).xy);
+
+            foreach (var point in globalPoints)
+            {
+                if (point.x < left_bottom.x)
+                    left_bottom.x = point.x;
+
+                if (point.x > right_top.x)
+                    right_top.x = point.x;
+
+                if (point.y < left_bottom.y)
+                    left_bottom.y = point.y;
+
+                if (point.y > right_top.y)
+                    right_top.y = point.y;
+            }
+
+            aabb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+        }
+
+        private void UpdateOBB()
+        {
+            obb = new BoundingBox()
+            {
+                left_bottom = new Vector2(-width / 2.0, -height / 2.0),
+                right_top = new Vector2(width / 2.0, height / 2.0)
+            };
+        }
+
+        private void UpdateCurves()
+        {
+            double halfWidth = width / 2.0;
+            double halfHeight = height / 2.0;
+
+            double[] bottomEdge = GetEdgeCoeffs(-halfWidth, -halfHeight, halfWidth, -halfHeight);
+            double[] rightEdge = GetEdgeCoeffs(halfWidth, -halfHeight, 0.0, halfHeight);
+            double[] leftEdge = GetEdgeCoeffs(0.0, halfHeight, -halfWidth, -halfHeight);
+
+            curves = (new List<IReadOnlyCollection<double[]>>() { (new List<double[]>() { bottomEdge, rightEdge, leftEdge }).AsReadOnly() }).AsReadOnly();
+        }
+
+        private void Update()
+        {
+            UpdatePoints();
+            UpdateAABB();
+            UpdateOBB();
+            UpdateCurves();
+        }
+
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            UpdateAABB();
             OnPropertyChanged(nameof(Transform));
         }
     }
