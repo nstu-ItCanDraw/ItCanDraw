@@ -10,5 +10,5 @@ out float outValue;
 
 void main()
 {
-    outValue = float(texture(tex1, uv).x == 0.0f || texture(tex2, uv).x == 0.0f);
+    outValue = float(texture(tex1, uv).r != 0.0f || texture(tex2, uv).r != 0.0f);
 }

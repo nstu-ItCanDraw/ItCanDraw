@@ -20,10 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="shaders\fullscreenColoring.fsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\documentQuad.vsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="shaders\coloring.fsh">
+    <None Update="shaders\floatTextureColoring.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="shaders\texturesIntersection.fsh">
@@ -33,6 +36,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="shaders\fullscreenQuad.vsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="shaders\textureUnion.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
