@@ -65,6 +65,7 @@ namespace GUI
             FBP = new FrameBufferPool(8, viewModel.CurrentDocument.Width, viewModel.CurrentDocument.Height, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
+            AssetsManager.LoadPipeline("TextureUnion", "shaders/fullscreenQuad.vsh", "shaders/textureUnion.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/coloring.fsh");
 
             dummyVAO = GL.GenVertexArray();
