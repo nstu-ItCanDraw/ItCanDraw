@@ -39,7 +39,7 @@ namespace LinearAlgebra.Test
         public void mult_1222and1234_4321_3223_1122__17141516returned()
         {
             //arrange
-            Vector4f MatX = new Vector4f(1f, 2f, 2f, 2f);
+            Vector4f VectX = new Vector4f(1f, 2f, 2f, 2f);
             Matrix4x4f MatY = new Matrix4x4f(1f, 2f, 3f, 4f,
                                              4f, 3f, 2f, 1f,
                                              3f, 2f, 2f, 3f,
@@ -49,7 +49,7 @@ namespace LinearAlgebra.Test
             //act
 
 
-            Vector4f actual = MatY * MatX;
+            Vector4f actual = VectX * MatY;
 
             //assert
             Assert.AreEqual(expected, actual);
