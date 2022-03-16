@@ -1,23 +1,12 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace IO
+﻿namespace IO
 {
-    [Serializable]
-    public class BadPDFError : Exception
-    {
-        public BadPDFError(string message) : base(message)
-        { }
-
-        protected BadPDFError(SerializationInfo info, StreamingContext ctxt) : base(info, ctxt)
-        { }
-    }
-
     public static class PDF
     {
         public static string GetSvgFromPDF(string filename)
         {
-            // TODO: проверить, что файл вообще существует
+            FileValidator.CheckFileExists(filename);
+            FileValidator.CheckExtension(filename, FileValidator.PDF_EXTENSION);
+
             var pdf = IronPdf.PdfDocument.FromFile(filename);
 
             if (pdf.MetaData.CustomProperties.Contains("svgImage"))

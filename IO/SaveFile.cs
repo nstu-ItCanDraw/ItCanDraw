@@ -10,6 +10,9 @@ namespace IO
     {
         public static void ToJSON(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.JSON_EXTENSION);
+
             string json_string = JsonConvert.SerializeObject(document);
 
             using (StreamWriter writer = new StreamWriter(filename))
