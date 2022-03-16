@@ -1,27 +1,19 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.Serialization;
 
 using Logic;
 
 namespace IO
 {
-    [Serializable]
-    public class BadFileExtensionError : Exception
-    {
-        public BadFileExtensionError(string message) : base(message)
-        { }
-
-        protected BadFileExtensionError(SerializationInfo info, StreamingContext ctxt) : base(info, ctxt)
-        { }
-    }
-
     public static class ExportFile
     {
+
         public static void ToSVG(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.SVG_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
             string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
 
@@ -33,12 +25,8 @@ namespace IO
 
         public static void ToHTML(string filename, IDocument document)
         {
-            // TODO: не использовать строки для работы с путями
-            // TODO: валидировать путь нормально
-            if (!(filename.EndsWith(".html") || filename.EndsWith(".htm")))
-            {
-                throw new BadFileExtensionError("File extension must be .htm or .html");
-            }
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.HTML_EXTENSION);
 
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
             string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
@@ -52,10 +40,8 @@ namespace IO
 
         public static void ToPDF(string filename, IDocument document)
         {
-            if (!filename.EndsWith(".pdf"))
-            {
-                throw new BadFileExtensionError("File extension must be .pdf");
-            }
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.PDF_EXTENSION);
 
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
             string svgString = SVG.GetSvgStringFromSvgDocument(svgDoc);
@@ -69,6 +55,9 @@ namespace IO
 
         public static void ToPNG(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.PNG_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Png);
@@ -76,6 +65,9 @@ namespace IO
 
         public static void ToJPEG(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.JPEG_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Jpeg);
@@ -83,6 +75,9 @@ namespace IO
 
         public static void ToBMP(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.BMP_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Bmp);
@@ -90,6 +85,9 @@ namespace IO
 
         public static void ToGIF(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.GIF_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Gif);
@@ -97,6 +95,9 @@ namespace IO
 
         public static void ToTIFF(string filename, IDocument document)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.TIFF_EXTENSION);
+
             var svgDoc = SVG.GetSvgDocumentFromDocument(document);
 
             svgDoc.Draw().Save(filename, ImageFormat.Tiff);
@@ -104,26 +105,41 @@ namespace IO
 
         public static void ToPNGFromBitmap(string filename, Bitmap bitmap)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.PNG_EXTENSION);
+
             bitmap.Save(filename, ImageFormat.Png);
         }
 
         public static void ToJPEGFromBitmap(string filename, Bitmap bitmap)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.JPEG_EXTENSION);
+
             bitmap.Save(filename, ImageFormat.Jpeg);
         }
 
         public static void ToBMPFromBitmap(string filename, Bitmap bitmap)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.BMP_EXTENSION);
+
             bitmap.Save(filename, ImageFormat.Bmp);
         }
 
         public static void ToGIFFromBitmap(string filename, Bitmap bitmap)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.GIF_EXTENSION);
+
             bitmap.Save(filename, ImageFormat.Gif);
         }
 
         public static void ToTIFFFromBitmap(string filename, Bitmap bitmap)
         {
+            FileValidator.CheckParentDirectory(filename);
+            FileValidator.CheckExtension(filename, FileValidator.TIFF_EXTENSION);
+
             bitmap.Save(filename, ImageFormat.Tiff);
         }
     }

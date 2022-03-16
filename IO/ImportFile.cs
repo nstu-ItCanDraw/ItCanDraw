@@ -13,6 +13,9 @@ namespace IO
     {
         public static IDocument FromSVG(string filename)
         {
+            FileValidator.CheckFileExists(filename);
+            FileValidator.CheckExtension(filename, FileValidator.SVG_EXTENSION);
+
             var svgDoc = SvgDocument.Open(filename);
 
             return SVG.GetDocumentFromSvgDocument(svgDoc);
@@ -20,6 +23,9 @@ namespace IO
 
         public static IDocument FromHTML(string filename)
         {
+            FileValidator.CheckFileExists(filename);
+            FileValidator.CheckExtension(filename, FileValidator.HTML_EXTENSION);
+
             var htmlString = "";
 
             using (StreamReader streamReader = new StreamReader(filename, Encoding.UTF8))
@@ -49,6 +55,9 @@ namespace IO
 
         public static IDocument FromPDF(string filename)
         {
+            FileValidator.CheckFileExists(filename);
+            FileValidator.CheckExtension(filename, FileValidator.PDF_EXTENSION);
+
             try
             {
                 var svgString = PDF.GetSvgFromPDF(filename);
