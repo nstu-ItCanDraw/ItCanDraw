@@ -11,7 +11,7 @@ namespace LinearAlgebra.Test
 
         //Обе матрицы не нулевые, все их компоненты не нулевые
         [TestMethod]
-        public void mult_23_12and21_12__78_45returned()
+        public void mult_123_321_213and134_212_431__171411_111417_161613returned()
         {
             //arrange
             Matrix3x3f MatX = new Matrix3x3f(1f, 2f, 3f,
@@ -32,11 +32,49 @@ namespace LinearAlgebra.Test
 
         }
 
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
+        [TestMethod]
+        public void mult_123and134_212_731__17_14_11returned()
+        {
+            //arrange
+            Vector3f VectX = new Vector3f(1f, 2f, 3f);
+            Matrix3x3f MatY = new Matrix3x3f(1f, 3f, 4f,
+                                             2f, 1f, 2f,
+                                             4f, 3f, 1f);
+
+            Vector3f expected = new Vector3f(17f, 14f, 11f);
+            //act
+            Vector3f actual = VectX * MatY;
+
+            //assert
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
+        [TestMethod]
+        public void mult_134_212_731and123__17_14_11returned()
+        {
+            //arrange
+            Matrix3x3f MatX = new Matrix3x3f(1f, 3f, 4f,
+                                             2f, 1f, 2f,
+                                             4f, 3f, 1f);
+            Vector3f VectY = new Vector3f(1f, 2f, 3f);
+
+            Vector3f expected = new Vector3f(19f, 10f, 13f);
+            //act
+            Vector3f actual = MatX * VectY;
+
+            //assert
+            Assert.AreEqual(expected, actual);
+
+        }
+
         /////////////////////////////////_inverse_/////////////////////////////////
 
         //Матрица не нулевая, все её компоненты не нулевые, она не вырождена
         [TestMethod]
-        public void inverse_23_12__74_53returned()
+        public void inverse_257_634_5m2m3__1m11_m3841m34_27m2924returned()
         {
             Matrix3x3f MatX = new Matrix3x3f(2f, 5f, 7f,
                                            6f, 3f, 4f,
@@ -57,7 +95,7 @@ namespace LinearAlgebra.Test
 
         //Матрица не нулевая, все её компоненты не нулевые, она не вырождена
         [TestMethod]
-        public void invert_23_12___returned()
+        public void invert_257_634_5m2m3__1m11_m3841m34_27m2924returned()
         {
             //arrange
             Matrix3x3f MatX = new Matrix3x3f(2f, 5f, 7f,
@@ -79,7 +117,7 @@ namespace LinearAlgebra.Test
         /////////////////////////////////_transposed_/////////////////////////////////
         //Матрица не нулевая, все её компоненты не нулевые, она не симметрична
         [TestMethod]
-        public void transposed_23_12__74_53returned()
+        public void transposed_257_634_5m2m3__265_53m2_74m3returned()
         {
             //arrange
             Matrix3x3f MatX = new Matrix3x3f(2f, 5f, 7f,
@@ -101,7 +139,7 @@ namespace LinearAlgebra.Test
         /////////////////////////////////_transpose_/////////////////////////////////
         //Матрица не нулевая, все её компоненты не нулевые, она не симметрична
         [TestMethod]
-        public void transpose_23_12__74_53returned()
+        public void transpose_257_634_5m2m3__265_53m2_74m3returned()
         {
             //arrange
             Matrix3x3f MatX = new Matrix3x3f(2f, 5f, 7f,
@@ -118,47 +156,7 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-        }
-
-        /////////////////////////////////_*_/////////////////////////////////
-
-        //Обе матрицы не нулевые, все их компоненты не нулевые
-        [TestMethod]
-        public void and21_12__78_45returned()
-        {
-            //arrange
-            Vector3f MatX = new Vector3f(1f, 2f, 3f);
-            Matrix3x3f MatY = new Matrix3x3f(1f, 3f, 4f,
-                                           2f, 1f, 2f,
-                                           4f, 3f, 1f);
-
-            Vector3f expected = new Vector3f(17f, 14f, 11f);
-            //act
-            Vector3f actual = MatX * MatY;
-
-            //assert
-            Assert.AreEqual(expected, actual);
-
-        }
-
-        //Обе матрицы не нулевые, все их компоненты не нулевые
-        [TestMethod]
-        public void and21___78_45returned()
-        {
-            //arrange
-            Vector3f MatX = new Vector3f(1f, 2f, 3f);
-            Matrix3x3f MatY = new Matrix3x3f(1f, 3f, 4f,
-                                           2f, 1f, 2f,
-                                           4f, 3f, 1f);
-
-            Vector3f expected = new Vector3f(17f, 14f, 11f);
-            //act
-            Vector3f actual = MatY * MatX;
-
-            //assert
-            Assert.AreEqual(expected, actual);
-
-        }
+        }  
     }
 }
 

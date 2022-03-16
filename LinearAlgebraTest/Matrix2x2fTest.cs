@@ -28,16 +28,16 @@ namespace LinearAlgebra.Test
             Assert.AreEqual(expected, actual);
         }
 
-        //Обе матрицы не нулевые, все их компоненты не нулевые
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
         [TestMethod]
-        public void mult_23and21_12__78_45returned()
+        public void mult_23and23_12__78_45returned()
         {
             //arrange
             Vector2f VectX = new Vector2f(2f, 3f);
-            Matrix2x2f MatY = new Matrix2x2f(2f, 1f,
+            Matrix2x2f MatY = new Matrix2x2f(2f, 3f,
                                              1f, 2f);
 
-            Vector2f expected = new Vector2f(7f, 8f);
+            Vector2f expected = new Vector2f(7f, 12f);
             //act
             Vector2f actual = VectX * MatY;
 
@@ -45,18 +45,19 @@ namespace LinearAlgebra.Test
             Assert.AreEqual(expected, actual);
         }
 
-        //Обе матрицы не нулевые, все их компоненты не нулевые
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
         [TestMethod]
-        public void mult_3and21_12__78_45returned()
+        public void mult_21_12and23__78_45returned()
         {
             //arrange
-            Vector2f VectX = new Vector2f(2f, 3f);
-            Matrix2x2f MatY = new Matrix2x2f(2f, 1f,
+            
+            Matrix2x2f MatX = new Matrix2x2f(2f, 3f,
                                              1f, 2f);
+            Vector2f VectY = new Vector2f(2f, 3f);
 
-            Vector2f expected = new Vector2f(7f, 8f);
+            Vector2f expected = new Vector2f(13f, 8f);
             //act
-            Vector2f actual = MatY * VectX;
+            Vector2f actual = MatX * VectY;
 
             //assert
             Assert.AreEqual(expected, actual);
@@ -67,7 +68,7 @@ namespace LinearAlgebra.Test
 
         //Матрица не нулевая, все её компоненты не нулевые, она не вырождена
         [TestMethod]
-        public void inverse_24_57___7m4_m53returned()
+        public void inverse_34_57___7m4_m53returned()
         {
             //arrange
             Matrix2x2f MatX = new Matrix2x2f(3f, 4f,
@@ -86,7 +87,7 @@ namespace LinearAlgebra.Test
         /////////////////////////////////_invert_/////////////////////////////////
         //Матрица не нулевая, все её компоненты не нулевые, она не вырождена
         [TestMethod]
-        public void invert_24_57___7m4_m53returned()
+        public void invert_34_57___7m4_m53returned()
         {
             //arrange
             Matrix2x2f MatX = new Matrix2x2f(3f, 4f,
@@ -120,10 +121,10 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
         /////////////////////////////////_transpose_/////////////////////////////////
+        
         //Матрица не нулевая, все её компоненты не нулевые, она не симметрична
         [TestMethod]
         public void transpose_34_57__35_47returned()

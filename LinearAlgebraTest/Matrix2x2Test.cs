@@ -26,50 +26,47 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
-        //Обе матрицы не нулевые, все их компоненты не нулевые
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
         [TestMethod]
-        public void mult_23and21_12__78_45returned()
+        public void mult_23and21_12__78returned()
         {
             //arrange
-            Vector2 MatX = new Vector2(2, 3);
-            Matrix2x2 MatY = new Matrix2x2(2f, 1,
-                                             1f, 2);
+            Vector2 VectX = new Vector2(2, 3);
+            Matrix2x2 MatY = new Matrix2x2(2, 3,
+                                           1, 2);
 
-            Vector2 expected = new Vector2(7f, 8);
+            Vector2 expected = new Vector2(7, 12);
             //act
-            Vector2 actual = MatX * MatY;
+            Vector2 actual = VectX * MatY;
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
-        //Обе матрицы не нулевые, все их компоненты не нулевые
+        //Матрица и вектор не нулевые, все их компоненты не нулевые
         [TestMethod]
-        public void mult_23and21_12_78_45returned()
+        public void mult_23_12and23_78returned()
         {
             //arrange
-            Vector2 MatX = new Vector2(2, 3);
-            Matrix2x2 MatY = new Matrix2x2(2f, 1,
-                                             1f, 2);
+            Matrix2x2 MatX = new Matrix2x2(2, 3,
+                                           1, 2);
+            Vector2 VectY = new Vector2(2, 3);
 
-            Vector2 expected = new Vector2(7f, 8);
+            Vector2 expected = new Vector2(13, 8);
             //act
-            Vector2 actual = MatY * MatX;
+            Vector2 actual = MatX * VectY;
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
         /////////////////////////////////_inverse_/////////////////////////////////
 
         //Матрица не нулевая, все её компоненты не нулевые, она не вырождена
         [TestMethod]
-        public void inverse_23_12__74_53returned()
+        public void inverse_34_57__7m4_m53returned()
         {
             //arrange
             Matrix2x2 MatX = new Matrix2x2(3, 4,
@@ -82,7 +79,6 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
         /////////////////////////////////_invert_/////////////////////////////////
@@ -121,7 +117,6 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
 
         /////////////////////////////////_transpose_/////////////////////////////////
@@ -142,7 +137,6 @@ namespace LinearAlgebra.Test
 
             //assert
             Assert.AreEqual(expected, actual);
-
         }
     }
 }
