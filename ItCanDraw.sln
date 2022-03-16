@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IO", "IO\IO.csproj", "{F413
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI", "GUI\GUI.csproj", "{CF4AC765-6403-4AAA-9354-CE5436D3ACFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinearAlgebra.Test", "LinearAlgebraTest\LinearAlgebra.Test.csproj", "{5A7BE459-4F25-4ABB-80A3-43FB364F7265}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{CF4AC765-6403-4AAA-9354-CE5436D3ACFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF4AC765-6403-4AAA-9354-CE5436D3ACFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF4AC765-6403-4AAA-9354-CE5436D3ACFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A7BE459-4F25-4ABB-80A3-43FB364F7265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A7BE459-4F25-4ABB-80A3-43FB364F7265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A7BE459-4F25-4ABB-80A3-43FB364F7265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A7BE459-4F25-4ABB-80A3-43FB364F7265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
