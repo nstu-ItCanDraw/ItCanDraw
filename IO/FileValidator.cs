@@ -13,6 +13,7 @@ namespace IO
         public static HashSet<string> BMP_EXTENSION = new HashSet<string> { "bmp" };
         public static HashSet<string> GIF_EXTENSION = new HashSet<string> { "gif" };
         public static HashSet<string> TIFF_EXTENSION = new HashSet<string> { "tiff" };
+        public static HashSet<string> JSON_EXTENSION = new HashSet<string> { "json" };
 
         public static void CheckParentDirectory(string filename)
         {
