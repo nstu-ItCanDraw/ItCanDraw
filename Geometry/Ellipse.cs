@@ -63,26 +63,6 @@ namespace Geometry
             }
         }
 
-        /*public List<Vector2> Points
-        {
-            get
-            {
-                Matrix3x3 globalMatrix = Transform.Model;
-
-                return new List<Vector2>()
-                {
-                    (globalMatrix * new Vector3(-rx, 0)).xy,
-                    (globalMatrix * new Vector3(0, ry).xy,
-                    (globalMatrix * new Vector3(rx, 0)).xy,
-                    (globalMatrix * new Vector3(0, -ry)).xy,
-                };
-            }
-        }
-        //ввести поинт
-        //перебор точек
-        //тоже самое */
-
-
         private BoundingBox aabb;
         public BoundingBox AABB => aabb;
         void UpdateAABB()
