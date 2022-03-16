@@ -142,7 +142,7 @@
         <TextBlock TextWrapping="Wrap" Foreground="#FFFCAEF6" Margin="0,0,1634,1054"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
         <TextBlock TextWrapping="Wrap" Foreground="#FFFCAEF6" Margin="0,0,1634,1058"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
 
-
+        <local:RenderControl x:Name="renderControl" Margin="100, 100, 500, 100"/>
 
     </Grid>
 </Window>
