@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
-// start gui
         Title="MainWindow" Height="1080" Width="1920">
     <Grid Background ="#494848">
         <Menu Height="1080" Width="39" HorizontalAlignment="Left" Background ="#2C2C2C">
@@ -145,10 +144,5 @@
 
 
 
-// env gui, start dev-gui
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <local:RenderControl x:Name="renderControl"/>
-// end dev-gui
     </Grid>
 </Window>
