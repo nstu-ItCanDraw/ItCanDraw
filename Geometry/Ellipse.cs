@@ -36,6 +36,9 @@ namespace Geometry
                 if (value != rx)
                 {
                     rx = value;
+                    UpdateCurvers();
+                    UpdateOBB();
+                    UpdateAABB();
                     OnPropertyChanged("RadiusX");
                 }
             }
@@ -52,6 +55,9 @@ namespace Geometry
                 if (value != ry)
                 {
                     ry = value;
+                    UpdateCurvers();
+                    UpdateOBB();
+                    UpdateAABB();
                     OnPropertyChanged("RadiusY");
                 }
             }
@@ -77,38 +83,64 @@ namespace Geometry
         //тоже самое */
 
 
-
-        public BoundingBox AABB
+        private BoundingBox aabb;
+        public BoundingBox AABB => aabb;
+        void UpdateAABB()
         {
-            get
+            // идея: переводим эллипс в глобальные координаты (умножаем матрицу перехода на коэффициенты)
+            //       находим производную по х, по у
+            //       эти прямые в местах пересечения с эллипсом дадут экстремумы по х и у
+            //       2а1*x + a3*y + a4 = 0 - дадет экстремум по у
+            //       2а2*у + а3*х + а5 = 0 - дает экстремум по х
+            //       подставляем выражение для у в кравнение эллипса и решаем 2 квадратных уравнения.
+
+            Matrix3x3 globalMatrix = Transform.Model;
+            Matrix3x3 coefMatrix = new Matrix3x3();
+            coefMatrix.v00 = curves[0][0][0];
+            coefMatrix.v11 = curves[0][0][1];
+            coefMatrix.v22 = curves[0][0][5];
+
+            coefMatrix = globalMatrix * coefMatrix;
+            double[] globalCoef = { coefMatrix.v00, coefMatrix.v11, 2*coefMatrix.v01, 2*coefMatrix.v20, 2* coefMatrix.v21, coefMatrix.v22 };
+            double a, b, c;
+            double xmax, ymax, ymin, xmin, xtmp;
+
+            a = (4 * globalCoef[1] * globalCoef[0] * globalCoef[0]) / (globalCoef[2] * globalCoef[2]) 
+                - globalCoef[0];
+            b = (4 * globalCoef[0] * globalCoef[1] * globalCoef[3]) / (globalCoef[2] * globalCoef[2]) 
+                - (2 * globalCoef[0] * globalCoef[4]) / globalCoef[2];
+            c = (globalCoef[1] * globalCoef[3] * globalCoef[3]) / (globalCoef[2] * globalCoef[2])
+                - (globalCoef[4] * globalCoef[3]) / globalCoef[2]
+                + globalCoef[5];
+            xtmp = (-b-Math.Sqrt(b*b-4*a*c))/(2*a);
+            ymin = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
+            xtmp = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+            ymax = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
+            if(ymax < ymin)
             {
-                Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
-                Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
-
-                /*foreach (var point in Points)
-                  {
-                      if (point.x < left_bottom.x)
-                          left_bottom.x = point.x;
-
-                      if (point.x > right_top.x)
-                          right_top.x = point.x;
-
-                      if (point.y < left_bottom.y)
-                          left_bottom.y = point.y;
-
-                      if (point.y > right_top.y)
-                          right_top.y = point.y;
-                  }
-                 */
-                return new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
-
+                xtmp = ymin;
+                ymin = ymax;
+                ymax = xtmp;
             }
+
+            a = globalCoef[0] - (globalCoef[2]* globalCoef[2]) / (4* globalCoef[1]);
+            b = globalCoef[3] - (globalCoef[2]* globalCoef[4]) / (2* globalCoef[1]);
+            c = globalCoef[5] - (globalCoef[4] * globalCoef[4]) / (4*globalCoef[1]);
+            xmin = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+            xmax = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+            if (xmax < xmin)
+            {
+                xtmp = xmin;
+                xmin = xmax;
+                xmax = xtmp;
+            }
+
+            aabb = new BoundingBox() { left_bottom = new Vector2(xmin, ymin), right_top = new Vector2(xmax, ymax) };
         }
+        
 
         private BoundingBox obb;
         public BoundingBox OBB => obb;
-
-
         private void UpdateOBB()
         {
             obb = new BoundingBox()
@@ -118,38 +150,30 @@ namespace Geometry
             };
         }
 
-        //тут должны быть коэф для прямой
-        //массив массивов
         List<List<double[]>> curves;
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => curves;
-
         void UpdateCurvers()
         {
             double[] CurveEllips = { 1 / rx / rx, 1 / ry / ry, 0, 0, 0, -1 };
             curves = new List<List<double[]>>() { new List<double[]>() { CurveEllips } };
         }
 
-        // 
-        public Transform Transform { get; set; }
+        public Transform Transform { get; }
         
-        IReadOnlyCollection<Vector2> IFigure.BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        // центральная или 4 крайние 
-
-
-
+        IReadOnlyCollection<Vector2> IFigure.BasicPoints { get => new List<Vector2>() { new Vector2(0,0) }; set => throw new NotImplementedException(); }
+        // возвращает центр в локальных
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
             Vector2 localPosition = (Transform.View * new Vector3(position)).xy;
 
-            if ((localPosition.x * localPosition.x / rx / rx + localPosition.y * localPosition.y / ry /ry) - 1 <= eps)
+            if (localPosition.x * localPosition.x / rx / rx + localPosition.y * localPosition.y / ry /ry - 1 <= eps)
             {
-                return (true);
+                return true;
             }
             else
             {
-                return (false);
+                return false;
             }
         }
 
