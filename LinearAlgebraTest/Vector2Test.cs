@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace LinearAlgebra.Tests
+namespace LinearAlgebra.Test
 {
     [TestClass]
-    public class Vector2Tests
+    public class Vector2Test
     {
 
         /////////////////////////////////dot/////////////////////////////////

@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace LinearAlgebra.Tests
+namespace LinearAlgebra.Test
 {
     [TestClass]
-    public class Vector2fTests
+    public class Vector2fTest
     {
 
         /////////////////////////////////dot/////////////////////////////////
