@@ -10,6 +10,9 @@ namespace IO
     {
         public static IDocument FromJSON(string filename)
         {
+            FileValidator.CheckFileExists(filename);
+            FileValidator.CheckExtension(filename, FileValidator.JSON_EXTENSION);
+
             string json_string;
 
             using (StreamReader reader = new StreamReader(filename))
