@@ -197,6 +197,7 @@ namespace Geometry
 
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            UpdateAABB();
             OnPropertyChanged(nameof(IGeometry.Transform));
         }
     }
