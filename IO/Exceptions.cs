@@ -22,4 +22,14 @@ namespace IO
         protected BadFileError(SerializationInfo info, StreamingContext ctxt) : base(info, ctxt)
         { }
     }
+
+    [Serializable]
+    public class BadPDFError : Exception
+    {
+        public BadPDFError(string message) : base(message)
+        { }
+
+        protected BadPDFError(SerializationInfo info, StreamingContext ctxt) : base(info, ctxt)
+        { }
+    }
 }
