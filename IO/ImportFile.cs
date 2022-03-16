@@ -58,17 +58,10 @@ namespace IO
             FileValidator.CheckFileExists(filename);
             FileValidator.CheckExtension(filename, FileValidator.PDF_EXTENSION);
 
-            try
-            {
-                var svgString = PDF.GetSvgFromPDF(filename);
-                var doc = SvgDocument.FromSvg<SvgDocument>(svgString);
+            var svgString = PDF.GetSvgFromPDF(filename);
+            var doc = SvgDocument.FromSvg<SvgDocument>(svgString);
 
-                return SVG.GetDocumentFromSvgDocument(doc);
-            }
-            catch (BadPDFError)
-            {
-                throw;
-            }
+            return SVG.GetDocumentFromSvgDocument(doc);
         }
     }
 }
