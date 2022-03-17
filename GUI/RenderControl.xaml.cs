@@ -52,11 +52,11 @@ namespace GUI
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
         }
-        public void OnKeyDown(object sender, KeyEventArgs e)
+        public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
         }
-        public void OnKeyUp(object sender, KeyEventArgs e)
+        public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
         }
@@ -249,6 +249,15 @@ namespace GUI
 
             camera.ScreenWidth = (int)e.NewSize.Width;
             camera.ScreenHeight = (int)e.NewSize.Height;
+        }
+
+        private void UserControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+        }
+        private void UserControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }
