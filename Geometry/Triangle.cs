@@ -120,9 +120,9 @@ namespace Geometry
 
         public Triangle(double _width, double _height, Vector2 Position)
         {
+            Transform = new Transform(Position, new Vector2(1, 1), 0);
             Width = _width;
             Height = _height;
-            Transform = new Transform(Position, new Vector2(1, 1), 0);
 
             Transform.PropertyChanged += Transform_OnPropertyChanged;
         }

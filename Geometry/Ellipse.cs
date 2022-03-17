@@ -168,10 +168,10 @@ namespace Geometry
 
         public Ellipse(double _radiusX, double _radiusY, Vector2 Position)
         {
+            Transform = new Transform(Position, new Vector2(1, 1), 0);
             RadiusX = _radiusX;
             RadiusX = _radiusY;
-            Transform = new Transform(Position, new Vector2(1, 1), 0);
-
+            
             Transform.PropertyChanged += Transform_OnPropertyChanged;
         }
 
