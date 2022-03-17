@@ -39,10 +39,7 @@ namespace GUI
 
         #region click and drag control states
         private bool isMouseWheelDown = false;
-        private bool isDragging = false;
-        private LinearAlgebra.Vector2 mouseDragBase;
         private LinearAlgebra.Vector2 mouseDragVirtualBase;
-        private const double mouseDragDelta = 5;
         #endregion
         public RenderControl()
         {
@@ -252,12 +249,7 @@ namespace GUI
             if (isMouseWheelDown)
             {
                 Point mousePosPoint = e.GetPosition(this);
-                LinearAlgebra.Vector2 mousePos = new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y);
-                if (isDragging)
-                    camera.Position += mouseDragVirtualBase - camera.ScreenToWorld(mousePos);
-                else
-                    if ((mouseDragBase - mousePos).squaredLength() >= mouseDragDelta * mouseDragDelta)
-                        isDragging = true;
+                camera.Position += mouseDragVirtualBase - camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
             }
         }
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
@@ -270,8 +262,7 @@ namespace GUI
             {
                 isMouseWheelDown = true;
                 Point mousePos = e.GetPosition(this);
-                mouseDragBase = new LinearAlgebra.Vector2(mousePos.X, mousePos.Y);
-                mouseDragVirtualBase = camera.ScreenToWorld(mouseDragBase);
+                mouseDragVirtualBase = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePos.X, mousePos.Y));
             }
         }
         private void UserControl_MouseUp(object sender, MouseButtonEventArgs e)
@@ -279,10 +270,7 @@ namespace GUI
             e.Handled = true;
 
             if (e.ChangedButton == MouseButton.Middle)
-            {
-                isDragging = false;
                 isMouseWheelDown = false;
-            }
         }
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
