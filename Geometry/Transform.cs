@@ -235,18 +235,24 @@ namespace Geometry
             localPosition = Vector2.Zero;
             localScale = new Vector2(1, 1);
             localRotation = 0;
+
+            recalculateMatrixes();
         }
         public Transform(Vector2 localPosition, Vector2 localScale, double localRotation)
         {
             this.localPosition = localPosition;
             this.localRotation = localRotation;
             this.localScale = localScale;
+
+            recalculateMatrixes();
         }
         public Transform(Vector2 localPosition, double localRotation, Vector2 localScale)
         {
             this.localPosition = localPosition;
             this.localRotation = localRotation;
             this.localScale = localScale;
+
+            recalculateMatrixes();
         }
     }
 }
