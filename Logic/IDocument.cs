@@ -19,7 +19,7 @@ namespace Logic
         /// <summary>
         /// List view collection of all geometries in document
         /// </summary>
-        public IReadOnlyCollection<IVisualGeometry> VisualGeometries { get; }
+        public IReadOnlyList<IVisualGeometry> VisualGeometries { get; }
         /// <summary>
         /// Width of the document in pixels
         /// </summary>
@@ -29,6 +29,10 @@ namespace Logic
         /// </summary>
         public int Height { get; set; }
         /// <summary>
+        /// Color of document background
+        /// </summary>
+        public Color BackgroundColor { get; set; }
+        /// <summary>
         /// Adds given visual geometry to geometries in this document
         /// </summary>
         public void AddVisualGeometry(IVisualGeometry visualGeometry);
@@ -37,7 +41,8 @@ namespace Logic
         /// </summary>
         public void RemoveVisualGeometry(IVisualGeometry visualGeometry);
         /// <summary>
-        /// Adds specified visual geometry to selected geometries in this document
+        /// Moves given visual geometry to specified position in list of visual geometries, changing order of objects
         /// </summary>
+        public void ReorderVisualGeometry(IVisualGeometry visualGeometry, int newPosition);
     }
 }

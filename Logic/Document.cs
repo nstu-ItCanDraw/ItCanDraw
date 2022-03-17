@@ -26,7 +26,7 @@ namespace Logic
             }
         }
         private List<IVisualGeometry> visualGeometries = new List<IVisualGeometry>();
-        public IReadOnlyCollection<IVisualGeometry> VisualGeometries { get => visualGeometries.AsReadOnly(); }
+        public IReadOnlyList<IVisualGeometry> VisualGeometries { get => visualGeometries.AsReadOnly(); }
         private int width;
         public int Width
         {
@@ -55,6 +55,19 @@ namespace Logic
                     throw new ArgumentOutOfRangeException("Height", "Document size must be positive.");
                 height = value;
                 OnPropertyChanged("Height");
+            }
+        }
+        private Color backgroundColor = Color.White;
+        public Color BackgroundColor
+        {
+            get
+            {
+                return backgroundColor;
+            }
+            set
+            {
+                backgroundColor = value;
+                OnPropertyChanged("BackgroundColor");
             }
         }
 
@@ -90,6 +103,18 @@ namespace Logic
                 throw new ArgumentException("This object does not present in this document.");
             visualGeometries.Remove(visualGeometry);
             visualGeometry.PropertyChanged -= visualGeometry_OnPropertyChanged;
+            OnPropertyChanged("VisualGeometries");
+        }
+        public void ReorderVisualGeometry(IVisualGeometry visualGeometry, int newPosition)
+        {
+            if (newPosition < 0 || newPosition >= visualGeometries.Count)
+                throw new ArgumentOutOfRangeException("newPosition");
+            if (!visualGeometries.Contains(visualGeometry))
+                throw new ArgumentException("This object does not present in this document.");
+
+            visualGeometries.Remove(visualGeometry);
+            visualGeometries.Insert(newPosition, visualGeometry);
+
             OnPropertyChanged("VisualGeometries");
         }
     }

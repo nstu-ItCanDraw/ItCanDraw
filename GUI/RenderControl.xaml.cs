@@ -91,7 +91,7 @@ namespace GUI
         }
         private void renderDocumentViewModel(DocumentViewModel document)
         {
-            renderDocumentBackground(document.CurrentDocument, Logic.Color.White);
+            renderDocumentBackground(document.CurrentDocument);
 
             foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
             {
@@ -110,7 +110,7 @@ namespace GUI
                     throw new NotImplementedException("Non-figures are not implemented yet.");
             }
         }
-        private void renderDocumentBackground(IDocument document, Logic.Color color)
+        private void renderDocumentBackground(IDocument document)
         {
             Pipeline background = AssetsManager.Pipelines["DocumentBackground"];
             background.Use();
@@ -118,7 +118,7 @@ namespace GUI
             background.Uniform1("documentHeight", (float)document.Height);
             background.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
 
-            background.Uniform4("color", color.r / 255f, color.g / 255f, color.b / 255f, 1.0f);
+            background.Uniform4("color", document.BackgroundColor.r / 255f, document.BackgroundColor.g / 255f, document.BackgroundColor.b / 255f, 1.0f);
 
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
