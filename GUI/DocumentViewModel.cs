@@ -65,6 +65,13 @@ namespace GUI
             if (currentDocument == null)
                 throw new NullReferenceException("There is no current document.");
         }
+        public bool IsVisualGeometrySelected(IVisualGeometry visualGeometry)
+        {
+            checkDocumentNotNull();
+            if (!currentDocument.VisualGeometries.Contains(visualGeometry))
+                throw new ArgumentException("Given visual geometry does not present in current document.");
+            return selectedVisualGeometries.Contains(visualGeometry);
+        }
         public void SelectVisualGeometry(IVisualGeometry visualGeometry)
         {
             checkDocumentNotNull();

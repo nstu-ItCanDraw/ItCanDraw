@@ -56,6 +56,8 @@ namespace GUI
 
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
+
+            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateRectangle(100, 100, LinearAlgebra.Vector2.Zero)));
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -269,8 +271,36 @@ namespace GUI
         {
             e.Handled = true;
 
-            if (e.ChangedButton == MouseButton.Middle)
-                isMouseWheelDown = false;
+            switch (e.ChangedButton)
+            {
+                case MouseButton.Middle:
+                    isMouseWheelDown = false;
+                    break;
+                case MouseButton.Left:
+                    Point mousePosPoint = e.GetPosition(this);
+                    LinearAlgebra.Vector2 mousePos = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
+                    bool nothingHit = true;
+                    foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
+                        if (vg.Geometry.IsPointInFigure(mousePos, 1e-7))
+                        {
+                            if (Keyboard.GetKeyStates(Key.LeftShift).HasFlag(KeyStates.Down))
+                            {
+                                if (viewModel.IsVisualGeometrySelected(vg))
+                                    viewModel.DeselectVisualGeometry(vg);
+                                else
+                                    viewModel.SelectVisualGeometry(vg);
+                            }
+                            else
+                            {
+                                viewModel.ClearSelectedVisualGeometries();
+                                viewModel.SelectVisualGeometry(vg);
+                            }
+                            nothingHit = false;
+                        }
+                    if (nothingHit)
+                        viewModel.ClearSelectedVisualGeometries();
+                    break;
+            }
         }
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
