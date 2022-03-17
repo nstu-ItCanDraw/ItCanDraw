@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              MouseDown="UserControl_MouseDown" MouseWheel="UserControl_MouseWheel"
-             MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave"
              MouseUp="UserControl_MouseUp" MouseMove="UserControl_MouseMove"
-             KeyDown="OnKeyDown" KeyUp="OnKeyUp">
+             KeyDown="UserControl_KeyDown" KeyUp="UserControl_KeyUp">
     <opentk:GLWpfControl x:Name="OpenTKControl" Render="OpenTKControl_Update" Loaded="OpenTKControl_Loaded" SizeChanged="OpenTKControl_SizeChanged"/>
 </UserControl>
