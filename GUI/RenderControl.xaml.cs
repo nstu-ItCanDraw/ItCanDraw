@@ -52,14 +52,6 @@ namespace GUI
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
         }
-        public void UserControl_KeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
-        }
-        public void UserControl_KeyUp(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
-        }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
             camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument.Height * 1.2);
@@ -227,12 +219,6 @@ namespace GUI
             GL.BindVertexArray(dummyVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
-        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            if (!IsFocused)
-                Focus();
-        }
         private void UserControl_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             Point position = e.GetPosition(this);
@@ -255,7 +241,21 @@ namespace GUI
         {
             e.Handled = true;
         }
+        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            if (!IsFocused)
+                Focus();
+        }
         private void UserControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+        }
+        public void UserControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+        public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
         }
