@@ -25,18 +25,9 @@ namespace GUI
         public MainWindow()
         {
             InitializeComponent();
-            fuuu();
             renderControl.Focusable = true;
             KeyDown += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyDown(sender, args); };
             KeyUp += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyUp(sender, args); };
-        }
-
-        void fuuu()
-        {
-            IGeometry obj1 = FigureFactory.CreateEllipse(1, 2, new Vector2(10, 10));
-            obj1.Transform.RotationDegrees = 91;
-
-            int y = 0;
         }
     }
 }
