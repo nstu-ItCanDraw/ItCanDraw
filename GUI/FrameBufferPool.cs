@@ -5,10 +5,12 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace GUI
 {
-    internal class FrameBufferPool
+    internal class FrameBufferPool : IDisposable
     {       
         private List<FrameBuffer> frameBuffers = new List<FrameBuffer>();
         private Stack<FrameBuffer> freeFrameBuffers = new Stack<FrameBuffer>();
+        private bool disposed;
+
         public int PoolCapacity 
         { 
             get
@@ -42,6 +44,9 @@ namespace GUI
         }
         public FrameBuffer Get()
         {
+            if (disposed)
+                throw new ObjectDisposedException("FrameBufferPool");
+
             if (freeFrameBuffers.Count == 0)
             {
                 int capacity = PoolCapacity;
@@ -56,6 +61,9 @@ namespace GUI
         }
         public void Release(FrameBuffer curFrameBuffer)
         {
+            if (disposed)
+                throw new ObjectDisposedException("FrameBufferPool");
+
             foreach (FrameBuffer fb in frameBuffers)
                 if (fb == curFrameBuffer)
                 {
@@ -63,6 +71,31 @@ namespace GUI
                     return;
                 }
             throw new ArgumentException("This FrameBuffer does not exist in this FrameBufferPool");
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                foreach (FrameBuffer fb in frameBuffers)
+                {
+                    fb.Dispose();
+                    fb.ColorTexture.Dispose();
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~FrameBufferPool()
+        {
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -66,13 +66,13 @@ namespace GUI
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
             camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument.Height * 1.2);
-            FBP = new FrameBufferPool(8, viewModel.CurrentDocument.Width, viewModel.CurrentDocument.Height, TextureType.FloatValue);
+            FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
 
-            AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
-            AssetsManager.LoadPipeline("TextureUnion", "shaders/fullscreenQuad.vsh", "shaders/textureUnion.fsh");
+            AssetsManager.LoadPipeline("CurveToTexture", "shaders/documentQuad.vsh", "shaders/curveToTexture.fsh");
+            AssetsManager.LoadPipeline("TextureUnion", "shaders/documentQuad.vsh", "shaders/textureUnion.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/floatTextureColoring.fsh");
-            AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/fullscreenColoring.fsh");
-            AssetsManager.LoadPipeline("OBBquad", "shaders/OBBquad.vsh", "shaders/fullscreenColoring.fsh");
+            AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/flatColoring.fsh");
+            AssetsManager.LoadPipeline("OBBquad", "shaders/OBBquad.vsh", "shaders/flatColoring.fsh");
 
             dummyVAO = GL.GenVertexArray();
 
@@ -232,8 +232,8 @@ namespace GUI
 
             Pipeline union = AssetsManager.Pipelines["TextureUnion"];
             union.Use();
-            union.Uniform1("quadWidth", (float)viewModel.CurrentDocument.Width);
-            union.Uniform1("quadHeight", (float)viewModel.CurrentDocument.Height);
+            union.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
+            union.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
 
             tex1.Bind("tex1");
             tex2.Bind("tex2");
@@ -250,9 +250,10 @@ namespace GUI
 
             Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
             curveToTexture.Use();
-            curveToTexture.Uniform1("quadWidth", (float)viewModel.CurrentDocument.Width);
-            curveToTexture.Uniform1("quadHeight", (float)viewModel.CurrentDocument.Height);
+            curveToTexture.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
+            curveToTexture.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
             curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)view);
+            curveToTexture.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
 
             int curvesCount = curves.Count;
             for (int i = 0; i < curvesCount; i++)
@@ -278,6 +279,9 @@ namespace GUI
 
             camera.ScreenWidth = (int)e.NewSize.Width;
             camera.ScreenHeight = (int)e.NewSize.Height;
+
+            FBP.Dispose();
+            FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
         }
 
         private void UserControl_MouseMove(object sender, MouseEventArgs e)
