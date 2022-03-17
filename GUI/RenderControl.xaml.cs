@@ -257,8 +257,8 @@ namespace GUI
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            //if (!IsFocused)
-            //    Focus();
+            if (!IsFocused)
+                Focus();
 
             if (e.ChangedButton == MouseButton.Middle)
             {
@@ -305,6 +305,13 @@ namespace GUI
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
+
+            switch (e.Key)
+            {
+                case Key.Delete:
+                    viewModel.DeleteSelectedVisualGeometries();
+                    break;
+            }
         }
         public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
