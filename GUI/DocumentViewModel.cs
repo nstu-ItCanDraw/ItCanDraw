@@ -34,7 +34,7 @@ namespace GUI
             }
         }
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
-        public IReadOnlyCollection<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
+        public IReadOnlyList<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
         public event PropertyChangedEventHandler PropertyChanged;
         private RelayCommand setCurrentDocumentCommand;
         public RelayCommand SetCurrentDocumentCommand

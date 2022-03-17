@@ -29,6 +29,9 @@
     <None Update="shaders\floatTextureColoring.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="shaders\OBBquad.vsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\texturesIntersection.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

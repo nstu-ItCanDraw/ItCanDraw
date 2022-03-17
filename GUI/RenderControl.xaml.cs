@@ -53,11 +53,15 @@ namespace GUI
 
             GL.Disable(EnableCap.DepthTest);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.LineWidth(2);
 
             viewModel = new DocumentViewModel();
             viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
 
-            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateRectangle(100, 100, LinearAlgebra.Vector2.Zero)));
+            IGeometry triangle = FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero);
+            triangle.Transform.Position = new LinearAlgebra.Vector2(20, 40);
+            triangle.Transform.RotationDegrees = 20;
+            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(triangle));
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -68,6 +72,7 @@ namespace GUI
             AssetsManager.LoadPipeline("TextureUnion", "shaders/fullscreenQuad.vsh", "shaders/textureUnion.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/floatTextureColoring.fsh");
             AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/fullscreenColoring.fsh");
+            AssetsManager.LoadPipeline("OBBquad", "shaders/OBBquad.vsh", "shaders/fullscreenColoring.fsh");
 
             dummyVAO = GL.GenVertexArray();
 
@@ -92,7 +97,13 @@ namespace GUI
         {
             renderDocumentBackground(document.CurrentDocument);
 
-            foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
+            renderVisualGeometries(viewModel.CurrentDocument.VisualGeometries);
+
+            renderOBBs(viewModel.SelectedVisualGeometries);
+        }
+        private void renderVisualGeometries(IReadOnlyList<IVisualGeometry> visualGeometries)
+        {
+            foreach (IVisualGeometry vg in visualGeometries)
             {
                 if (vg.Geometry is IFigure)
                 {
@@ -108,6 +119,31 @@ namespace GUI
                 else
                     throw new NotImplementedException("Non-figures are not implemented yet.");
             }
+        }
+        private void renderOBBs(IReadOnlyList<IVisualGeometry> visualGeometries)
+        {
+            GL.Disable(EnableCap.Blend);
+
+            foreach (IVisualGeometry vg in visualGeometries)
+                renderGeometryOBBto(null, vg.Geometry);
+        }
+        private void renderGeometryOBBto(FrameBuffer fbo, IGeometry geometry)
+        {
+            if (fbo == null)
+                FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
+            else
+                fbo.Use();
+
+            Pipeline obbQuad = AssetsManager.Pipelines["OBBquad"];
+            obbQuad.Use();
+            obbQuad.Uniform2("bottomLeft", (Vector2f)geometry.OBB.left_bottom);
+            obbQuad.Uniform2("topRight", (Vector2f)geometry.OBB.right_top);
+            obbQuad.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            obbQuad.UniformMatrix3x3("model", (Matrix3x3f)geometry.Transform.Model);
+            obbQuad.Uniform4("color", 1.0f, 0.0f, 0.0f, 1.0f);
+
+            GL.BindVertexArray(dummyVAO);
+            GL.DrawArrays(PrimitiveType.LineLoop, 0, 4);
         }
         private void renderDocumentBackground(IDocument document)
         {
@@ -281,7 +317,7 @@ namespace GUI
                     LinearAlgebra.Vector2 mousePos = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
                     bool nothingHit = true;
                     foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
-                        if (vg.Geometry.IsPointInFigure(mousePos, 1e-7))
+                        if (vg.Geometry.IsPointInFigure(mousePos, 1e-2))
                         {
                             if (Keyboard.GetKeyStates(Key.LeftShift).HasFlag(KeyStates.Down))
                             {
