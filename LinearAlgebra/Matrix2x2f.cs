@@ -120,7 +120,7 @@ namespace LinearAlgebra
 
             float tmp = v00;
             v00 = v11 / determinant;
-            v11 = v00 / determinant;
+            v11 = tmp / determinant;
             v01 = -v01 / determinant;
             v10 = -v10 / determinant;
         }
