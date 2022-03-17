@@ -67,6 +67,12 @@ namespace Geometry
             Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
             Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
 
+            globalpoints = new List<Vector2>();
+            foreach (var point in points)
+            {
+                globalpoints.Add((Transform.Model * new Vector3(point, 1.0)).xy); 
+            }
+
             foreach (var point in globalpoints)
             {
                 if (point.x < left_bottom.x)
