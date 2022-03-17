@@ -36,6 +36,14 @@ namespace GUI
         private DocumentViewModel viewModel;
         internal DocumentViewModel ViewModel { get => viewModel; }
         private FrameBufferPool FBP;
+
+        #region click and drag control states
+        private bool isMouseDown = false;
+        private bool isDragging = false;
+        private LinearAlgebra.Vector2 mouseDragCameraOrigin;
+        private LinearAlgebra.Vector2 mouseDragBase;
+        private const double mouseDragDelta = 5;
+        #endregion
         public RenderControl()
         {
             InitializeComponent();
@@ -240,16 +248,39 @@ namespace GUI
         private void UserControl_MouseMove(object sender, MouseEventArgs e)
         {
             e.Handled = true;
+
+            if (isMouseDown)
+            {
+                Point mousePosPoint = e.GetPosition(this);
+                LinearAlgebra.Vector2 mousePos = new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y);
+                if (isDragging)
+                {
+                    camera.Position = mouseDragCameraOrigin + camera.ScreenToWorld(mouseDragBase - mousePos, false);
+                }
+                else
+                {
+                    if ((mouseDragBase - mousePos).squaredLength() >= mouseDragDelta * mouseDragDelta)
+                        isDragging = true;
+                }
+            }
         }
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            if (!IsFocused)
-                Focus();
+            //if (!IsFocused)
+            //    Focus();
+
+            isMouseDown = true;
+            Point mousePos = e.GetPosition(this);
+            mouseDragBase = new LinearAlgebra.Vector2(mousePos.X, mousePos.Y);
+            mouseDragCameraOrigin = camera.Position;
         }
         private void UserControl_MouseUp(object sender, MouseEventArgs e)
         {
             e.Handled = true;
+
+            isDragging = false;
+            isMouseDown = false;
         }
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
