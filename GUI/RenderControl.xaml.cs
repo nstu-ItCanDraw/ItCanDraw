@@ -250,5 +250,22 @@ namespace GUI
             camera.ScreenWidth = (int)e.NewSize.Width;
             camera.ScreenHeight = (int)e.NewSize.Height;
         }
+
+        private void UserControl_MouseEnter(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void UserControl_MouseLeave(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void UserControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void UserControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
