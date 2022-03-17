@@ -36,6 +36,26 @@ namespace GUI
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
         public IReadOnlyCollection<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
         public event PropertyChangedEventHandler PropertyChanged;
+        private RelayCommand setCurrentDocumentCommand;
+        public RelayCommand SetCurrentDocumentCommand
+        {
+            get => setCurrentDocumentCommand ?? (setCurrentDocumentCommand = new RelayCommand(obj => CurrentDocument = obj as IDocument, obj => obj is IDocument));
+        }
+        private RelayCommand selectVisualGeometryCommand;
+        public RelayCommand SelectVisualGeometryCommand
+        {
+            get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
+        }
+        private RelayCommand deselectVisualGeometryCommand;
+        public RelayCommand DeselectVisualGeometryCommand
+        {
+            get => deselectVisualGeometryCommand ?? (deselectVisualGeometryCommand = new RelayCommand(obj => DeselectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
+        }
+        private RelayCommand clearSelectedVisualGeometriesCommand;
+        public RelayCommand ClearSelectedVisualGeometryCommand
+        {
+            get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries()));
+        }
         public DocumentViewModel()
         {
 
