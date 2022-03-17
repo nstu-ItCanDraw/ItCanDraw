@@ -169,6 +169,7 @@ namespace Geometry
 
         public Polyline(IList<Vector2> _points)
         {
+            globalpoints = new List<Vector2>();
             Transform = new Transform();
             Points = new List<Vector2>(_points);
         }
