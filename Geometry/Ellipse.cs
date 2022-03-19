@@ -23,7 +23,7 @@ namespace Geometry
         public string Name => name;
 
         private double rx;
-        private double ry;
+        private double ry = 1e-6;
 
         public double RadiusX
         {
@@ -74,45 +74,62 @@ namespace Geometry
             //       2а2*у + а3*х + а5 = 0 - дает экстремум по х
             //       подставляем выражение для у в кравнение эллипса и решаем 2 квадратных уравнения.
 
-            Matrix3x3 globalMatrix = Transform.Model;
+            Matrix3x3 globalMatrix_inverse = Transform.Model.inverse();
             Matrix3x3 coefMatrix = new Matrix3x3();
             coefMatrix.v00 = curves[0][0][0];
             coefMatrix.v11 = curves[0][0][1];
             coefMatrix.v22 = curves[0][0][5];
 
-            coefMatrix = globalMatrix * coefMatrix;
+            coefMatrix = globalMatrix_inverse.transposed() * coefMatrix * globalMatrix_inverse;
             double[] globalCoef = { coefMatrix.v00, coefMatrix.v11, 2*coefMatrix.v01, 2*coefMatrix.v20, 2* coefMatrix.v21, coefMatrix.v22 };
             double a, b, c;
             double xmax, ymax, ymin, xmin, xtmp;
 
-            a = (4 * globalCoef[1] * globalCoef[0] * globalCoef[0]) / (globalCoef[2] * globalCoef[2]) 
-                - globalCoef[0];
-            b = (4 * globalCoef[0] * globalCoef[1] * globalCoef[3]) / (globalCoef[2] * globalCoef[2]) 
-                - (2 * globalCoef[0] * globalCoef[4]) / globalCoef[2];
-            c = (globalCoef[1] * globalCoef[3] * globalCoef[3]) / (globalCoef[2] * globalCoef[2])
-                - (globalCoef[4] * globalCoef[3]) / globalCoef[2]
-                + globalCoef[5];
-            xtmp = (-b-Math.Sqrt(b*b-4*a*c))/(2*a);
-            ymin = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
-            xtmp = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
-            ymax = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
-            if(ymax < ymin)
+
+            if (Math.Abs(globalCoef[2]) > 1e-15) // есть поворот
             {
-                xtmp = ymin;
-                ymin = ymax;
-                ymax = xtmp;
+                a = (4 * globalCoef[1] * globalCoef[0] * globalCoef[0]) / (globalCoef[2] * globalCoef[2])
+                  - globalCoef[0];
+                b = (4 * globalCoef[0] * globalCoef[1] * globalCoef[3]) / (globalCoef[2] * globalCoef[2])
+                    - (2 * globalCoef[0] * globalCoef[4]) / globalCoef[2];
+                c = (globalCoef[1] * globalCoef[3] * globalCoef[3]) / (globalCoef[2] * globalCoef[2])
+                    - (globalCoef[4] * globalCoef[3]) / globalCoef[2]
+                    + globalCoef[5];
+                xtmp = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                ymin = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
+                xtmp = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                ymax = -(globalCoef[3] + 2 * globalCoef[0] * xtmp) / globalCoef[2];
+                if (ymax < ymin)
+                {
+                    xtmp = ymin;
+                    ymin = ymax;
+                    ymax = xtmp;
+                }
+
+                a = globalCoef[0] - (globalCoef[2] * globalCoef[2]) / (4 * globalCoef[1]);
+                b = globalCoef[3] - (globalCoef[2] * globalCoef[4]) / (2 * globalCoef[1]);
+                c = globalCoef[5] - (globalCoef[4] * globalCoef[4]) / (4 * globalCoef[1]);
+                xmin = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                xmax = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                if (xmax < xmin)
+                {
+                    xtmp = xmin;
+                    xmin = xmax;
+                    xmax = xtmp;
+                }
             }
 
-            a = globalCoef[0] - (globalCoef[2]* globalCoef[2]) / (4* globalCoef[1]);
-            b = globalCoef[3] - (globalCoef[2]* globalCoef[4]) / (2* globalCoef[1]);
-            c = globalCoef[5] - (globalCoef[4] * globalCoef[4]) / (4*globalCoef[1]);
-            xmin = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
-            xmax = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
-            if (xmax < xmin)
+            else
             {
-                xtmp = xmin;
-                xmin = xmax;
-                xmax = xtmp;
+                Vector2 pos = Transform.Position;
+                Vector2 delta;
+                delta = Math.Abs(Transform.RotationDegrees - 90) < 1e-10 ||
+                        Math.Abs(Transform.RotationDegrees - 270) < 1e-10 ?
+                        new Vector2(RadiusY, RadiusX) : new Vector2(RadiusX, RadiusY);
+                xmax = pos.x + delta.x;
+                ymax = pos.y + delta.y;
+                ymin = pos.y - delta.y;
+                xmin = pos.x - delta.x;
             }
 
             aabb = new BoundingBox() { left_bottom = new Vector2(xmin, ymin), right_top = new Vector2(xmax, ymax) };
@@ -168,10 +185,10 @@ namespace Geometry
 
         public Ellipse(double _radiusX, double _radiusY, Vector2 Position)
         {
-            RadiusX = _radiusX;
-            RadiusX = _radiusY;
             Transform = new Transform(Position, new Vector2(1, 1), 0);
-
+            RadiusX = _radiusX;
+            RadiusY = _radiusY;
+            
             Transform.PropertyChanged += Transform_OnPropertyChanged;
         }
 

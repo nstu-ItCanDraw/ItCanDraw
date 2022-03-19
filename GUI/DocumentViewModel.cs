@@ -34,8 +34,28 @@ namespace GUI
             }
         }
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
-        public IReadOnlyCollection<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
+        public IReadOnlyList<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
         public event PropertyChangedEventHandler PropertyChanged;
+        private RelayCommand setCurrentDocumentCommand;
+        public RelayCommand SetCurrentDocumentCommand
+        {
+            get => setCurrentDocumentCommand ?? (setCurrentDocumentCommand = new RelayCommand(obj => CurrentDocument = obj as IDocument, obj => obj is IDocument));
+        }
+        private RelayCommand selectVisualGeometryCommand;
+        public RelayCommand SelectVisualGeometryCommand
+        {
+            get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
+        }
+        private RelayCommand deselectVisualGeometryCommand;
+        public RelayCommand DeselectVisualGeometryCommand
+        {
+            get => deselectVisualGeometryCommand ?? (deselectVisualGeometryCommand = new RelayCommand(obj => DeselectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
+        }
+        private RelayCommand clearSelectedVisualGeometriesCommand;
+        public RelayCommand ClearSelectedVisualGeometryCommand
+        {
+            get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries()));
+        }
         public DocumentViewModel()
         {
 
@@ -44,6 +64,13 @@ namespace GUI
         {
             if (currentDocument == null)
                 throw new NullReferenceException("There is no current document.");
+        }
+        public bool IsVisualGeometrySelected(IVisualGeometry visualGeometry)
+        {
+            checkDocumentNotNull();
+            if (!currentDocument.VisualGeometries.Contains(visualGeometry))
+                throw new ArgumentException("Given visual geometry does not present in current document.");
+            return selectedVisualGeometries.Contains(visualGeometry);
         }
         public void SelectVisualGeometry(IVisualGeometry visualGeometry)
         {
