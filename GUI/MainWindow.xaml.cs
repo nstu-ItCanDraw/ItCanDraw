@@ -24,8 +24,6 @@ namespace GUI
         {
             InitializeComponent();
             renderControl.Focusable = true;
-            KeyDown += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyDown(sender, args); };
-            KeyUp += (sender, args) => { if (renderControl.IsFocused) renderControl.OnKeyUp(sender, args); };
         }
   
     }

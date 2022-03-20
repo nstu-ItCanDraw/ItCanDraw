@@ -167,7 +167,7 @@ namespace LinearAlgebra
             return new Matrix4x4(v00, v10, v20, v30,
                                  v01, v11, v21, v31,
                                  v02, v12, v22, v32,
-                                 v03, v13, v32, v33);
+                                 v03, v13, v23, v33);
         }
         /// <summary>
         /// Transposes this matrix

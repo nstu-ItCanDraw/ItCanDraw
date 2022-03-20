@@ -14,6 +14,8 @@ namespace GUI
     internal class Camera
     {
         private Vector2 position = Vector2.Zero;
+        private readonly double ZoomMinPosition = -1e6;
+        private readonly double ZoomMaxPosition = 1e6;
         /// <summary>
         /// Camera position in global space
         /// </summary>
@@ -143,22 +145,31 @@ namespace GUI
             ScreenHeight = screenHeight;
             Height = height;
         }
+
         /// <summary>
         /// Transforms point from screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement)) to virtual space
         /// </summary>
-        public Vector2 ScreenToWorld(Vector2 point)
+        /// <param name="isPoint">True if given vector is point (so offset is applied) and false if vector is a direction (so offset is ignored)</param>
+        public Vector2 ScreenToWorld(Vector2 vec, bool isPoint = true)
         {
-            return new Vector2((point.x / screenWidth - 0.5) * Width + position.x, -(point.y / screenHeight - 0.5) * height + position.y);
+            if (isPoint)
+                return new Vector2((vec.x / screenWidth - 0.5) * Width + position.x, -(vec.y / screenHeight - 0.5) * height + position.y);
+            else
+                return new Vector2(vec.x / screenWidth * Width, -vec.y / screenHeight * height);
         }
         /// <summary>
         /// Transforms point from virtual space to screen space (where top-left corner is origin, see WPF documentation for Mouse.GetPosition(IInputElement))
         /// </summary>
-        public Vector2 WorldToScreen(Vector2 point)
+        /// <param name="isPoint">True if given vector is point (so offset is applied) and false if vector is a direction (so offset is ignored)</param>
+        public Vector2 WorldToScreen(Vector2 vec, bool isPoint = true)
         {
-            return new Vector2(((point.x - position.x) / Width + 0.5) * screenWidth, (-(point.y - position.y) / height + 0.5) * screenHeight);
+            if (isPoint)
+                return new Vector2(((vec.x - position.x) / Width + 0.5) * screenWidth, (-(vec.y - position.y) / height + 0.5) * screenHeight);
+            else
+                return new Vector2(vec.x / Width * screenWidth, -vec.y / height * screenHeight);
         }
         /// <summary>
-        /// Zooms camera for given delta, keeping given virtual point at the same place, delta > 1 means zoom in and delta < 0 means zoom out
+        /// Zooms camera for given delta, keeping given virtual point at the same place, delta > 1 means zoom in and delta < 1 means zoom out, so, for example, value of 2 means zoom in twice and value of 0.5 means zoom out twice
         /// </summary>
         /// <param name="point">Point that will be the same in virtual space, pass camera's position too zoom into or out of camera center</param>
         /// <param name="delta">Delta to zoom for, must be positive, value > 1 means zoom in and value < 1 means zoom out</param>
@@ -167,9 +178,16 @@ namespace GUI
             if (delta <= 0)
                 throw new ArgumentOutOfRangeException("delta", "Zoom delta must be positive.");
 
-            position += (point - position) / delta;
-            height /= delta;
+            double newHeight = height / delta;
 
+            if (newHeight < 1e-6 || 1e6 < newHeight)
+                return;
+
+            position = point + (position - point) / delta;
+
+            position.x = Math.Min(this.ZoomMaxPosition, Math.Max(this.ZoomMinPosition, position.x));
+
+            height = newHeight;
             recalculateMatrixes();
         }
     }

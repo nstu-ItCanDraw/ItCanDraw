@@ -32,12 +32,16 @@ namespace Geometry
             }
             set
             {
+                if (value.Count < 2)
+                    throw new ArgumentException("Polyline must have 2 or more points");
 
                 if (!globalpoints.SequenceEqual(value)) // ? как Vector2 переварится
                 {
                     ChangePoints(value);
                     RecalcCurves();
-                    RecalcBoundingBox();
+                    RecalcAABB();
+                    RecalcOBB();
+
 
                     OnPropertyChanged("Curves");
                     OnPropertyChanged("OBB");
@@ -58,10 +62,16 @@ namespace Geometry
         List<List<double[]>> coeficients;
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
 
-        private void RecalcBoundingBox()
+        private void RecalcAABB()
         {
             Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
             Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+            globalpoints = new List<Vector2>();
+            foreach (var point in points)
+            {
+                globalpoints.Add((Transform.Model * new Vector3(point, 1.0)).xy);
+            }
 
             foreach (var point in globalpoints)
             {
@@ -79,9 +89,11 @@ namespace Geometry
             }
 
             aabb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
-
-            left_bottom = new Vector2(double.MaxValue, double.MaxValue);
-            right_top = new Vector2(double.MinValue, double.MinValue);
+        }
+        private void RecalcOBB()
+        {
+            Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
 
             foreach (var point in Points)
             {
@@ -163,18 +175,14 @@ namespace Geometry
 
         public Polyline(IList<Vector2> _points)
         {
+            globalpoints = new List<Vector2>();
             Transform = new Transform();
-            ChangePoints(_points);
-            RecalcCurves();
-            RecalcBoundingBox();
-
-            OnPropertyChanged("Curves");
-            OnPropertyChanged("OBB");
-            OnPropertyChanged("AABB");
+            Points = new List<Vector2>(_points);
         }
 
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            RecalcAABB();
             OnPropertyChanged(nameof(IGeometry.Transform));
         }
 
