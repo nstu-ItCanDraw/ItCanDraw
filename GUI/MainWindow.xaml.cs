@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace GUI
 {
@@ -25,6 +26,22 @@ namespace GUI
             InitializeComponent();
             renderControl.Focusable = true;
         }
-  
+
+        private void renderControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void MenuItem_Click_FAQ(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(File.ReadAllText("Texts/faq1.txt"));
+        }
+        private void MenuItem_Click_FAQ2(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(File.ReadAllText("Texts/faq2.txt"));
+        }
+        private void MenuItem_Click_Autors(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(File.ReadAllText("Texts/autors.txt"));
+        }
     }
 }

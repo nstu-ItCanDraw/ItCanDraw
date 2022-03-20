@@ -63,9 +63,9 @@
                     <MenuItem Header="Инверсия" Background ="#2C2C2C" ></MenuItem>
                 </MenuItem>
                 <MenuItem Header="Справка" Width="59" Foreground="#FCAEF6" >
-                    <MenuItem Header="Справка программы ItCanDraw F1" Background ="#2C2C2C" ></MenuItem>
-                    <MenuItem Header="Руководство по ItCanDraw" Background ="#2C2C2C" ></MenuItem>
-                    <MenuItem Header="Информация о разработчиках" Background ="#2C2C2C" ></MenuItem>
+                    <MenuItem Header="Справка программы ItCanDraw F1" Background ="#2C2C2C" Click="MenuItem_Click_FAQ" ></MenuItem>
+                    <MenuItem Header="Руководство по ItCanDraw" Background ="#2C2C2C" Click="MenuItem_Click_FAQ2" ></MenuItem>
+                    <MenuItem Header="Информация о разработчиках" Background ="#2C2C2C" Click="MenuItem_Click_Autors" ></MenuItem>
                     <MenuItem Header="Выйти..." Background ="#2C2C2C" ></MenuItem>
                 </MenuItem>
 
@@ -109,7 +109,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </Menu>
-            <local:RenderControl x:Name="renderControl"/>
+            <local:RenderControl x:Name="renderControl" Loaded="renderControl_Loaded"/>
         </DockPanel>
         <DockPanel LastChildFill="True" Grid.Row="2" Grid.ColumnSpan="3" >
             <Menu Background ="#2C2C2C"/>
@@ -151,7 +151,6 @@
                 <TextBlock Height="17" TextWrapping="Wrap" Width="225" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="  "/><Run Text="О"/><Run Language="ru-ru" Text="бозреватель"/><LineBreak/><Run Language="ru-ru"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
                 <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
                 <TreeView Height="294" Width="284" Background="#FF2F2F2F" BorderBrush="#FFFCAEF6" Foreground="Black"/>
-
             </Menu>
         </DockPanel>
         <GridSplitter Grid.Column="1"  Grid.RowSpan="2" Width="5" HorizontalAlignment="Center" Margin="0,36,0,0"/>
