@@ -15,7 +15,7 @@ namespace Logic
         {
             get
             {
-                return name;
+                return isModified ? name : name + "*";
             }
             set
             {
@@ -71,6 +71,20 @@ namespace Logic
             }
         }
 
+        private bool isModified;
+        public bool IsModified
+        {
+            get
+            {
+                return isModified;
+            }
+            set
+            {
+                isModified = value;
+                OnPropertyChanged("IsModified");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Document(string name, int width, int height)
@@ -83,7 +97,11 @@ namespace Logic
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             if (PropertyChanged != null)
+            {
+                if(prop != nameof(IsModified))
+                    isModified = true;
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
         }
         private void visualGeometry_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

@@ -33,6 +33,10 @@ namespace Logic
         /// </summary>
         public Color BackgroundColor { get; set; }
         /// <summary>
+        /// Determines document state
+        /// </summary>
+        public bool IsModified { get; set; }
+        /// <summary>
         /// Adds given visual geometry to geometries in this document
         /// </summary>
         public void AddVisualGeometry(IVisualGeometry visualGeometry);

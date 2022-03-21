@@ -21,6 +21,8 @@ using OpenTK.Wpf;
 using LinearAlgebra;
 using Geometry;
 using Logic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace GUI
 {
@@ -29,18 +31,36 @@ namespace GUI
     /// </summary>
     public partial class RenderControl : UserControl
     {
+        public static readonly DependencyProperty ViewModelProperty;
+        
         private Camera camera;
         private int dummyVAO = 0;
         private bool initialized = false;
         private readonly double ZoomDelta = 1.1;
-        private DocumentViewModel viewModel;
-        internal DocumentViewModel ViewModel { get => viewModel; }
+        internal DocumentViewModel ViewModel
+        {
+            get
+            {
+                return (DocumentViewModel) GetValue(ViewModelProperty);
+            }
+
+            private set
+            {
+                SetValue(ViewModelProperty, value);
+            }
+        }
         private FrameBufferPool FBP;
 
         #region click and drag control states
         private bool isMouseWheelDown = false;
         private LinearAlgebra.Vector2 mouseDragVirtualBase;
         #endregion
+
+        static RenderControl()
+        {
+            ViewModelProperty = DependencyProperty.Register(nameof(ViewModel), typeof(DocumentViewModel), typeof(RenderControl));
+        }
+
         public RenderControl()
         {
             InitializeComponent();
@@ -55,13 +75,13 @@ namespace GUI
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.LineWidth(2);
 
-            viewModel = new DocumentViewModel();
-            viewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
+            ViewModel = new DocumentViewModel();
+            ViewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
 
             IGeometry triangle = FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero);
             triangle.Transform.Position = new LinearAlgebra.Vector2(20, 40);
             triangle.Transform.RotationDegrees = 20;
-            viewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(triangle));
+            ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(triangle));
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -91,15 +111,15 @@ namespace GUI
             GL.ClearColor(Color4.Gray);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            renderDocumentViewModel(viewModel);
+            renderDocumentViewModel(ViewModel);
         }
         private void renderDocumentViewModel(DocumentViewModel document)
         {
             renderDocumentBackground(document.CurrentDocument);
 
-            renderVisualGeometries(viewModel.CurrentDocument.VisualGeometries);
+            renderVisualGeometries(ViewModel.CurrentDocument.VisualGeometries);
 
-            renderOBBs(viewModel.SelectedVisualGeometries);
+            renderOBBs(ViewModel.SelectedVisualGeometries);
         }
         private void renderVisualGeometries(IReadOnlyList<IVisualGeometry> visualGeometries)
         {
@@ -167,8 +187,8 @@ namespace GUI
 
             Pipeline coloring = AssetsManager.Pipelines["Coloring"];
             coloring.Use();
-            coloring.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
-            coloring.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
+            coloring.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
+            coloring.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
             if (brush is Logic.SolidColorBrush)
             {
                 Logic.SolidColorBrush scb = (Logic.SolidColorBrush)brush;
@@ -232,8 +252,8 @@ namespace GUI
 
             Pipeline union = AssetsManager.Pipelines["TextureUnion"];
             union.Use();
-            union.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
-            union.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
+            union.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
+            union.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
 
             tex1.Bind("tex1");
             tex2.Bind("tex2");
@@ -250,8 +270,8 @@ namespace GUI
 
             Pipeline curveToTexture = AssetsManager.Pipelines["CurveToTexture"];
             curveToTexture.Use();
-            curveToTexture.Uniform1("documentWidth", (float)viewModel.CurrentDocument.Width);
-            curveToTexture.Uniform1("documentHeight", (float)viewModel.CurrentDocument.Height);
+            curveToTexture.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
+            curveToTexture.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
             curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)view);
             curveToTexture.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
 
@@ -320,25 +340,25 @@ namespace GUI
                     Point mousePosPoint = e.GetPosition(this);
                     LinearAlgebra.Vector2 mousePos = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
                     bool nothingHit = true;
-                    foreach (IVisualGeometry vg in viewModel.CurrentDocument.VisualGeometries)
+                    foreach (IVisualGeometry vg in ViewModel.CurrentDocument.VisualGeometries)
                         if (vg.Geometry.IsPointInFigure(mousePos, 1e-2))
                         {
                             if (Keyboard.GetKeyStates(Key.LeftShift).HasFlag(KeyStates.Down))
                             {
-                                if (viewModel.IsVisualGeometrySelected(vg))
-                                    viewModel.DeselectVisualGeometry(vg);
+                                if (ViewModel.IsVisualGeometrySelected(vg))
+                                    ViewModel.DeselectVisualGeometry(vg);
                                 else
-                                    viewModel.SelectVisualGeometry(vg);
+                                    ViewModel.SelectVisualGeometry(vg);
                             }
                             else
                             {
-                                viewModel.ClearSelectedVisualGeometries();
-                                viewModel.SelectVisualGeometry(vg);
+                                ViewModel.ClearSelectedVisualGeometries();
+                                ViewModel.SelectVisualGeometry(vg);
                             }
                             nothingHit = false;
                         }
                     if (nothingHit)
-                        viewModel.ClearSelectedVisualGeometries();
+                        ViewModel.ClearSelectedVisualGeometries();
                     break;
             }
         }
@@ -349,7 +369,7 @@ namespace GUI
             switch (e.Key)
             {
                 case Key.Delete:
-                    viewModel.DeleteSelectedVisualGeometries();
+                    ViewModel.DeleteSelectedVisualGeometries();
                     break;
             }
         }
