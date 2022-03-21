@@ -15,6 +15,10 @@ namespace Logic
     public interface IVisualGeometry : INotifyPropertyChanged
     {
         /// <summary>
+        /// Name for geometry
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
         /// Geometry base
         /// </summary>
         public IGeometry Geometry { get; }
