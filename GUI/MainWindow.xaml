@@ -109,6 +109,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </Menu>
+            <ScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+            </ScrollViewer>
             <local:RenderControl x:Name="renderControl" Loaded="renderControl_Loaded"/>
         </DockPanel>
         <DockPanel LastChildFill="True" Grid.Row="2" Grid.ColumnSpan="3" >
