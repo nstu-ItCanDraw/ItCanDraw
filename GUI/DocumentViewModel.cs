@@ -129,7 +129,10 @@ namespace GUI
 
             try
             {
-                IDocument document = OpenFile.FromJSON(openDocumentFileDialog.FileName);
+                string filename = openDocumentFileDialog.FileName;
+                IDocument document = OpenFile.FromJSON(filename);
+                document.FullName = filename;
+
                 openedDocuments.Add(document);
                 CurrentDocument = document;
             }
@@ -154,7 +157,6 @@ namespace GUI
         public void SaveAsCurrentDocument()
         {
             saveDocumentFileDialog.FileName = CurrentDocument.Name.Trim('*');
-            saveDocumentFileDialog.ShowDialog();
             if(!saveDocumentFileDialog.ShowDialog().Value)
             {
                 return;
@@ -163,6 +165,7 @@ namespace GUI
             try
             {
                 SaveFile.ToJSON(saveDocumentFileDialog.FileName, CurrentDocument);
+                CurrentDocument.FullName = saveDocumentFileDialog.FileName;
                 CurrentDocument.IsModified = false;
             }
             catch (Exception e)
