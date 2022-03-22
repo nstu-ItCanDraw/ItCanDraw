@@ -79,8 +79,13 @@
                 <Image Source="Pictures\i_удаление_НеАктивная.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\i_зум_НеАктивная.png" Margin="0,0,0,3"/>
             </StackPanel>
-            <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}">
-
+            <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}" 
+                        DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding OpenedDocuments}" SelectedItem="{Binding CurrentDocument}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
             </TabControl>
             <Grid Grid.Column="1" Margin="0,29,0,0" MinWidth="100" MinHeight="100">
                 <local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>

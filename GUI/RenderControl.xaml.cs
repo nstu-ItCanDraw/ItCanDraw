@@ -76,7 +76,8 @@ namespace GUI
             GL.LineWidth(2);
 
             ViewModel = new DocumentViewModel();
-            ViewModel.CurrentDocument = DocumentFactory.CreateDocument("Untitled", 480, 640);
+            ViewModel.CreateDocument();
+            ViewModel.CreateDocument();
 
             IGeometry triangle = FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero);
             triangle.Transform.Position = new LinearAlgebra.Vector2(20, 40);
