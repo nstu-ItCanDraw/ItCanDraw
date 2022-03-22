@@ -124,7 +124,8 @@ namespace GUI
         }
         public void OpenDocument()
         {
-            openDocumentFileDialog.ShowDialog();
+            if (!openDocumentFileDialog.ShowDialog().Value)
+                return;
 
             try
             {
