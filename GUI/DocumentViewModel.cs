@@ -78,6 +78,16 @@ namespace GUI
         {
             get => saveAsCurrentDocumentCommand ?? (saveAsCurrentDocumentCommand = new RelayCommand(obj => SaveAsCurrentDocument()));
         }
+        private RelayCommand saveCurrentDocumentCommand;
+        public RelayCommand SaveCurrentDocumentCommand
+        {
+            get => saveCurrentDocumentCommand ?? (saveCurrentDocumentCommand = new RelayCommand(obj => SaveCurrentDocument()));
+        }
+        private RelayCommand createDocumentCommand;
+        public RelayCommand CreateDocumentCommand
+        {
+            get => createDocumentCommand ?? (createDocumentCommand = new RelayCommand(obj => CreateDocument()));
+        }
         public DocumentViewModel()
         {
 
@@ -172,7 +182,37 @@ namespace GUI
             {
                 MessageBox.Show(e.Message);
             }
-            
+        }
+        public void SaveCurrentDocument()
+        {
+            if(CurrentDocument.FullName == null)
+            {
+                SaveAsCurrentDocument();
+                return;
+            }
+
+            try
+            {
+                SaveFile.ToJSON(CurrentDocument.FullName, CurrentDocument);
+                CurrentDocument.IsModified = false;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        public void CreateDocument()
+        {
+            try
+            {
+                IDocument document = DocumentFactory.CreateDocument("Untitled", 500, 500);
+                openedDocuments.Add(document);
+                CurrentDocument = document;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

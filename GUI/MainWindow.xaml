@@ -16,9 +16,9 @@
                 <Image Style="{StaticResource ResourceKey=GrayStretch}" Source="Pictures\icon_pinc_2.png" Margin="2"/>
                 <Menu Style="{StaticResource ResourceKey=GrayStretch}" VerticalAlignment="Center">
                     <MenuItem Header="Файл" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
-                        <MenuItem Header="Новый Ctrl+N"/>
+                        <MenuItem Header="Новый Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
                         <MenuItem Header="Открыть Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
-                        <MenuItem Header="Сохранить Ctrl+S"/>
+                        <MenuItem Header="Сохранить Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
                         <MenuItem Header="Сохранить как... Shift+Ctr+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
                         <MenuItem Header="Экспорт в... Ctrl+E">
                             <MenuItem Header="SVG"/>
