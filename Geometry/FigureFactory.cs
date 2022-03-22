@@ -25,6 +25,10 @@ namespace Geometry
         {
             return new Polyline(points);
         }
+        public static IFigure CreatePolygon(IList<Vector2> points)
+        {
+            return new Polygon(points);
+        }
     }
 
 

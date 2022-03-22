@@ -13,6 +13,7 @@ namespace Geometry
     {
         List<Vector2> Points { get; set; }
     }
+    // новые точки полигона ВСЕГДА в конце списка
     class Polygon : NotifyPropertyChanged, IPolygone
     {
         private static Dictionary<string, PropertyInfo> parameterDictionary;
@@ -22,27 +23,183 @@ namespace Geometry
         public string Name => name;
 
         private List<Vector2> points;
+        private List<Vector2> globalpoints;
+
         public List<Vector2> Points 
         {
-            get 
+            get
             {
-                throw new NotImplementedException();
+                return points;
             }
-            set 
+            set
             {
-                throw new NotImplementedException();
-            } 
+                if (value.Count < 3)
+                    throw new ArgumentException("Polygone must have 3 or more points");
+
+                if (!globalpoints.SequenceEqual(value)) // ? как Vector2 переварится
+                {
+                    List<Vector2> old_points = new List<Vector2>(points);
+                    List<Vector2> old_globalpoints = new List<Vector2>(globalpoints);
+                    ChangePoints(value);
+                    List<List<double[]>> old_coeficients = new List<List<double[]>>(coeficients);
+                    if(!RecalcCurves())
+                    {
+                        points = new List<Vector2>(old_points);
+                        globalpoints = new List<Vector2>(old_globalpoints);
+                        coeficients = new List<List<double[]>>(old_coeficients);
+                        throw new ArgumentException("Two points in polygon are too close");
+                    }
+                    RecalcAABB();
+                    RecalcOBB();
+
+
+                    OnPropertyChanged("Curves");
+                    OnPropertyChanged("OBB");
+                    OnPropertyChanged("AABB");
+                }
+            }
         }
 
-        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => throw new NotImplementedException();
+        List<List<double[]>> coeficients;
+        public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
+        private bool RecalcCurves() // пересчитать все
+        {
+            coeficients = new List<List<double[]>>(1);
+            double[] line;
+            for (int i = 1; i < Points.Count; i++)
+            {             
+                line = GetEdgeCoeffs(Points[i-1].x, Points[i - 1].y, Points[i].x, Points[i].y);
+                if(line[3] * line[3] == 0 && line[4] * line[4] == 0)
+                    return false;
+                coeficients[0].Add(line);
+            }
+            line = GetEdgeCoeffs(Points[0].x, Points[0].y, Points[Points.Count - 1].x, Points[Points.Count - 1].y);
+            coeficients[0].Add(line);
+            return true;
+        }
 
-        public Transform Transform { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private void ChangePoints(IList<Vector2> _points)
+        {
+            Vector2 centre = new Vector2();
+            int n = 0;
+            foreach (var _point in _points)
+            {
+                centre += _point;
+                n++;
+            }
+            centre /= n;
 
-        public BoundingBox AABB => throw new NotImplementedException();
+            // -------------- add new points from end to right position --------------
+            // -------- no more than one new point is expected near the side ---------
+            var to_from = new SortedDictionary<int, List<int>>();
+            if (Points.Count != 0)
+            {
+                for (int j = Points.Count; j < _points.Count; j++)
+                {
+                    Vector2 point_loc = (Transform.View * new Vector3(_points[j], 1.0)).xy;
+                    double min_distance = 1e+30, distance;
+                    int id_curve = 0;
+                    for (int i = 0; i < Curves.ElementAt(0).Count; i++)
+                    {
+                        distance = GetDistanceToCurve(Curves.ElementAt(0).ElementAt(i), point_loc);
+                        if (distance < min_distance)
+                        {
+                            min_distance = distance;
+                            id_curve = i;
+                        }
+                    }
+                    to_from[id_curve].Add(j);
+                }
+                int shift = 1;
 
-        public BoundingBox OBB => throw new NotImplementedException();
+                foreach (var to in to_from)
+                {
+                    if (to.Value.Count == 1)
+                    {
+                        Vector2 tmp = new Vector2(_points[to.Value[0]].x, _points[to.Value[0]].y);
+                        _points.RemoveAt(to.Value[0]);
+                        _points.Insert(to.Key + shift, tmp);
+                        shift++;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("2 new points near one side not released yet");
+                        // тут надо отсортировать точки по расстоянию до Point[to.Key] и в таком порядке вставлять
+                        // но мне кажется, за раз не будут более 1 точки добавлять из интерфейса, поэтому не сделано
+                    }
+                }
+            }
+            //--------------------------------------------------------------------------------
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            Transform.Position = centre;
+
+            globalpoints = new List<Vector2>(_points);
+            points = new List<Vector2>();
+            foreach (var _point in globalpoints)
+            {
+                points.Add((Transform.View * new Vector3(_point, 1.0)).xy);
+            }
+
+            Transform.PropertyChanged += Transform_OnPropertyChanged;
+        }
+        public Transform Transform { get; }
+
+        BoundingBox aabb;
+        public BoundingBox AABB => aabb;
+        BoundingBox obb;
+        public BoundingBox OBB => obb;
+        private void RecalcAABB()
+        {
+            Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+            globalpoints = new List<Vector2>();
+            foreach (var point in points)
+            {
+                globalpoints.Add((Transform.Model * new Vector3(point, 1.0)).xy);
+            }
+
+            foreach (var point in globalpoints)
+            {
+                if (point.x < left_bottom.x)
+                    left_bottom.x = point.x;
+
+                if (point.x > right_top.x)
+                    right_top.x = point.x;
+
+                if (point.y < left_bottom.y)
+                    left_bottom.y = point.y;
+
+                if (point.y > right_top.y)
+                    right_top.y = point.y;
+            }
+
+            aabb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+        }
+        private void RecalcOBB()
+        {
+            Vector2 left_bottom = new Vector2(double.MaxValue, double.MaxValue);
+            Vector2 right_top = new Vector2(double.MinValue, double.MinValue);
+
+            foreach (var point in Points)
+            {
+                if (point.x < left_bottom.x)
+                    left_bottom.x = point.x;
+
+                if (point.x > right_top.x)
+                    right_top.x = point.x;
+
+                if (point.y < left_bottom.y)
+                    left_bottom.y = point.y;
+
+                if (point.y > right_top.y)
+                    right_top.y = point.y;
+            }
+
+            obb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
+        }
+
+        public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set { Points = value.ToList(); } }
 
         static Polygon()
         {
@@ -54,12 +211,45 @@ namespace Geometry
 
         protected void Transform_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            RecalcAABB();
             OnPropertyChanged(nameof(IGeometry.Transform));
+        }
+
+        private double[] GetEdgeCoeffs(double x1, double y1, double x2, double y2)
+        {
+            double vx = x2 - x1;
+            double vy = y2 - y1;
+
+            return new double[6] { 0, 0, 0, vy, -vx, -x1 * vy + y1 * vx };
+        }
+        private double GetDistanceToCurve(double[] _curve, Vector2 _point) // return Distance*Distance
+        {
+            return (_curve[3]*_point.x + _curve[4]*_point.y + _curve[5]) *
+                   (_curve[3] * _point.x + _curve[4] * _point.y + _curve[5]) / 
+                   (_curve[3] * _curve[3] + _curve[4] * _curve[4]);
         }
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
-            throw new NotImplementedException();
+            Vector2 localPosition = (Transform.View * new Vector3(position, 1.0)).xy;
+
+            foreach(var _curve in Curves.ElementAt(0))
+            {
+                if (GetValue(localPosition, _curve) > eps)
+                    return false;
+            }
+
+            return true;
+        }
+        private double GetValue(Vector2 point, double[] coef)
+        {
+            return coef[3] * point.x + coef[4] * point.y + coef[5];
+        }
+        public Polygon(IList<Vector2> _points)
+        {
+            globalpoints = new List<Vector2>();
+            Transform = new Transform();
+            Points = new List<Vector2>(_points);
         }
     }
 }

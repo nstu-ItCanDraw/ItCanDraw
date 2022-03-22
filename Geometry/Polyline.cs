@@ -57,7 +57,7 @@ namespace Geometry
         BoundingBox obb;
         public BoundingBox OBB => obb;
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set => throw new NotImplementedException(); }
+        public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set { Points = value.ToList(); } }
 
         List<List<double[]>> coeficients;
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
