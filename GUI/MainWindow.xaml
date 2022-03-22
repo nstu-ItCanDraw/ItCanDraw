@@ -42,11 +42,11 @@
                         <MenuItem Header="Зеркальное отражение..."/>
                         <MenuItem Header="Наклон..."/>
                     </MenuItem>
-                    <MenuItem Header="Выделение">
-                        <MenuItem Header="Все"/>
-                        <MenuItem Header="Отменить выделение"/>
+                    <MenuItem Header="Выделение" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
+                        <MenuItem Header="Все" Command="{Binding SelectAllVisualGeometriesCommand}"/>
+                        <MenuItem Header="Отменить выделение" Command="{Binding ClearSelectedVisualGeometryCommand}"/>
                         <MenuItem Header="Выделить снова"/>
-                        <MenuItem Header="Инверсия"/>
+                        <MenuItem Header="Инверсия" Command="{Binding InverseSelectionCommand}"/>
                     </MenuItem>
                     <MenuItem Header="Справка">
                         <MenuItem Header="Справка программы ItCanDraw F1" Click="MenuItem_Click_FAQ"/>
