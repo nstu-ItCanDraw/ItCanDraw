@@ -16,9 +16,9 @@ namespace Logic
         /// <summary>
         /// Creates new visual geometry wrapper for given geometry object
         /// </summary>
-        public static IVisualGeometry CreateVisualGeometry(IGeometry geometry)
+        public static IVisualGeometry CreateVisualGeometry(string name, IGeometry geometry)
         {
-            return new VisualGeometry(geometry);
+            return new VisualGeometry(name, geometry);
         }
     }
 }

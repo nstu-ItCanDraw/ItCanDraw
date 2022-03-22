@@ -104,8 +104,13 @@
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Текущий документ</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
-                            <TreeView Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-
+                            <TreeView Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel.CurrentDocumentVisualTree}" ItemsSource="{Binding Roots}">
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type local:VisualGeometryTreeNode}" ItemsSource="{Binding Children}">
+                                        <TextBlock Text="{Binding VisualGeometry.Name}"/>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
                             </TreeView>
                         </Border>
                     </Grid>

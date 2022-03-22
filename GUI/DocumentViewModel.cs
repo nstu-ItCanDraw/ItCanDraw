@@ -38,6 +38,8 @@ namespace GUI
                 OnPropertyChanged("CurrentDocument");
             }
         }
+        private VisualGeometryTree currentDocumentVisualTree = new VisualGeometryTree();
+        public VisualGeometryTree CurrentDocumentVisualTree => currentDocumentVisualTree;
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
         public IReadOnlyList<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
         private List<IDocument> openedDocuments = new List<IDocument>();
@@ -244,6 +246,9 @@ namespace GUI
         }
         private void currentDocument_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(IDocument.VisualGeometries))
+                currentDocumentVisualTree.RebuildFromDocument(CurrentDocument);
+
             OnPropertyChanged("CurrentDocument");
         }
     }
