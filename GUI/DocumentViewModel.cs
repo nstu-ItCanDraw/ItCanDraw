@@ -42,6 +42,7 @@ namespace GUI
         public VisualGeometryTree CurrentDocumentVisualTree => currentDocumentVisualTree;
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
         public IReadOnlyList<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
+        public IVisualGeometry SelectedVisualGeometry => selectedVisualGeometries.Count < 2 ? selectedVisualGeometries.FirstOrDefault() : null;
         private List<IDocument> openedDocuments = new List<IDocument>();
         public IReadOnlyList<IDocument> OpenedDocuments { get => openedDocuments.AsReadOnly(); }
         public event PropertyChangedEventHandler PropertyChanged;
