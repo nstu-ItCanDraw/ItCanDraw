@@ -28,6 +28,8 @@ namespace GUI
     /// </summary>
     public partial class RenderControl : UserControl
     {
+        private IFigure polygon;
+
         private FrameBuffer FBO;
         private Camera camera;
         private int dummyVAO = 0;
@@ -57,6 +59,18 @@ namespace GUI
             camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, 300);
             FBO = new FrameBuffer(new Texture2D(200, 200, TextureType.FloatValue));
 
+            var list = new List<LinearAlgebra.Vector2>() { new LinearAlgebra.Vector2(-0.4, 0.1), new LinearAlgebra.Vector2(0.4, 0.5), new LinearAlgebra.Vector2(-0.4, 0.5) };
+
+            polygon = FigureFactory.CreatePolygon(list);
+            list.Add(new LinearAlgebra.Vector2(0, -0.4));
+            polygon.BasicPoints = list;
+            list = polygon.BasicPoints.ToList();
+            list.Add(new LinearAlgebra.Vector2(0.4, 0.1));
+            polygon.BasicPoints = list;
+            list = polygon.BasicPoints.ToList();
+            list.Add(new LinearAlgebra.Vector2(0, 0.3));
+            polygon.BasicPoints = list;
+
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/fullscreenQuad.vsh", "shaders/curveToTexture.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/coloring.fsh");
 
@@ -74,6 +88,7 @@ namespace GUI
         private void render(TimeSpan deltaTime)
         {
             FBO.Use();
+            renderFigure(polygon);
 
             FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
 

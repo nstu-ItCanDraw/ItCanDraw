@@ -38,16 +38,32 @@ namespace Geometry
 
                 if (!globalpoints.SequenceEqual(value)) // ? как Vector2 переварится
                 {
-                    List<Vector2> old_points = new List<Vector2>(points);
-                    List<Vector2> old_globalpoints = new List<Vector2>(globalpoints);
-                    ChangePoints(value);
-                    List<List<double[]>> old_coeficients = new List<List<double[]>>(coeficients);
-                    if(!RecalcCurves())
+                    
+                    if (points != null)
                     {
-                        points = new List<Vector2>(old_points);
-                        globalpoints = new List<Vector2>(old_globalpoints);
-                        coeficients = new List<List<double[]>>(old_coeficients);
-                        throw new ArgumentException("Two points in polygon are too close");
+                        List<Vector2> old_points = new List<Vector2>(points);
+                        List<Vector2> old_globalpoints = new List<Vector2>(globalpoints);
+                        List<List<double[]>> old_coeficients = new List<List<double[]>>(coeficients);
+                        ChangePoints(value);
+                        if (!RecalcCurves())
+                        {
+                            points = new List<Vector2>(old_points);
+                            globalpoints = new List<Vector2>(old_globalpoints);
+                            coeficients = new List<List<double[]>>(old_coeficients);
+                            throw new ArgumentException("Two points in polygon are too close");
+                        }
+                    }
+                    else
+                    {
+                        ChangePoints(value);
+                        if (!RecalcCurves())
+                        {
+                            // если две точки совпали и не было предыдущих точек, загрузить базовый полигон
+                            globalpoints = new List<Vector2>(new List<Vector2>() { new Vector2(1, 1), new Vector2(5, 1), new Vector2(1, 7) });
+                            ChangePoints(value);
+                            RecalcCurves();
+                            throw new ArgumentException("Two points in polygon are too close");
+                        }
                     }
                     RecalcAABB();
                     RecalcOBB();
@@ -64,7 +80,7 @@ namespace Geometry
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
         private bool RecalcCurves() // пересчитать все
         {
-            coeficients = new List<List<double[]>>(1);
+            coeficients = new List<List<double[]>>() { new List<double[]>() };
             double[] line;
             for (int i = 1; i < Points.Count; i++)
             {             
@@ -73,7 +89,7 @@ namespace Geometry
                     return false;
                 coeficients[0].Add(line);
             }
-            line = GetEdgeCoeffs(Points[0].x, Points[0].y, Points[Points.Count - 1].x, Points[Points.Count - 1].y);
+            line = GetEdgeCoeffs(Points[Points.Count - 1].x, Points[Points.Count - 1].y, Points[0].x, Points[0].y);
             coeficients[0].Add(line);
             return true;
         }
@@ -92,7 +108,7 @@ namespace Geometry
             // -------------- add new points from end to right position --------------
             // -------- no more than one new point is expected near the side ---------
             var to_from = new SortedDictionary<int, List<int>>();
-            if (Points.Count != 0)
+            if (Points != null)
             {
                 for (int j = Points.Count; j < _points.Count; j++)
                 {
@@ -101,24 +117,38 @@ namespace Geometry
                     int id_curve = 0;
                     for (int i = 0; i < Curves.ElementAt(0).Count; i++)
                     {
-                        distance = GetDistanceToCurve(Curves.ElementAt(0).ElementAt(i), point_loc);
+                        int k1 = i,
+                            k2 = (i + 1 == points.Count ? 0 : i + 1);
+                        if ((points[k1] - point_loc).dot(points[k2] - points[k1]) >= 0)
+                            distance = (points[k1] - point_loc).length();
+                        else if ((points[k2] - point_loc).dot(points[k2] - points[k1]) <= 0)
+                            distance = (points[k2] - point_loc).length();
+                        else
+                            distance = GetDistanceToCurve(Curves.ElementAt(0).ElementAt(i), point_loc);
                         if (distance < min_distance)
                         {
                             min_distance = distance;
                             id_curve = i;
                         }
                     }
+                    if (!to_from.ContainsKey(id_curve))
+                        to_from.Add(id_curve, new List<int>());
                     to_from[id_curve].Add(j);
                 }
                 int shift = 1;
 
+                for (int j = 0; j < Points.Count; j++)
+                {
+                    globalpoints[j] = new Vector2(_points[j].x, _points[j].y);
+                }
                 foreach (var to in to_from)
                 {
                     if (to.Value.Count == 1)
                     {
                         Vector2 tmp = new Vector2(_points[to.Value[0]].x, _points[to.Value[0]].y);
-                        _points.RemoveAt(to.Value[0]);
-                        _points.Insert(to.Key + shift, tmp);
+                        //_points.RemoveAt(to.Value[0]);
+                        //_points.Insert(to.Key + shift, tmp);
+                        globalpoints.Insert(to.Key + shift, tmp);
                         shift++;
                     }
                     else
@@ -129,11 +159,15 @@ namespace Geometry
                     }
                 }
             }
+            else
+            {
+                globalpoints = new List<Vector2>(_points);
+            }
             //--------------------------------------------------------------------------------
-
+            var tmp_save = new List<Vector2>(globalpoints);
             Transform.Position = centre;
-
-            globalpoints = new List<Vector2>(_points);
+            globalpoints = new List<Vector2>(tmp_save);
+            //globalpoints = new List<Vector2>(_points);
             points = new List<Vector2>();
             foreach (var _point in globalpoints)
             {
@@ -199,7 +233,8 @@ namespace Geometry
             obb = new BoundingBox() { left_bottom = left_bottom, right_top = right_top };
         }
 
-        public IReadOnlyCollection<Vector2> BasicPoints { get => Points; set { Points = value.ToList(); } }
+        // set and get in local
+        public IReadOnlyCollection<Vector2> BasicPoints { get => globalpoints; set { Points = value.ToList(); } }
 
         static Polygon()
         {
