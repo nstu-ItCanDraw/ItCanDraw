@@ -366,6 +366,39 @@ namespace GUI
         {
             e.Handled = true;
 
+            bool ctrlPressed = e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control);
+            bool ctrlShiftPresses = ctrlPressed && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Shift);
+
+            if(ctrlShiftPresses)
+            {
+                switch(e.Key)
+                {
+                    case Key.S:
+                        ViewModel.SaveAsCurrentDocument();
+                        break;
+                }
+
+                return;
+            }
+
+            if(ctrlPressed)
+            {
+                switch (e.Key)
+                {
+                    case Key.N:
+                        ViewModel.CreateDocument();
+                        break;
+                    case Key.O:
+                        ViewModel.OpenDocument();
+                        break;
+                    case Key.S:
+                        ViewModel.SaveCurrentDocument();
+                        break;
+                }
+
+                return;
+            }
+
             switch (e.Key)
             {
                 case Key.Delete:

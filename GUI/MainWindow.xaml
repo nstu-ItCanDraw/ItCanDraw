@@ -16,11 +16,11 @@
                 <Image Style="{StaticResource ResourceKey=GrayStretch}" Source="Pictures\icon_pinc_2.png" Margin="2"/>
                 <Menu Style="{StaticResource ResourceKey=GrayStretch}" VerticalAlignment="Center">
                     <MenuItem Header="Файл" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
-                        <MenuItem Header="Новый Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
-                        <MenuItem Header="Открыть Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
-                        <MenuItem Header="Сохранить Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
-                        <MenuItem Header="Сохранить как... Shift+Ctr+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
-                        <MenuItem Header="Экспорт в... Ctrl+E">
+                        <MenuItem Header="Новый" InputGestureText="Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
+                        <MenuItem Header="Открыть" InputGestureText="Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
+                        <MenuItem Header="Сохранить" InputGestureText="Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
+                        <MenuItem Header="Сохранить как..." InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
+                        <MenuItem Header="Экспорт в...">
                             <MenuItem Header="SVG"/>
                             <MenuItem Header="HTML"/>
                             <MenuItem Header="PDF"/>
@@ -29,11 +29,11 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Редактирование">
-                        <MenuItem Header="Отменить Ctrl+Z"/>
-                        <MenuItem Header="Повторить Shift+Ctrl+Z"/>
-                        <MenuItem Header="Вырезать Ctr+X"/>
-                        <MenuItem Header="Копировать Ctr+C"/>
-                        <MenuItem Header="Вставить Ctr+V"/>
+                        <MenuItem Header="Отменить" InputGestureText="Ctrl+Z"/>
+                        <MenuItem Header="Повторить" InputGestureText="Shift+Ctrl+Z"/>
+                        <MenuItem Header="Вырезать" InputGestureText="Ctrl+X"/>
+                        <MenuItem Header="Копировать" InputGestureText="Ctrl+C"/>
+                        <MenuItem Header="Вставить" InputGestureText="Ctrl+V"/>
                         <MenuItem Header="Настройки"/>
                     </MenuItem>
                     <MenuItem Header="Объект">
