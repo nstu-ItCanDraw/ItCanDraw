@@ -6,11 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
+using System.Windows;
 
 using Logic;
+using Geometry;
 using IO;
 using LinearAlgebra;
-using System.Windows;
 
 namespace GUI
 {
@@ -124,11 +125,15 @@ namespace GUI
                 throw new ArgumentException("Given visual geometry does not present in current document.");
             if (!selectedVisualGeometries.Contains(visualGeometry))
                 selectedVisualGeometries.Add(visualGeometry);
+            OnPropertyChanged("SelectedVisualGeometries");
+            OnPropertyChanged("SelectedVisualGeometry");
         }
         public void SelectAllVisualGeometries()
         {
             checkDocumentNotNull();
             selectedVisualGeometries.AddRange(currentDocument.VisualGeometries.Except(selectedVisualGeometries));
+            OnPropertyChanged("SelectedVisualGeometries");
+            OnPropertyChanged("SelectedVisualGeometry");
         }
         public void DeselectVisualGeometry(IVisualGeometry visualGeometry)
         {
@@ -137,11 +142,15 @@ namespace GUI
                 throw new ArgumentException("Given visual geometry does not present in current document.");
             if (selectedVisualGeometries.Contains(visualGeometry))
                 selectedVisualGeometries.Remove(visualGeometry);
+            OnPropertyChanged("SelectedVisualGeometries");
+            OnPropertyChanged("SelectedVisualGeometry");
         }
         public void ClearSelectedVisualGeometries()
         {
             checkDocumentNotNull();
             selectedVisualGeometries.Clear();
+            OnPropertyChanged("SelectedVisualGeometries");
+            OnPropertyChanged("SelectedVisualGeometry");
         }
         public void DeleteSelectedVisualGeometries()
         {
@@ -251,7 +260,10 @@ namespace GUI
         private void currentDocument_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(IDocument.VisualGeometries))
+            {
                 currentDocumentVisualTree.RebuildFromDocument(CurrentDocument);
+                OnPropertyChanged("CurrentDocumentVisualTree");
+            }
 
             OnPropertyChanged("CurrentDocument");
         }
