@@ -25,6 +25,21 @@ namespace Logic
                 OnPropertyChanged("Name");
             }
         }
+        private string fullName;
+        public string FullName
+        {
+            get
+            {
+                return fullName;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("FullName can't be null.");
+                fullName = value;
+                OnPropertyChanged("FullName");
+            }
+        }
         private List<IVisualGeometry> visualGeometries = new List<IVisualGeometry>();
         public IReadOnlyList<IVisualGeometry> VisualGeometries { get => visualGeometries.AsReadOnly(); }
         private int width;
