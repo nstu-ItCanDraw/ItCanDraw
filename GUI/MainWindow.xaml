@@ -82,10 +82,10 @@
             <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}">
 
             </TabControl>
-            <Grid Grid.Column="1" Margin="0,29,0,0">
+            <Grid Grid.Column="1" Margin="0,29,0,0" MinWidth="100" MinHeight="100">
                 <local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>
             </Grid>
-            <Border Grid.Column="3" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <Border MinWidth="100" Grid.Column="3" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
@@ -109,8 +109,85 @@
                         <TextBlock Grid.Row="0" FontSize="16" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Object properties</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
                             <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
-                                <StackPanel Orientation="Vertical">
-
+                                <StackPanel Orientation="Vertical" TextElement.Foreground="{StaticResource ForegroundBrush}">
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Margin="5,0,5,0">Name:</TextBlock>
+                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}"></TextBox>
+                                    </Grid>
+                                    <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Background="{StaticResource BorderBrush}" Padding="5,0,5,0">Transform</TextBlock>
+                                            <StackPanel Grid.Row="1" Grid.IsSharedSizeScope="True">
+                                                <Grid Margin="0,3,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Position:</TextBlock>
+                                                    <Grid Grid.Column="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Margin="5,0,2,0">X:</TextBlock>
+                                                        <TextBox Grid.Column="1"/>
+                                                        <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
+                                                        <TextBox Grid.Column="3"/>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Margin="0,0,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Scale:</TextBlock>
+                                                    <Grid Grid.Column="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Margin="5,0,2,0">X:</TextBlock>
+                                                        <TextBox Grid.Column="1"/>
+                                                        <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
+                                                        <TextBox Grid.Column="3"/>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Margin="0,0,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Rotation:</TextBlock>
+                                                    <TextBox Grid.Column="1"/>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                    <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                        <StackPanel>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Background="{StaticResource BorderBrush}" Padding="5,0,5,0">Properties</TextBlock>
+                                                <StackPanel Grid.Row="1" Grid.IsSharedSizeScope="True">
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </ScrollViewer>
                         </Border>

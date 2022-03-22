@@ -566,4 +566,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+    </Style>
 </ResourceDictionary>
