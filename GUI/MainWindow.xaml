@@ -64,7 +64,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <GridSplitter Grid.Column="2" Width="5" HorizontalAlignment="Center"/>
+            <GridSplitter Grid.Column="2" Width="3" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{StaticResource BorderBrush}"/>
             <StackPanel Orientation="Vertical" Margin="3">
                 <Image Source="Pictures\i_выделения_НеАктивная.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\ii_квадрат.png" Margin="0,0,0,3"/>
@@ -74,8 +74,44 @@
                 <Image Source="Pictures\i_удаление_НеАктивная.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\i_зум_НеАктивная.png" Margin="0,0,0,3"/>
             </StackPanel>
-            <local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>
-            <Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Background ="#2C2C2C" >
+            <!--<local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>-->
+            <Border Grid.Column="3" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <GridSplitter Height="3" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="#505050" Grid.Row="1"/>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Свойства объекта</TextBlock>
+                        <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+                                <StackPanel Orientation="Vertical">
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Текущий документ</TextBlock>
+                        <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                            <TreeView Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                            </TreeView>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+            <!--<Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Background ="#2C2C2C" >
                 <TextBlock HorizontalAlignment="Center" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Foreground="#FFFCAEF6"><Run/><LineBreak/><Run Text="     Свойства"/><LineBreak/></TextBlock>
                 <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
                 <TextBlock Height="18" TextWrapping="Wrap" Width="119" Foreground="#FFFCAEF6" FontSize="14"><Run Text="  "/><Run Text=" "/><Run Text=" Имя "/><Run Text="объекта"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
@@ -111,7 +147,7 @@
                 <TextBlock Height="17" TextWrapping="Wrap" Width="225" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="  "/><Run Text="О"/><Run Language="ru-ru" Text="бозреватель"/><LineBreak/><Run Language="ru-ru"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
                 <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
                 <TreeView Height="294" Width="284" Background="#FF2F2F2F" BorderBrush="#FFFCAEF6" Foreground="Black"/>
-            </Menu>
+            </Menu>-->
         </Grid>
     </Grid>
 </Window>

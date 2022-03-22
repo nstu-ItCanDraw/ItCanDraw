@@ -5,10 +5,12 @@
     <Color x:Key="HoverBackgroundColor">#909090</Color>
     <Color x:Key="HoverForegroundColor">#000000</Color>
     <Color x:Key="SubmenuArrowColor">#E0E0E0</Color>
+    <Color x:Key="BorderColor">#505050</Color>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource MainBackgroundColor}"/>
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource MainForegroundColor}"/>
     <SolidColorBrush x:Key="HoverBackgroundBrush" Color="{StaticResource HoverBackgroundColor}"/>
     <SolidColorBrush x:Key="HoverForegroundBrush" Color="{StaticResource HoverForegroundColor}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
 
     <Style x:Key="GrayStretch">
         <Setter Property="Control.Background" Value="#2C2C2C"/>
