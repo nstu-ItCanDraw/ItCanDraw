@@ -154,6 +154,10 @@ namespace GUI
         {
             saveDocumentFileDialog.FileName = CurrentDocument.Name.Trim('*');
             saveDocumentFileDialog.ShowDialog();
+            if(!saveDocumentFileDialog.ShowDialog().Value)
+            {
+                return;
+            }
 
             try
             {
