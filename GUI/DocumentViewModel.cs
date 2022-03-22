@@ -158,6 +158,7 @@ namespace GUI
             try
             {
                 SaveFile.ToJSON(saveDocumentFileDialog.FileName, CurrentDocument);
+                CurrentDocument.IsModified = false;
             }
             catch (Exception e)
             {

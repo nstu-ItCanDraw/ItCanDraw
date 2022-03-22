@@ -15,7 +15,7 @@ namespace Logic
         {
             get
             {
-                return isModified ? name : name + "*";
+                return isModified ? name + "*" : name;
             }
             set
             {
