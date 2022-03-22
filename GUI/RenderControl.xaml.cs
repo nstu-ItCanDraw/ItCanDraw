@@ -37,6 +37,7 @@ namespace GUI
         private int dummyVAO = 0;
         private bool initialized = false;
         private readonly double ZoomDelta = 1.1;
+        public Logic.Color SpaceBackgroundColor { get; set; } = new Logic.Color(60, 60, 60);
         internal DocumentViewModel ViewModel
         {
             get
@@ -76,17 +77,17 @@ namespace GUI
             GL.LineWidth(2);
 
             ViewModel = new DocumentViewModel();
-            ViewModel.CreateDocument();
+            /*ViewModel.CreateDocument();
             ViewModel.CreateDocument();
 
             IGeometry triangle = FigureFactory.CreateTriangle(100, 100, LinearAlgebra.Vector2.Zero);
             triangle.Transform.Position = new LinearAlgebra.Vector2(20, 40);
             triangle.Transform.RotationDegrees = 20;
-            ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(triangle));
+            ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(triangle));*/
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
-            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument.Height * 1.2);
+            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument != null ? ViewModel.CurrentDocument.Height * 1.2 : OpenTKControl.ActualHeight);
             FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/documentQuad.vsh", "shaders/curveToTexture.fsh");
@@ -109,10 +110,11 @@ namespace GUI
         private void render(TimeSpan deltaTime)
         {
             FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
-            GL.ClearColor(Color4.Gray);
+            GL.ClearColor(SpaceBackgroundColor.r / 255f, SpaceBackgroundColor.g / 255f, SpaceBackgroundColor.b / 255f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            renderDocumentViewModel(ViewModel);
+            if (ViewModel.CurrentDocument != null)
+                renderDocumentViewModel(ViewModel);
         }
         private void renderDocumentViewModel(DocumentViewModel document)
         {

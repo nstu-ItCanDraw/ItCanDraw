@@ -170,6 +170,7 @@ namespace GUI
 
                 openedDocuments.Add(document);
                 CurrentDocument = document;
+                OnPropertyChanged("OpenedDocuments");
             }
             catch(Exception e)
             {
@@ -180,13 +181,14 @@ namespace GUI
         {
             if(CurrentDocument.IsModified)
             {
-                if (MessageBox.Show("Сохранить текущий документ?", "Save", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Save current document?", "Save", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     SaveAsCurrentDocument();
                 }
             }
 
             openedDocuments.Remove(CurrentDocument);
+            OnPropertyChanged("OpenedDocuments");
             CurrentDocument = openedDocuments.FirstOrDefault();
         }
         public void SaveAsCurrentDocument()
@@ -232,6 +234,7 @@ namespace GUI
             {
                 IDocument document = DocumentFactory.CreateDocument("Untitled", 500, 500);
                 openedDocuments.Add(document);
+                OnPropertyChanged("OpenedDocuments");
                 CurrentDocument = document;
             }
             catch(Exception e)
