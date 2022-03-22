@@ -211,7 +211,7 @@
                                       DataContext="{Binding ElementName=renderControl, Path=ViewModel.CurrentDocumentVisualTree}" ItemsSource="{Binding Roots}">
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate DataType="{x:Type local:VisualGeometryTreeNode}" ItemsSource="{Binding Children}">
-                                        <TreeViewItem Header="{Binding VisualGeometry.Name}"/>
+                                        <TextBlock Text="{Binding VisualGeometry.Name}"/>
                                     </HierarchicalDataTemplate>
                                 </TreeView.ItemTemplate>
                             </TreeView>
