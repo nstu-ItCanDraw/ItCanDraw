@@ -38,6 +38,8 @@ namespace GUI
                 OnPropertyChanged("CurrentDocument");
             }
         }
+        private VisualGeometryTree currentDocumentVisualTree = new VisualGeometryTree();
+        public VisualGeometryTree CurrentDocumentVisualTree => currentDocumentVisualTree;
         private List<IVisualGeometry> selectedVisualGeometries = new List<IVisualGeometry>();
         public IReadOnlyList<IVisualGeometry> SelectedVisualGeometries { get => selectedVisualGeometries.AsReadOnly(); }
         private List<IDocument> openedDocuments = new List<IDocument>();
@@ -53,6 +55,11 @@ namespace GUI
         {
             get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
         }
+        private RelayCommand selectAllVisualGeometriesCommand;
+        public RelayCommand SelectAllVisualGeometriesCommand
+        {
+            get => selectAllVisualGeometriesCommand ?? (selectAllVisualGeometriesCommand = new RelayCommand(obj => SelectAllVisualGeometries()));
+        }
         private RelayCommand deselectVisualGeometryCommand;
         public RelayCommand DeselectVisualGeometryCommand
         {
@@ -62,6 +69,11 @@ namespace GUI
         public RelayCommand ClearSelectedVisualGeometryCommand
         {
             get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries()));
+        }
+        private RelayCommand inverseSelectionCommand;
+        public RelayCommand InverseSelectionCommand
+        {
+            get => inverseSelectionCommand ?? (inverseSelectionCommand = new RelayCommand(obj => InverseSelection()));
         }
         private RelayCommand openDocumentCommand;
         public RelayCommand OpenDocumentCommand
@@ -112,6 +124,11 @@ namespace GUI
             if (!selectedVisualGeometries.Contains(visualGeometry))
                 selectedVisualGeometries.Add(visualGeometry);
         }
+        public void SelectAllVisualGeometries()
+        {
+            checkDocumentNotNull();
+            selectedVisualGeometries.AddRange(currentDocument.VisualGeometries.Except(selectedVisualGeometries));
+        }
         public void DeselectVisualGeometry(IVisualGeometry visualGeometry)
         {
             checkDocumentNotNull();
@@ -131,6 +148,14 @@ namespace GUI
             foreach (IVisualGeometry visualGeometry in selectedVisualGeometries)
                 currentDocument.RemoveVisualGeometry(visualGeometry);
             selectedVisualGeometries.Clear();
+        }
+        public void InverseSelection()
+        {
+            checkDocumentNotNull();
+
+            int selectedCount = selectedVisualGeometries.Count;
+            selectedVisualGeometries.AddRange(currentDocument.VisualGeometries.Except(selectedVisualGeometries));
+            selectedVisualGeometries.RemoveRange(0, selectedCount);
         }
         public void OpenDocument()
         {
@@ -221,6 +246,9 @@ namespace GUI
         }
         private void currentDocument_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(IDocument.VisualGeometries))
+                currentDocumentVisualTree.RebuildFromDocument(CurrentDocument);
+
             OnPropertyChanged("CurrentDocument");
         }
     }

@@ -98,9 +98,10 @@ namespace Logic
         {
             OnPropertyChanged("Geometry");
         }
-        public VisualGeometry(IGeometry geometry)
+        public VisualGeometry(string name, IGeometry geometry)
         {
             this.geometry = geometry;
+            this.name = name;
             BackgroundBrush = new SolidColorBrush(Color.Black);
             BorderBrush = new SolidColorBrush(Color.Black);
             geometry.PropertyChanged += geometry_OnPropertyChanged;

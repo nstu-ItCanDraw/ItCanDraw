@@ -15,12 +15,12 @@
             <StackPanel Style="{StaticResource ResourceKey=GrayStretch}" Orientation="Horizontal">
                 <Image Style="{StaticResource ResourceKey=GrayStretch}" Source="Pictures\icon_pinc_2.png" Margin="2"/>
                 <Menu Style="{StaticResource ResourceKey=GrayStretch}" VerticalAlignment="Center">
-                    <MenuItem Header="Файл" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
-                        <MenuItem Header="Новый Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
-                        <MenuItem Header="Открыть Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
-                        <MenuItem Header="Сохранить Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
-                        <MenuItem Header="Сохранить как... Shift+Ctr+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
-                        <MenuItem Header="Экспорт в... Ctrl+E">
+                    <MenuItem Header="File" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
+                        <MenuItem Header="New" InputGestureText="Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
+                        <MenuItem Header="Open" InputGestureText="Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
+                        <MenuItem Header="Save" InputGestureText="Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
+                        <MenuItem Header="Save As..." InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
+                        <MenuItem Header="Export...">
                             <MenuItem Header="SVG"/>
                             <MenuItem Header="HTML"/>
                             <MenuItem Header="PDF"/>
@@ -28,31 +28,28 @@
                             <MenuItem Header="JPG"/>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Редактирование">
-                        <MenuItem Header="Отменить Ctrl+Z"/>
-                        <MenuItem Header="Повторить Shift+Ctrl+Z"/>
-                        <MenuItem Header="Вырезать Ctr+X"/>
-                        <MenuItem Header="Копировать Ctr+C"/>
-                        <MenuItem Header="Вставить Ctr+V"/>
-                        <MenuItem Header="Настройки"/>
+                    <MenuItem Header="Edit">
+                        <!--<MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>-->
+                        <!--<MenuItem Header="Redo" InputGestureText="Ctrl+Y"/>-->
+                        <MenuItem Header="Cut" InputGestureText="Ctrl+X"/>
+                        <MenuItem Header="Copy" InputGestureText="Ctrl+C"/>
+                        <MenuItem Header="Paste" InputGestureText="Ctrl+V"/>
+                        <!--<MenuItem Header="Settings"/>-->
                     </MenuItem>
-                    <MenuItem Header="Объект">
-                        <MenuItem Header="Перемещение..."/>
-                        <MenuItem Header="Поворот..."/>
-                        <MenuItem Header="Зеркальное отражение..."/>
-                        <MenuItem Header="Наклон..."/>
+                    <MenuItem Header="Object">
+                        <MenuItem Header="Move..."/>
+                        <MenuItem Header="Rotate..."/>
+                        <MenuItem Header="Reflect..."/>
+                        <!--<MenuItem Header="Tilt..."/>-->
                     </MenuItem>
-                    <MenuItem Header="Выделение">
-                        <MenuItem Header="Все"/>
-                        <MenuItem Header="Отменить выделение"/>
-                        <MenuItem Header="Выделить снова"/>
-                        <MenuItem Header="Инверсия"/>
+                    <MenuItem Header="Selection" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
+                        <MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>
+                        <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometryCommand}"/>
+                        <!--<MenuItem Header="Reselect"/>-->
+                        <MenuItem Header="Invert" Command="{Binding InverseSelectionCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="Справка">
-                        <MenuItem Header="Справка программы ItCanDraw F1" Click="MenuItem_Click_FAQ"/>
-                        <MenuItem Header="Руководство по ItCanDraw" Click="MenuItem_Click_FAQ2"/>
-                        <MenuItem Header="Информация о разработчиках" Click="MenuItem_Click_Autors"/>
-                        <MenuItem Header="Выйти..."/>
+                    <MenuItem Header="About">
+                        <MenuItem Header="Developers" Click="MenuItem_Click_Autors"/>
                     </MenuItem>
                 </Menu>
             </StackPanel>
@@ -64,8 +61,16 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <GridSplitter Grid.Column="2" Width="3" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{StaticResource BorderBrush}"/>
-            <StackPanel Orientation="Vertical" Margin="3">
+            <GridSplitter Grid.Column="2" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{StaticResource BackgroundDarkBrush}">
+                <GridSplitter.Template>
+                    <ControlTemplate>
+                        <Grid Background="{TemplateBinding Background}">
+                            <Rectangle Margin="2" Fill="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+            <StackPanel Orientation="Vertical" Margin="3" Background="{StaticResource BackgroundDarkBrush}">
                 <Image Source="Pictures\i_выделения_НеАктивная.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\ii_квадрат.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\ii_треугольник.png" Margin="0,0,0,3"/>
@@ -82,13 +87,21 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="2*"/>
                     </Grid.RowDefinitions>
-                    <GridSplitter Height="3" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="#505050" Grid.Row="1"/>
+                    <GridSplitter Height="7" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{StaticResource BackgroundDarkBrush}" Grid.Row="1">
+                        <GridSplitter.Template>
+                            <ControlTemplate>
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Rectangle Margin="2" Fill="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </GridSplitter.Template>
+                    </GridSplitter>
                     <Grid Grid.Row="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" FontSize="16" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Свойства объекта</TextBlock>
+                        <TextBlock Grid.Row="0" FontSize="16" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Object properties</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
                             <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
                                 <StackPanel Orientation="Vertical">
@@ -102,10 +115,15 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock FontSize="16" Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Текущий документ</TextBlock>
+                        <TextBlock FontSize="16" Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Document explorer</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
-                            <TreeView FontSize="16" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}">
-
+                            <TreeView FontSize="16"  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}" 
+                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel.CurrentDocumentVisualTree}" ItemsSource="{Binding Roots}">
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type local:VisualGeometryTreeNode}" ItemsSource="{Binding Children}">
+                                        <TextBlock Text="{Binding VisualGeometry.Name}"/>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
                             </TreeView>
                         </Border>
                     </Grid>

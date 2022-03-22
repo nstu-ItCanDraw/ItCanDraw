@@ -31,14 +31,6 @@ namespace GUI
         {
 
         }
-        private void MenuItem_Click_FAQ(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(File.ReadAllText("Texts/faq1.txt"));
-        }
-        private void MenuItem_Click_FAQ2(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(File.ReadAllText("Texts/faq2.txt"));
-        }
         private void MenuItem_Click_Autors(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(File.ReadAllText("Texts/autors.txt"));
