@@ -79,7 +79,12 @@
                 <Image Source="Pictures\i_удаление_НеАктивная.png" Margin="0,0,0,3"/>
                 <Image Source="Pictures\i_зум_НеАктивная.png" Margin="0,0,0,3"/>
             </StackPanel>
-            <!--<local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>-->
+            <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}">
+
+            </TabControl>
+            <Grid Grid.Column="1" Margin="0,29,0,0">
+                <local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>
+            </Grid>
             <Border Grid.Column="3" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
