@@ -457,7 +457,7 @@ namespace GUI
                     if (nothingHit)
                     {
                         ViewModel.ClearSelectedVisualGeometries();
-                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateExclusionOperator()));
+                        /*ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateExclusionOperator()));
                         ViewModel.CurrentDocument.VisualGeometries[0].BackgroundBrush = new Logic.SolidColorBrush(Logic.Color.White);
                         ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, new LinearAlgebra.Vector2(0, 0))));
                         ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, new LinearAlgebra.Vector2(0, -50))));
@@ -481,7 +481,7 @@ namespace GUI
                         ((IOperator)ViewModel.CurrentDocument.VisualGeometries[6].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[8].Geometry);
 
                         ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateRectangle(200, 200, new LinearAlgebra.Vector2(0, -10))));
-                        ViewModel.CurrentDocument.VisualGeometries[9].BackgroundBrush = new Logic.SolidColorBrush(206, 50, 50);
+                        ViewModel.CurrentDocument.VisualGeometries[9].BackgroundBrush = new Logic.SolidColorBrush(206, 50, 50);*/
                     }
                     break;
             }

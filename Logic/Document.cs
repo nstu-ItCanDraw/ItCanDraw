@@ -25,19 +25,19 @@ namespace Logic
                 OnPropertyChanged("Name");
             }
         }
-        private string fullName;
-        public string FullName
+        private string path;
+        public string Path
         {
             get
             {
-                return fullName;
+                return path;
             }
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("FullName can't be null.");
-                fullName = value;
-                OnPropertyChanged("FullName");
+                    throw new ArgumentNullException("Path can't be null.");
+                path = value;
+                OnPropertyChanged("Path");
             }
         }
         private List<IVisualGeometry> visualGeometries = new List<IVisualGeometry>();

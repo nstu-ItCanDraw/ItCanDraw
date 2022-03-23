@@ -12,6 +12,7 @@ using Logic;
 using Geometry;
 using IO;
 using LinearAlgebra;
+using System.IO;
 
 namespace GUI
 {
@@ -22,9 +23,9 @@ namespace GUI
         private IDocument currentDocument = null;
         public IDocument CurrentDocument
         {
-            get 
-            { 
-                return currentDocument; 
+            get
+            {
+                return currentDocument;
             }
             set
             {
@@ -90,17 +91,17 @@ namespace GUI
         private RelayCommand closeCurrentDocumentCommand;
         public RelayCommand CloseCurrentDocumentCommand
         {
-            get => closeCurrentDocumentCommand ?? (closeCurrentDocumentCommand = new RelayCommand(obj => CloseCurrentDocument()));
+            get => closeCurrentDocumentCommand ?? (closeCurrentDocumentCommand = new RelayCommand(obj => CloseCurrentDocument(), obj => currentDocument != null));
         }
         private RelayCommand saveAsCurrentDocumentCommand;
         public RelayCommand SaveAsCurrentDocumentCommand
         {
-            get => saveAsCurrentDocumentCommand ?? (saveAsCurrentDocumentCommand = new RelayCommand(obj => SaveAsCurrentDocument()));
+            get => saveAsCurrentDocumentCommand ?? (saveAsCurrentDocumentCommand = new RelayCommand(obj => SaveAsCurrentDocument(), obj => currentDocument != null));
         }
         private RelayCommand saveCurrentDocumentCommand;
         public RelayCommand SaveCurrentDocumentCommand
         {
-            get => saveCurrentDocumentCommand ?? (saveCurrentDocumentCommand = new RelayCommand(obj => SaveCurrentDocument()));
+            get => saveCurrentDocumentCommand ?? (saveCurrentDocumentCommand = new RelayCommand(obj => SaveCurrentDocument(), obj => currentDocument != null));
         }
         private RelayCommand createDocumentCommand;
         public RelayCommand CreateDocumentCommand
@@ -197,9 +198,15 @@ namespace GUI
 
             try
             {
-                string filename = openDocumentFileDialog.FileName;
-                IDocument document = OpenFile.FromJSON(filename);
-                document.FullName = filename;
+                string filepath = openDocumentFileDialog.FileName;
+                IDocument document = OpenFile.FromJSON(filepath);
+
+                foreach (IDocument doc in openedDocuments)
+                    if (doc.Name == document.Name && doc.Path == document.Path)
+                    {
+                        CurrentDocument = doc;
+                        return;
+                    }
 
                 openedDocuments.Add(document);
                 CurrentDocument = document;
@@ -213,12 +220,8 @@ namespace GUI
         public void CloseCurrentDocument()
         {
             if(CurrentDocument.IsModified)
-            {
                 if (MessageBox.Show("Save current document?", "Save", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    SaveAsCurrentDocument();
-                }
-            }
+                    SaveCurrentDocument();
 
             openedDocuments.Remove(CurrentDocument);
             OnPropertyChanged("OpenedDocuments");
@@ -226,7 +229,6 @@ namespace GUI
         }
         public void SaveAsCurrentDocument()
         {
-            saveDocumentFileDialog.FileName = CurrentDocument.Name.Trim('*');
             if(!saveDocumentFileDialog.ShowDialog().Value)
             {
                 return;
@@ -234,9 +236,10 @@ namespace GUI
 
             try
             {
-                SaveFile.ToJSON(saveDocumentFileDialog.FileName, CurrentDocument);
-                CurrentDocument.FullName = saveDocumentFileDialog.FileName;
+                CurrentDocument.Path = Path.GetDirectoryName(saveDocumentFileDialog.FileName);
+                currentDocument.Name = Path.GetFileNameWithoutExtension(saveDocumentFileDialog.FileName);
                 CurrentDocument.IsModified = false;
+                SaveFile.ToJSON(saveDocumentFileDialog.FileName, CurrentDocument);
             }
             catch (Exception e)
             {
@@ -245,7 +248,7 @@ namespace GUI
         }
         public void SaveCurrentDocument()
         {
-            if(CurrentDocument.FullName == null)
+            if(CurrentDocument.Path == null)
             {
                 SaveAsCurrentDocument();
                 return;
@@ -253,8 +256,8 @@ namespace GUI
 
             try
             {
-                SaveFile.ToJSON(CurrentDocument.FullName, CurrentDocument);
                 CurrentDocument.IsModified = false;
+                SaveFile.ToJSON(CurrentDocument.Path + "\\" + currentDocument.Name + ".json", CurrentDocument);
             }
             catch (Exception e)
             {

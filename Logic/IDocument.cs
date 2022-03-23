@@ -16,7 +16,7 @@ namespace Logic
         /// Name of this document
         /// </summary>
         public string Name { get; set; }
-        public string FullName { get; set; }
+        public string Path { get; set; }
         /// <summary>
         /// List view collection of all geometries in document
         /// </summary>

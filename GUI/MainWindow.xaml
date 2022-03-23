@@ -37,6 +37,7 @@
                             <MenuItem Header="PNG"/>
                             <MenuItem Header="JPG"/>
                         </MenuItem>
+                        <MenuItem Header="Close" Command="{Binding CloseCurrentDocumentCommand}"/>
                     </MenuItem>
                     <MenuItem Header="Edit">
                         <!--<MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>-->
