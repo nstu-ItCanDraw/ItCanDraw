@@ -288,6 +288,11 @@ namespace GUI
         }
         private void UserControl_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            e.Handled = true;
+
+            if (ViewModel.CurrentDocument == null)
+                return;
+
             Point position = e.GetPosition(this);
             LinearAlgebra.Vector2 point = camera.ScreenToWorld(new LinearAlgebra.Vector2(position.X, position.Y));
             double delta = e.Delta > 0 ? this.ZoomDelta : 1 / this.ZoomDelta;
@@ -311,6 +316,9 @@ namespace GUI
         {
             e.Handled = true;
 
+            if (ViewModel.CurrentDocument == null)
+                return;
+
             if (isMouseWheelDown)
             {
                 Point mousePosPoint = e.GetPosition(this);
@@ -323,6 +331,9 @@ namespace GUI
             if (!IsFocused)
                 Focus();
 
+            if (ViewModel.CurrentDocument == null)
+                return;
+
             if (e.ChangedButton == MouseButton.Middle)
             {
                 isMouseWheelDown = true;
@@ -333,6 +344,9 @@ namespace GUI
         private void UserControl_MouseUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
+
+            if (ViewModel.CurrentDocument == null)
+                return;
 
             switch (e.ChangedButton)
             {
@@ -361,13 +375,19 @@ namespace GUI
                             nothingHit = false;
                         }
                     if (nothingHit)
+                    {
                         ViewModel.ClearSelectedVisualGeometries();
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, mousePos)));
+                    }
                     break;
             }
         }
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
+
+            if (ViewModel.CurrentDocument == null)
+                return;
 
             bool ctrlPressed = e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control);
             bool ctrlShiftPresses = ctrlPressed && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Shift);
@@ -412,6 +432,9 @@ namespace GUI
         public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
+
+            if (ViewModel.CurrentDocument == null)
+                return;
         }
     }
 }
