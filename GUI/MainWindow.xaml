@@ -255,7 +255,7 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Margin="5,0,5,0">Name:</TextBlock>
-                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}">
+                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}" KeyDown="TextBox_KeyDown">
                                             <TextBox.Text>
                                                 <Binding Path="Name" Mode="TwoWay">
                                                     <Binding.ValidationRules>
@@ -287,7 +287,7 @@
                                                             <ColumnDefinition Width="1*"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Margin="5,0,2,0">X:</TextBlock>
-                                                        <TextBox Grid.Column="1">
+                                                        <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
                                                             <TextBox.Text>
                                                                 <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
                                                                     <Binding.ValidationRules>
@@ -297,7 +297,7 @@
                                                             </TextBox.Text>
                                                         </TextBox>
                                                         <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
-                                                        <TextBox Grid.Column="3">
+                                                        <TextBox Grid.Column="3" KeyDown="TextBox_KeyDown">
                                                             <TextBox.Text>
                                                                 <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
                                                                     <Binding.ValidationRules>
@@ -322,7 +322,7 @@
                                                             <ColumnDefinition Width="1*"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Margin="5,0,2,0">X:</TextBlock>
-                                                        <TextBox Grid.Column="1">
+                                                        <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
                                                             <TextBox.Text>
                                                                 <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
                                                                     <Binding.ValidationRules>
@@ -332,7 +332,7 @@
                                                             </TextBox.Text>
                                                         </TextBox>
                                                         <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
-                                                        <TextBox Grid.Column="3">
+                                                        <TextBox Grid.Column="3" KeyDown="TextBox_KeyDown">
                                                             <TextBox.Text>
                                                                 <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
                                                                     <Binding.ValidationRules>
@@ -349,7 +349,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Margin="5,0,5,0">Rotation:</TextBlock>
-                                                    <TextBox Grid.Column="1">
+                                                    <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
                                                         <TextBox.Text>
                                                             <Binding Path="LocalRotationDegrees" Mode="TwoWay">
                                                                 <Binding.ValidationRules>
