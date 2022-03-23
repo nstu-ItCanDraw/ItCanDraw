@@ -32,11 +32,15 @@ namespace GUI
                 if (currentDocument != null)
                 {
                     ClearSelectedVisualGeometries();
+                    currentDocumentVisualTree.Clear();
                     currentDocument.PropertyChanged -= currentDocument_OnPropertyChanged;
                 }
                 currentDocument = value;
                 if (currentDocument != null)
+                {
+                    currentDocumentVisualTree.RebuildFromDocument(currentDocument);
                     currentDocument.PropertyChanged += currentDocument_OnPropertyChanged;
+                }
                 OnPropertyChanged("CurrentDocument");
             }
         }

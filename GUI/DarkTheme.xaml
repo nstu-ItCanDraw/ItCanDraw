@@ -348,6 +348,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="IsExpanded" Value="True"/>
     </Style>
     
     

@@ -11,6 +11,7 @@
     <Window.Resources>
         <local:Vector2Converter x:Key="vec2conv"/>
         <local:DocumentStateConverter x:Key="docstateconv"/>
+        <local:VisualGeometryConverter x:Key="vgconv"/>
         <local:VisibilityConverter x:Key="visconv"/>
         <local:BrushConverter x:Key="brushconv"/>
         <local:ColorConverter x:Key="colorconv"/>
@@ -403,8 +404,26 @@
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="16" Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Document explorer</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
-                            <TreeView FontSize="16"  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}" 
-                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel.CurrentDocumentVisualTree}" ItemsSource="{Binding Roots}">
+                            <TreeView x:Name="currentDocumentTreeView" FontSize="16"  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}" 
+                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding CurrentDocumentVisualTree.Roots}">
+                                <i:Interaction.Behaviors>
+                                    <local:BindingSelectedItemBehavior>
+                                        <local:BindingSelectedItemBehavior.SelectedItem>
+                                            <MultiBinding Converter="{StaticResource vgconv}" Mode="TwoWay">
+                                                <Binding Path="CurrentDocumentVisualTree"/>
+                                                <Binding Path="SelectedVisualGeometry"/>
+                                                <Binding ElementName="currentDocumentTreeView"/>
+                                            </MultiBinding>
+                                        </local:BindingSelectedItemBehavior.SelectedItem>
+                                    </local:BindingSelectedItemBehavior>
+                                </i:Interaction.Behaviors>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectedItemChanged">
+                                        <i:InvokeCommandAction Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
+                                        <i:InvokeCommandAction Command="{Binding SelectVisualGeometryCommand}"
+                                                               CommandParameter="{Binding ElementName=currentDocumentTreeView, Path=SelectedItem.VisualGeometry}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate DataType="{x:Type local:VisualGeometryTreeNode}" ItemsSource="{Binding Children}">
                                         <TextBlock Text="{Binding VisualGeometry.Name}"/>

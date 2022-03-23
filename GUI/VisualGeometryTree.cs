@@ -19,15 +19,17 @@ namespace GUI
 
     internal class VisualGeometryTree : INotifyPropertyChanged
     {
+        private List<VisualGeometryTreeNode> nodes = new List<VisualGeometryTreeNode>();
         private List<VisualGeometryTreeNode> roots = new List<VisualGeometryTreeNode>();
         public IReadOnlyList<VisualGeometryTreeNode> Roots => roots.AsReadOnly();
 
         public void RebuildFromDocument(IDocument document)
         {
+            this.nodes.Clear();
             roots.Clear();
 
             List<VisualGeometryTreeNode> nodes = document.VisualGeometries.Select(visualGeometry => new VisualGeometryTreeNode() { VisualGeometry = visualGeometry }).ToList();
-
+            this.nodes.AddRange(nodes);
             roots.AddRange(nodes.Where(node => node.VisualGeometry.Geometry.Transform.Parent == null));
             nodes = nodes.Except(Roots).ToList();
 
@@ -49,6 +51,19 @@ namespace GUI
                     }
                 }
             }
+
+            OnPropertyChanged("Roots");
+        }
+
+        public VisualGeometryTreeNode FindVisualGeometryNode(IVisualGeometry visualGeometry)
+        {
+            return nodes.FirstOrDefault(node => node.VisualGeometry == visualGeometry);
+        }
+
+        public void Clear()
+        {
+            nodes.Clear();
+            roots.Clear();
 
             OnPropertyChanged("Roots");
         }
