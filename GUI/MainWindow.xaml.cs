@@ -46,7 +46,9 @@ namespace GUI
             if (!_isDragging && e.LeftButton == MouseButtonState.Pressed)
             {
                 _isDragging = true;
-                DragDrop.DoDragDrop(currentDocumentTreeView, currentDocumentTreeView.SelectedValue, DragDropEffects.Move);
+
+                if(currentDocumentTreeView.SelectedValue != null)
+                    DragDrop.DoDragDrop(currentDocumentTreeView, currentDocumentTreeView.SelectedValue, DragDropEffects.Move);
             }
         }
 
@@ -99,8 +101,6 @@ namespace GUI
                 }
 
                 (target.VisualGeometry.Geometry as IOperator).AddOperand(sourceGeometry);
-
-                // Code to move the item in the model is placed here...
             }
         }
 
