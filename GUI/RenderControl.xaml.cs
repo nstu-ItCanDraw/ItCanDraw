@@ -91,7 +91,9 @@ namespace GUI
             FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/documentQuad.vsh", "shaders/curveToTexture.fsh");
-            AssetsManager.LoadPipeline("TextureUnion", "shaders/documentQuad.vsh", "shaders/textureUnion.fsh");
+            AssetsManager.LoadPipeline("TexturesUnion", "shaders/documentQuad.vsh", "shaders/texturesUnion.fsh");
+            AssetsManager.LoadPipeline("TexturesIntersection", "shaders/documentQuad.vsh", "shaders/texturesIntersection.fsh");
+            AssetsManager.LoadPipeline("TexturesExclusion", "shaders/documentQuad.vsh", "shaders/texturesExclusion.fsh");
             AssetsManager.LoadPipeline("Coloring", "shaders/documentQuad.vsh", "shaders/floatTextureColoring.fsh");
             AssetsManager.LoadPipeline("DocumentBackground", "shaders/documentQuad.vsh", "shaders/flatColoring.fsh");
             AssetsManager.LoadPipeline("OBBquad", "shaders/OBBquad.vsh", "shaders/flatColoring.fsh");
@@ -126,21 +128,30 @@ namespace GUI
         }
         private void renderVisualGeometries(IReadOnlyList<IVisualGeometry> visualGeometries)
         {
-            foreach (IVisualGeometry vg in visualGeometries)
+            for (int i = visualGeometries.Count - 1; i >= 0; i--)
             {
-                if (vg.Geometry is IFigure)
-                {
-                    GL.Disable(EnableCap.Blend);
+                if (visualGeometries[i].Geometry.Transform.Parent != null)
+                    continue;
 
-                    FrameBuffer fbo = FBP.Get();
-                    renderFigureTo(fbo, vg.Geometry as IFigure);
+                FrameBuffer fbo = FBP.Get();
+                renderGeometryTo(fbo, visualGeometries[i].Geometry);
 
-                    GL.Enable(EnableCap.Blend);
-                    renderFloatTextureWithBrushTo(null, fbo.ColorTexture, vg.BackgroundBrush);
-                    FBP.Release(fbo);
-                }
+                GL.Enable(EnableCap.Blend);
+                renderFloatTextureWithBrushTo(null, fbo.ColorTexture, visualGeometries[i].BackgroundBrush);
+                FBP.Release(fbo);
+            }
+        }
+        private void renderGeometryTo(FrameBuffer fbo, IGeometry geometry)
+        {
+            GL.Disable(EnableCap.Blend);
+            if (geometry is IFigure)
+                renderFigureTo(fbo, geometry as IFigure);
+            else
+            {
+                if (geometry is IOperator)
+                    renderOperatorTo(fbo, geometry as IOperator);
                 else
-                    throw new NotImplementedException("Non-figures are not implemented yet.");
+                    throw new NotImplementedException(geometry.GetType().Name + " render is not implemented yet.");
             }
         }
         private void renderOBBs(IReadOnlyList<IVisualGeometry> visualGeometries)
@@ -233,12 +244,12 @@ namespace GUI
                 if (stack.Count > 2)
                     result = FBP.Get();
                 else
-                    result = null;
+                    result = fbo;
 
                 FrameBuffer source1 = stack.Pop();
                 FrameBuffer source2 = stack.Pop();
 
-                unionTexturesTo(result, source1.ColorTexture, source2.ColorTexture);
+                ApplyPipelineToTexturesTexturesTo(AssetsManager.Pipelines["TexturesUnion"], result, source1.ColorTexture, source2.ColorTexture);
 
                 FBP.Release(source1);
                 FBP.Release(source2);
@@ -246,17 +257,73 @@ namespace GUI
                 stack.Push(result);
             }
         }
-        private void unionTexturesTo(FrameBuffer fbo, Texture2D tex1, Texture2D tex2)
+        private void renderOperatorTo(FrameBuffer fbo, IOperator op)
+        {
+            Pipeline operatorPipeline;
+            switch (op.Type)
+            {
+                case OperatorType.Union:
+                    operatorPipeline = AssetsManager.Pipelines["TexturesUnion"];
+                    break;
+                case OperatorType.Intersection:
+                    operatorPipeline = AssetsManager.Pipelines["TexturesIntersection"];
+                    break;
+                case OperatorType.Exclusion:
+                    operatorPipeline = AssetsManager.Pipelines["TexturesExclusion"];
+                    break;
+                default:
+                    throw new NotImplementedException(op.Type.ToString() + " render is not implemented yet.");
+            }
+
+            int operandsCount = op.Operands.Count;
+
+            if (operandsCount == 1)
+            {
+                renderGeometryTo(fbo, op.Operands[0]);
+                return;
+            }
+
+            Stack<FrameBuffer> stack = new Stack<FrameBuffer>();
+
+            for (int i = operandsCount - 1; i >= 0; i--)
+            {
+                FrameBuffer frameBuffer = FBP.Get();
+
+                renderGeometryTo(frameBuffer, op.Operands[i]);
+
+                stack.Push(frameBuffer);
+            }
+
+            while (stack.Count > 1)
+            {
+                FrameBuffer result;
+                if (stack.Count > 2)
+                    result = FBP.Get();
+                else
+                    result = fbo;
+
+                FrameBuffer source1 = stack.Pop();
+                FrameBuffer source2 = stack.Pop();
+
+                ApplyPipelineToTexturesTexturesTo(operatorPipeline, result, source1.ColorTexture, source2.ColorTexture);
+
+                FBP.Release(source1);
+                FBP.Release(source2);
+
+                stack.Push(result);
+            }
+        }
+        private void ApplyPipelineToTexturesTexturesTo(Pipeline pipeline, FrameBuffer fbo, Texture2D tex1, Texture2D tex2)
         {
             if (fbo == null)
                 FrameBuffer.UseDefault((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight);
             else
                 fbo.Use();
 
-            Pipeline union = AssetsManager.Pipelines["TextureUnion"];
-            union.Use();
-            union.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
-            union.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
+            pipeline.Use();
+            pipeline.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
+            pipeline.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
+            pipeline.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
 
             tex1.Bind("tex1");
             tex2.Bind("tex2");
@@ -358,7 +425,7 @@ namespace GUI
                     LinearAlgebra.Vector2 mousePos = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
                     bool nothingHit = true;
                     foreach (IVisualGeometry vg in ViewModel.CurrentDocument.VisualGeometries)
-                        if (vg.Geometry.IsPointInFigure(mousePos, 1e-2))
+                        if (!(vg.Geometry is IOperator) && vg.Geometry.IsPointInFigure(mousePos, 1e-2))
                         {
                             if (Keyboard.GetKeyStates(Key.LeftShift).HasFlag(KeyStates.Down))
                             {
@@ -373,11 +440,36 @@ namespace GUI
                                 ViewModel.SelectVisualGeometry(vg);
                             }
                             nothingHit = false;
+                            break;
                         }
                     if (nothingHit)
                     {
                         ViewModel.ClearSelectedVisualGeometries();
-                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, mousePos)));
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateExclusionOperator()));
+                        ViewModel.CurrentDocument.VisualGeometries[0].BackgroundBrush = new Logic.SolidColorBrush(Logic.Color.White);
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, new LinearAlgebra.Vector2(0, 0))));
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, new LinearAlgebra.Vector2(0, -50))));
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[0].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[1].Geometry);
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[0].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[2].Geometry);
+
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateIntersectionOperator()));
+                        ViewModel.CurrentDocument.VisualGeometries[3].BackgroundBrush = new Logic.SolidColorBrush(Logic.Color.White);
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(50, 20, new LinearAlgebra.Vector2(35, -60))));
+                        ViewModel.CurrentDocument.VisualGeometries[4].Geometry.Transform.RotationDegrees = 180.0;
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(200, 200, new LinearAlgebra.Vector2(0, -50))));
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[3].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[4].Geometry);
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[3].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[5].Geometry);
+
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateIntersectionOperator()));
+                        ViewModel.CurrentDocument.VisualGeometries[6].BackgroundBrush = new Logic.SolidColorBrush(Logic.Color.White);
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(50, 20, new LinearAlgebra.Vector2(-35, -60))));
+                        ViewModel.CurrentDocument.VisualGeometries[7].Geometry.Transform.RotationDegrees = 180.0;
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(200, 200, new LinearAlgebra.Vector2(0, -50))));
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[6].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[7].Geometry);
+                        ((IOperator)ViewModel.CurrentDocument.VisualGeometries[6].Geometry).AddOperand(ViewModel.CurrentDocument.VisualGeometries[8].Geometry);
+
+                        ViewModel.CurrentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateRectangle(200, 200, new LinearAlgebra.Vector2(0, -10))));
+                        ViewModel.CurrentDocument.VisualGeometries[9].BackgroundBrush = new Logic.SolidColorBrush(206, 50, 50);
                     }
                     break;
             }

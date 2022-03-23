@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,84 +17,24 @@ namespace Geometry
 
     public interface IOperator : IGeometry
     {
-        protected List<IGeometry> OperandList { get; init; }
+        public OperatorType Type { get; } // тип оператора
 
-        OperatorType Type { get; } // тип оператора
+        public IReadOnlyList<IGeometry> Operands { get; } // возвращает набор фигур операндов
 
-        IReadOnlyCollection<IGeometry> Operands => OperandList.AsReadOnly(); // возвращает набор фигур операндов
+        public void AddOperand(IGeometry operand); // добавляет операнд в конец
 
-        void AddOperand(IGeometry operand) // добавляет операнд в конец
-        {
-            if (operand == null)
-                throw new ArgumentNullException(nameof(operand));
+        public void InsertOperand(int index, IGeometry operand); // вставляет операнд по индексу
 
-            if (OperandList.Contains(operand))
-                throw new ArgumentException("The operand is already exists.");
+        public void RemoveOperand(IGeometry operand); // убирает существующий операнд
 
-            OperandList.Add(operand);
-        }
+        public void RemoveOperandAt(int index); // убирает операнд по индексу
 
-        void InsertOperand(int index, IGeometry operand) // вставляет операнд по индексу
-        {
-            if (index < 0 || index > OperandList.Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+        public void MakeOperandFirst(IGeometry operand); // делает существующий операнд первым
 
-            if (OperandList.Contains(operand))
-                throw new ArgumentException("The operand is already exists.");
+        public void MakeOperandLast(IGeometry operand); // делает существующий операнд последним
 
-            if (operand == null)
-                throw new ArgumentNullException(nameof(operand));
+        public void ReplaceOperandTo(int index, IGeometry operand); // перемещает существующий операнд на место {index}
 
-            OperandList.Insert(index, operand);
-        }
-
-        void RemoveOperand(IGeometry operand) // убирает существующий операнд
-        {
-            if (OperandList.Contains(operand))
-                OperandList.Remove(operand);
-        }
-
-        void RemoveOperandAt(int index) // убирает операнд по индексу
-        {
-            if (index < 0 || index > OperandList.Count - 1)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            OperandList.RemoveAt(index);
-        }
-
-        void MakeOperandFirst(IGeometry operand) // делает существующий операнд первым
-        {
-            int oldIndex = OperandList.IndexOf(operand);
-            if (oldIndex < 0)
-                throw new ArgumentException("Operator doesn't contain this operand.");
-
-            OperandList.RemoveAt(oldIndex);
-            OperandList.Prepend(operand);
-        }
-
-        void MakeOperandLast(IGeometry operand) // делает существующий операнд последним
-        {
-            int oldIndex = OperandList.IndexOf(operand);
-            if(oldIndex < 0)
-                throw new ArgumentException("Operator doesn't contain this operand.");
-
-            OperandList.RemoveAt(oldIndex);
-            OperandList.Add(operand);
-        }
-
-        void ReplaceOperandTo(int index, IGeometry operand) // перемещает существующий операнд на место {index}
-        {
-            if(index < 0 || index > OperandList.Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            int oldIndex = OperandList.IndexOf(operand);
-            if(oldIndex < 0)
-                throw new ArgumentException("Operator doesn't contain this operand.");
-
-            OperandList.RemoveAt(oldIndex);
-            OperandList.Insert(index, operand);
-        }
-
-        IReadOnlyCollection<Vector2> BasicPoints { get; }
+        public IReadOnlyCollection<Vector2> BasicPoints { get; }
     }
 }
