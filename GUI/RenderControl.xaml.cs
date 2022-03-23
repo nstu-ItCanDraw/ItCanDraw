@@ -439,18 +439,8 @@ namespace GUI
                     foreach (IVisualGeometry vg in ViewModel.CurrentDocument.VisualGeometries)
                         if (!(vg.Geometry is IOperator) && vg.Geometry.IsPointInFigure(mousePos, 1e-2))
                         {
-                            if (Keyboard.GetKeyStates(Key.LeftShift).HasFlag(KeyStates.Down))
-                            {
-                                if (ViewModel.IsVisualGeometrySelected(vg))
-                                    ViewModel.DeselectVisualGeometry(vg);
-                                else
-                                    ViewModel.SelectVisualGeometry(vg);
-                            }
-                            else
-                            {
-                                ViewModel.ClearSelectedVisualGeometries();
-                                ViewModel.SelectVisualGeometry(vg);
-                            }
+                            ViewModel.ClearSelectedVisualGeometries();
+                            ViewModel.SelectVisualGeometry(vg);
                             nothingHit = false;
                             break;
                         }
