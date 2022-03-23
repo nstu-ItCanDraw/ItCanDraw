@@ -55,10 +55,10 @@
                         <!--<MenuItem Header="Tilt..."/>-->
                     <!--</MenuItem>-->
                     <MenuItem Header="Selection" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
-                        <MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>
+                        <!--<MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>-->
                         <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
                         <!--<MenuItem Header="Reselect"/>-->
-                        <MenuItem Header="Invert" Command="{Binding InverseSelectionCommand}"/>
+                        <!--<MenuItem Header="Invert" Command="{Binding InverseSelectionCommand}"/>-->
                     </MenuItem>
                     <MenuItem Header="About">
                         <MenuItem Header="Developers" Click="MenuItem_Click_Autors"/>

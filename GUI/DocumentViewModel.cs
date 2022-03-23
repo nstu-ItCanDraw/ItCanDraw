@@ -62,11 +62,6 @@ namespace GUI
         {
             get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry && currentDocument != null));
         }
-        private RelayCommand selectAllVisualGeometriesCommand;
-        public RelayCommand SelectAllVisualGeometriesCommand
-        {
-            get => selectAllVisualGeometriesCommand ?? (selectAllVisualGeometriesCommand = new RelayCommand(obj => SelectAllVisualGeometries(), obj => currentDocument != null));
-        }
         private RelayCommand deselectVisualGeometryCommand;
         public RelayCommand DeselectVisualGeometryCommand
         {
@@ -81,11 +76,6 @@ namespace GUI
         public RelayCommand DeleteSelectedVisualGeometriesCommand
         {
             get => deleteSelectedVisualGeometriesCommand ?? (deleteSelectedVisualGeometriesCommand = new RelayCommand(obj => DeleteSelectedVisualGeometries(), obj => currentDocument != null));
-        }
-        private RelayCommand inverseSelectionCommand;
-        public RelayCommand InverseSelectionCommand
-        {
-            get => inverseSelectionCommand ?? (inverseSelectionCommand = new RelayCommand(obj => InverseSelection(), obj => currentDocument != null));
         }
         private RelayCommand openDocumentCommand;
         public RelayCommand OpenDocumentCommand
@@ -174,13 +164,6 @@ namespace GUI
             OnPropertyChanged("SelectedVisualGeometries");
             OnPropertyChanged("SelectedVisualGeometry");
         }
-        public void SelectAllVisualGeometries()
-        {
-            checkDocumentNotNull();
-            selectedVisualGeometries.AddRange(currentDocument.VisualGeometries.Except(selectedVisualGeometries));
-            OnPropertyChanged("SelectedVisualGeometries");
-            OnPropertyChanged("SelectedVisualGeometry");
-        }
         public void DeselectVisualGeometry(IVisualGeometry visualGeometry)
         {
             checkDocumentNotNull();
@@ -204,14 +187,6 @@ namespace GUI
             for(int i = 0; i < selectedVisualGeometries.Count; i++)
                 currentDocument.RemoveVisualGeometry(selectedVisualGeometries[i]);
             selectedVisualGeometries.Clear();
-        }
-        public void InverseSelection()
-        {
-            checkDocumentNotNull();
-
-            int selectedCount = selectedVisualGeometries.Count;
-            selectedVisualGeometries.AddRange(currentDocument.VisualGeometries.Except(selectedVisualGeometries));
-            selectedVisualGeometries.RemoveRange(0, selectedCount);
         }
         public void OpenDocument()
         {
