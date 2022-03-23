@@ -201,8 +201,8 @@ namespace GUI
         public void DeleteSelectedVisualGeometries()
         {
             checkDocumentNotNull();
-            foreach (IVisualGeometry visualGeometry in selectedVisualGeometries)
-                currentDocument.RemoveVisualGeometry(visualGeometry);
+            for(int i = 0; i < selectedVisualGeometries.Count; i++)
+                currentDocument.RemoveVisualGeometry(selectedVisualGeometries[i]);
             selectedVisualGeometries.Clear();
         }
         public void InverseSelection()
@@ -231,8 +231,8 @@ namespace GUI
                     }
 
                 openedDocuments.Add(document);
-                CurrentDocument = document;
                 OnPropertyChanged("OpenedDocuments");
+                CurrentDocument = document;
             }
             catch(Exception e)
             {

@@ -405,7 +405,8 @@
                         <TextBlock FontSize="16" Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Document explorer</TextBlock>
                         <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
                             <TreeView x:Name="currentDocumentTreeView" FontSize="16"  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}" 
-                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding CurrentDocumentVisualTree.Roots}">
+                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding CurrentDocumentVisualTree.Roots}"
+                                      AllowDrop="True" MouseMove="treeView_MouseMove" Drop="treeView_Drop" DragOver="treeView_DragOver">
                                 <i:Interaction.Behaviors>
                                     <local:BindingSelectedItemBehavior>
                                         <local:BindingSelectedItemBehavior.SelectedItem>

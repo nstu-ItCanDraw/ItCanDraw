@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using Geometry;
+
 namespace Logic
 {
     internal class Document : IDocument
@@ -134,6 +136,8 @@ namespace Logic
         {
             if (!visualGeometries.Contains(visualGeometry))
                 throw new ArgumentException("This object does not present in this document.");
+            if (visualGeometry.Geometry is IOperator)
+                (visualGeometry.Geometry as IOperator).ClearOperands();
             visualGeometries.Remove(visualGeometry);
             visualGeometry.PropertyChanged -= visualGeometry_OnPropertyChanged;
             OnPropertyChanged("VisualGeometries");

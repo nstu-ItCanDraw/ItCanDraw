@@ -14,6 +14,7 @@ namespace GUI
     internal class VisualGeometryTreeNode
     {
         public IVisualGeometry VisualGeometry { get; set; }
+        public VisualGeometryTreeNode Parent { get; set; }
         public List<VisualGeometryTreeNode> Children { get; } = new List<VisualGeometryTreeNode>();
     }
 
@@ -43,6 +44,7 @@ namespace GUI
                     VisualGeometryTreeNode currentNode = nodes[i];
                     if (currentNode.VisualGeometry.Geometry.Transform.Parent == node.VisualGeometry.Geometry.Transform)
                     {
+                        currentNode.Parent = node;
                         node.Children.Add(currentNode);
                         queue.Enqueue(currentNode);
 
