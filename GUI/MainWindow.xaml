@@ -140,6 +140,60 @@
                 <Image Margin="0,0,0,3">
                     <Image.Style>
                         <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_объединение_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_объединение_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddUnionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_пересечение_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_пересечение_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddIntersectionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_вырезание_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_вырезание_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddExclusionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
                             <Setter Property="Source" Value="Pictures\i_удаление_НеАктивная.png"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">

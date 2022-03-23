@@ -126,6 +126,24 @@ namespace GUI
             get => addEllipseCommand ?? (addEllipseCommand = new RelayCommand(obj =>
             currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateEllipse(50, 50, (Vector2)obj))), obj => obj is Vector2 && currentDocument != null));
         }
+        private RelayCommand addUnionOperatorCommand;
+        public RelayCommand AddUnionOperatorCommand
+        {
+            get => addUnionOperatorCommand ?? (addUnionOperatorCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateUnionOperator())), obj => currentDocument != null));
+        }
+        private RelayCommand addIntersectionOperatorCommand;
+        public RelayCommand AddIntersectionOperatorCommand
+        {
+            get => addIntersectionOperatorCommand ?? (addIntersectionOperatorCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateIntersectionOperator())), obj => currentDocument != null));
+        }
+        private RelayCommand addExclusionOperatorCommand;
+        public RelayCommand AddExclusionOperatorCommand
+        {
+            get => addExclusionOperatorCommand ?? (addExclusionOperatorCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(OperatorFactory.CreateExclusionOperator())), obj => currentDocument != null));
+        }
         public DocumentViewModel()
         {
             currentDocumentVisualTree.PropertyChanged += currentDocumentVisualTree_OnPropertyChanged;
