@@ -45,24 +45,33 @@ namespace Geometry
                         List<Vector2> old_globalpoints = new List<Vector2>(globalpoints);
                         List<List<double[]>> old_coeficients = new List<List<double[]>>(coeficients);
                         ChangePoints(value);
-                        if (!RecalcCurves())
+                        int err = RecalcCurves();
+
+                        if (err != 0)
                         {
                             points = new List<Vector2>(old_points);
                             globalpoints = new List<Vector2>(old_globalpoints);
                             coeficients = new List<List<double[]>>(old_coeficients);
-                            throw new ArgumentException("Two points in polygon are too close");
+                            if (err == 1)
+                                throw new ArgumentException("Two points in polygon are too close");
+                            if (err == 2)
+                                throw new ArgumentException("Non-convex polygon");
                         }
                     }
                     else
                     {
                         ChangePoints(value);
-                        if (!RecalcCurves())
+                        int err = RecalcCurves();
+                        if (err != 0)
                         {
                             // если две точки совпали и не было предыдущих точек, загрузить базовый полигон
                             globalpoints = new List<Vector2>(new List<Vector2>() { new Vector2(1, 1), new Vector2(5, 1), new Vector2(1, 7) });
                             ChangePoints(value);
                             RecalcCurves();
-                            throw new ArgumentException("Two points in polygon are too close");
+                            if(err == 1)
+                                throw new ArgumentException("Two points in polygon are too close");
+                            if (err == 2)
+                                throw new ArgumentException("Non-convex polygon");
                         }
                     }
                     RecalcAABB();
@@ -78,21 +87,64 @@ namespace Geometry
 
         List<List<double[]>> coeficients;
         public IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves => coeficients;
-        private bool RecalcCurves() // пересчитать все
+        private int RecalcCurves() // пересчитать все
         {
             coeficients = new List<List<double[]>>() { new List<double[]>() };
             double[] line;
             for (int i = 1; i < Points.Count; i++)
-            {             
-                line = GetEdgeCoeffs(Points[i-1].x, Points[i - 1].y, Points[i].x, Points[i].y);
-                if(line[3] * line[3] == 0 && line[4] * line[4] == 0)
-                    return false;
+            {
+                line = GetEdgeCoeffs(Points[i - 1].x, Points[i - 1].y, Points[i].x, Points[i].y);
+                if (line[3] * line[3] == 0 && line[4] * line[4] == 0)
+                    return 1;
                 coeficients[0].Add(line);
+                for (int j = i + 1; i < Points.Count; i++)
+                {
+                    if (GetValue(Points[j], line) > 0)
+                    {
+                        return 2;
+                    }
+                }
             }
             line = GetEdgeCoeffs(Points[Points.Count - 1].x, Points[Points.Count - 1].y, Points[0].x, Points[0].y);
             coeficients[0].Add(line);
-            return true;
+            return 0;
         }
+
+        /*private bool RecalcCurves() // пересчитать все
+        {
+            coeficients = new List<List<double[]>>() { new List<double[]>() };
+            double[] line;
+            int curve_id = 0;
+            bool point_not_in_curve = false;
+            for (int i = 1; i < Points.Count; i++)
+            {
+                line = GetEdgeCoeffs(Points[i - 1].x, Points[i - 1].y, Points[i].x, Points[i].y);
+                if (line[3] * line[3] == 0 && line[4] * line[4] == 0)
+                    return false;
+                coeficients[curve_id].Add(line);
+
+                for (int j = i + 1; i < Points.Count; i++)
+                {
+                    if (GetValue(Points[j], line) > 0)
+                    {
+                        point_not_in_curve = true;
+                    }
+                }
+                if(point_not_in_curve)
+                {
+                    point_not_in_curve = false;
+                    curve_id++;
+                    coeficients.Add(new List<double[]>());
+                    line[3] *= -1;
+                    line[4] *= -1;
+                    line[5] *= -1;
+                    coeficients[curve_id].Add(line);
+                }
+            }
+            line = GetEdgeCoeffs(Points[Points.Count - 1].x, Points[Points.Count - 1].y, Points[0].x, Points[0].y);
+            coeficients[curve_id].Add(line);
+            return true;
+        }*/
 
         private void ChangePoints(IList<Vector2> _points)
         {
@@ -267,14 +319,19 @@ namespace Geometry
         public bool IsPointInFigure(Vector2 position, double eps)
         {
             Vector2 localPosition = (Transform.View * new Vector3(position, 1.0)).xy;
-
-            foreach(var _curve in Curves.ElementAt(0))
+            bool InFigure = true;
+            foreach (var _group_curve in Curves)
             {
-                if (GetValue(localPosition, _curve) > eps)
-                    return false;
+                foreach (var _curve in _group_curve)
+                {
+                    if (GetValue(localPosition, _curve) > eps)
+                        InFigure = false;
+                }
+                if(InFigure == true)
+                    return true;
             }
 
-            return true;
+            return false;
         }
         private double GetValue(Vector2 point, double[] coef)
         {
