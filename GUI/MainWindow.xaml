@@ -55,7 +55,7 @@
                     </MenuItem>
                     <MenuItem Header="Selection" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
                         <MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>
-                        <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometryCommand}"/>
+                        <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
                         <!--<MenuItem Header="Reselect"/>-->
                         <MenuItem Header="Invert" Command="{Binding InverseSelectionCommand}"/>
                     </MenuItem>

@@ -69,7 +69,7 @@ namespace GUI
             get => deselectVisualGeometryCommand ?? (deselectVisualGeometryCommand = new RelayCommand(obj => DeselectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
         }
         private RelayCommand clearSelectedVisualGeometriesCommand;
-        public RelayCommand ClearSelectedVisualGeometryCommand
+        public RelayCommand ClearSelectedVisualGeometriesCommand
         {
             get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries(), obj => currentDocument != null));
         }
