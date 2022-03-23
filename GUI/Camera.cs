@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +13,11 @@ namespace GUI
     /// <summary>
     /// Contains information about camera object
     /// </summary>
-    internal class Camera
+    internal class Camera : INotifyPropertyChanged
     {
         private Vector2 position = Vector2.Zero;
-        private readonly double ZoomMinPosition = -1e6;
-        private readonly double ZoomMaxPosition = 1e6;
+        private readonly double MinPosition = -1e6;
+        private readonly double MaxPosition = 1e6;
         /// <summary>
         /// Camera position in global space
         /// </summary>
@@ -29,6 +31,7 @@ namespace GUI
             {
                 position = value;
                 recalculateMatrixes();
+                OnPropertyChanged("Position");
             }
         }
         private int screenWidth = 1;
@@ -47,6 +50,9 @@ namespace GUI
                     throw new ArgumentOutOfRangeException("ScreenWidth", "Screen size must be positive.");
                 screenWidth = value;
                 recalculateMatrixes();
+                OnPropertyChanged("ScreenWidth");
+                OnPropertyChanged("Aspect");
+                OnPropertyChanged("Width");
             }
         }
         private int screenHeight = 1;
@@ -65,6 +71,9 @@ namespace GUI
                     throw new ArgumentOutOfRangeException("ScreenHeight", "Screen size must be positive.");
                 screenHeight = value;
                 recalculateMatrixes();
+                OnPropertyChanged("ScreenHeight");
+                OnPropertyChanged("Aspect");
+                OnPropertyChanged("Width");
             }
         }
         /// <summary>
@@ -90,11 +99,11 @@ namespace GUI
             {
                 if (value <= 0)
                     throw new ArgumentOutOfRangeException("Width", "Camera size must be positive.");
-                height = value / Aspect;
-                recalculateMatrixes();
+                Height = value / Aspect;
             }
         }
         private double height = 1.0;
+
         /// <summary>
         /// Height of the camera in virtual space, changing it will change Width to preserve aspect
         /// </summary>
@@ -110,6 +119,8 @@ namespace GUI
                     throw new ArgumentOutOfRangeException("Height", "Camera size must be positive.");
                 height = value;
                 recalculateMatrixes();
+                OnPropertyChanged("Height");
+                OnPropertyChanged("Width");
             }
         }
         /// <summary>
@@ -132,6 +143,15 @@ namespace GUI
             Model = new Matrix3x3(halfWidth, 0.0, position.x,
                                   0.0, halfHeight, position.y,
                                   0.0, 0.0, 1.0);
+            OnPropertyChanged("View");
+            OnPropertyChanged("Model");
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
         /// <summary>
         /// Creates camera with specified screen size and virtual height (width is calculated from aspect ratio of screen size)
@@ -185,9 +205,9 @@ namespace GUI
 
             position = point + (position - point) / delta;
 
-            position.x = Math.Min(this.ZoomMaxPosition, Math.Max(this.ZoomMinPosition, position.x));
+            Position = new Vector2(Math.Min(MaxPosition, Math.Max(MinPosition, position.x)), Math.Min(MaxPosition, Math.Max(MinPosition, position.y)));
 
-            height = newHeight;
+            Height = newHeight;
             recalculateMatrixes();
         }
     }

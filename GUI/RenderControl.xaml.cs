@@ -32,8 +32,19 @@ namespace GUI
     public partial class RenderControl : UserControl
     {
         public static readonly DependencyProperty ViewModelProperty;
+        public static readonly DependencyProperty CameraProperty;
         
-        private Camera camera;
+        internal Camera Camera
+        {
+            get
+            {
+                return (Camera)GetValue(CameraProperty);
+            }
+            private set
+            {
+                SetValue(CameraProperty, value);
+            }
+        }
         private int dummyVAO = 0;
         private bool initialized = false;
         private readonly double ZoomDelta = 1.1;
@@ -60,6 +71,7 @@ namespace GUI
         static RenderControl()
         {
             ViewModelProperty = DependencyProperty.Register(nameof(ViewModel), typeof(DocumentViewModel), typeof(RenderControl));
+            CameraProperty = DependencyProperty.Register(nameof(Camera), typeof(Camera), typeof(RenderControl));
         }
 
         public RenderControl()
@@ -87,8 +99,8 @@ namespace GUI
         }
         private void OpenTKControl_Loaded(object sender, RoutedEventArgs e)
         {
-            camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument != null ? ViewModel.CurrentDocument.Height * 1.2 : OpenTKControl.ActualHeight);
-            FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
+            Camera = new Camera((int)OpenTKControl.ActualWidth, (int)OpenTKControl.ActualHeight, ViewModel.CurrentDocument != null ? ViewModel.CurrentDocument.Height * 1.2 : OpenTKControl.ActualHeight);
+            FBP = new FrameBufferPool(8, Camera.ScreenWidth, Camera.ScreenHeight, TextureType.FloatValue);
 
             AssetsManager.LoadPipeline("CurveToTexture", "shaders/documentQuad.vsh", "shaders/curveToTexture.fsh");
             AssetsManager.LoadPipeline("TexturesUnion", "shaders/documentQuad.vsh", "shaders/texturesUnion.fsh");
@@ -172,7 +184,7 @@ namespace GUI
             obbQuad.Use();
             obbQuad.Uniform2("bottomLeft", (Vector2f)geometry.OBB.left_bottom);
             obbQuad.Uniform2("topRight", (Vector2f)geometry.OBB.right_top);
-            obbQuad.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            obbQuad.UniformMatrix3x3("view", (Matrix3x3f)Camera.View);
             obbQuad.UniformMatrix3x3("model", (Matrix3x3f)geometry.Transform.Model);
             obbQuad.Uniform4("color", 1.0f, 0.0f, 0.0f, 1.0f);
 
@@ -185,7 +197,7 @@ namespace GUI
             background.Use();
             background.Uniform1("documentWidth", (float)document.Width);
             background.Uniform1("documentHeight", (float)document.Height);
-            background.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            background.UniformMatrix3x3("view", (Matrix3x3f)Camera.View);
 
             background.Uniform4("color", document.BackgroundColor.r / 255f, document.BackgroundColor.g / 255f, document.BackgroundColor.b / 255f, 1.0f);
 
@@ -211,7 +223,7 @@ namespace GUI
             else
                 throw new NotImplementedException("Types other than SolidColorBrush are not implemented yet.");
 
-            coloring.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            coloring.UniformMatrix3x3("view", (Matrix3x3f)Camera.View);
             tex.Bind("tex");
 
             GL.BindVertexArray(dummyVAO);
@@ -323,7 +335,7 @@ namespace GUI
             pipeline.Use();
             pipeline.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
             pipeline.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
-            pipeline.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            pipeline.UniformMatrix3x3("view", (Matrix3x3f)Camera.View);
 
             tex1.Bind("tex1");
             tex2.Bind("tex2");
@@ -343,7 +355,7 @@ namespace GUI
             curveToTexture.Uniform1("documentWidth", (float)ViewModel.CurrentDocument.Width);
             curveToTexture.Uniform1("documentHeight", (float)ViewModel.CurrentDocument.Height);
             curveToTexture.UniformMatrix3x3("curveView", (Matrix3x3f)view);
-            curveToTexture.UniformMatrix3x3("view", (Matrix3x3f)camera.View);
+            curveToTexture.UniformMatrix3x3("view", (Matrix3x3f)Camera.View);
 
             int curvesCount = curves.Count;
             for (int i = 0; i < curvesCount; i++)
@@ -361,10 +373,10 @@ namespace GUI
                 return;
 
             Point position = e.GetPosition(this);
-            LinearAlgebra.Vector2 point = camera.ScreenToWorld(new LinearAlgebra.Vector2(position.X, position.Y));
+            LinearAlgebra.Vector2 point = Camera.ScreenToWorld(new LinearAlgebra.Vector2(position.X, position.Y));
             double delta = e.Delta > 0 ? this.ZoomDelta : 1 / this.ZoomDelta;
 
-            camera.Zoom(point, delta);
+            Camera.Zoom(point, delta);
         }
 
         private void OpenTKControl_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -372,11 +384,11 @@ namespace GUI
             if (!initialized)
                 return;
 
-            camera.ScreenWidth = (int)e.NewSize.Width;
-            camera.ScreenHeight = (int)e.NewSize.Height;
+            Camera.ScreenWidth = (int)e.NewSize.Width;
+            Camera.ScreenHeight = (int)e.NewSize.Height;
 
             FBP.Dispose();
-            FBP = new FrameBufferPool(8, camera.ScreenWidth, camera.ScreenHeight, TextureType.FloatValue);
+            FBP = new FrameBufferPool(8, Camera.ScreenWidth, Camera.ScreenHeight, TextureType.FloatValue);
         }
 
         private void UserControl_MouseMove(object sender, MouseEventArgs e)
@@ -389,7 +401,7 @@ namespace GUI
             if (isMouseWheelDown)
             {
                 Point mousePosPoint = e.GetPosition(this);
-                camera.Position += mouseDragVirtualBase - camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
+                Camera.Position += mouseDragVirtualBase - Camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
             }
         }
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
@@ -405,7 +417,7 @@ namespace GUI
             {
                 isMouseWheelDown = true;
                 Point mousePos = e.GetPosition(this);
-                mouseDragVirtualBase = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePos.X, mousePos.Y));
+                mouseDragVirtualBase = Camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePos.X, mousePos.Y));
             }
         }
         private void UserControl_MouseUp(object sender, MouseButtonEventArgs e)
@@ -422,7 +434,7 @@ namespace GUI
                     break;
                 case MouseButton.Left:
                     Point mousePosPoint = e.GetPosition(this);
-                    LinearAlgebra.Vector2 mousePos = camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
+                    LinearAlgebra.Vector2 mousePos = Camera.ScreenToWorld(new LinearAlgebra.Vector2(mousePosPoint.X, mousePosPoint.Y));
                     bool nothingHit = true;
                     foreach (IVisualGeometry vg in ViewModel.CurrentDocument.VisualGeometries)
                         if (!(vg.Geometry is IOperator) && vg.Geometry.IsPointInFigure(mousePos, 1e-2))

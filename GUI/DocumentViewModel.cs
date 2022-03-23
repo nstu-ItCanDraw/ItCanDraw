@@ -55,12 +55,12 @@ namespace GUI
         private RelayCommand selectVisualGeometryCommand;
         public RelayCommand SelectVisualGeometryCommand
         {
-            get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry));
+            get => selectVisualGeometryCommand ?? (selectVisualGeometryCommand = new RelayCommand(obj => SelectVisualGeometry(obj as IVisualGeometry), obj => obj is IVisualGeometry && currentDocument != null));
         }
         private RelayCommand selectAllVisualGeometriesCommand;
         public RelayCommand SelectAllVisualGeometriesCommand
         {
-            get => selectAllVisualGeometriesCommand ?? (selectAllVisualGeometriesCommand = new RelayCommand(obj => SelectAllVisualGeometries()));
+            get => selectAllVisualGeometriesCommand ?? (selectAllVisualGeometriesCommand = new RelayCommand(obj => SelectAllVisualGeometries(), obj => currentDocument != null));
         }
         private RelayCommand deselectVisualGeometryCommand;
         public RelayCommand DeselectVisualGeometryCommand
@@ -70,12 +70,17 @@ namespace GUI
         private RelayCommand clearSelectedVisualGeometriesCommand;
         public RelayCommand ClearSelectedVisualGeometryCommand
         {
-            get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries()));
+            get => clearSelectedVisualGeometriesCommand ?? (clearSelectedVisualGeometriesCommand = new RelayCommand(obj => ClearSelectedVisualGeometries(), obj => currentDocument != null));
+        }
+        private RelayCommand deleteSelectedVisualGeometriesCommand;
+        public RelayCommand DeleteSelectedVisualGeometriesCommand
+        {
+            get => deleteSelectedVisualGeometriesCommand ?? (deleteSelectedVisualGeometriesCommand = new RelayCommand(obj => DeleteSelectedVisualGeometries(), obj => currentDocument != null));
         }
         private RelayCommand inverseSelectionCommand;
         public RelayCommand InverseSelectionCommand
         {
-            get => inverseSelectionCommand ?? (inverseSelectionCommand = new RelayCommand(obj => InverseSelection()));
+            get => inverseSelectionCommand ?? (inverseSelectionCommand = new RelayCommand(obj => InverseSelection(), obj => currentDocument != null));
         }
         private RelayCommand openDocumentCommand;
         public RelayCommand OpenDocumentCommand
@@ -101,6 +106,24 @@ namespace GUI
         public RelayCommand CreateDocumentCommand
         {
             get => createDocumentCommand ?? (createDocumentCommand = new RelayCommand(obj => CreateDocument()));
+        }
+        private RelayCommand addRectangleCommand;
+        public RelayCommand AddRectangleCommand
+        {
+            get => addRectangleCommand ?? (addRectangleCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateRectangle(100, 100, (Vector2)obj))), obj => obj is Vector2 && currentDocument != null));
+        }
+        private RelayCommand addTriangleCommand;
+        public RelayCommand AddTriangleCommand
+        {
+            get => addTriangleCommand ?? (addTriangleCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateTriangle(100, 100, (Vector2)obj))), obj => obj is Vector2 && currentDocument != null));
+        }
+        private RelayCommand addEllipseCommand;
+        public RelayCommand AddEllipseCommand
+        {
+            get => addEllipseCommand ?? (addEllipseCommand = new RelayCommand(obj =>
+            currentDocument.AddVisualGeometry(VisualGeometryFactory.CreateVisualGeometry(FigureFactory.CreateEllipse(50, 50, (Vector2)obj))), obj => obj is Vector2 && currentDocument != null));
         }
         public DocumentViewModel()
         {

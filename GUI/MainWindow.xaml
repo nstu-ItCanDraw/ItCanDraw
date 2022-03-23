@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
@@ -80,13 +81,78 @@
                 </GridSplitter.Template>
             </GridSplitter>
             <StackPanel Orientation="Vertical" Margin="3" Background="{StaticResource BackgroundDarkBrush}">
-                <Image Source="Pictures\i_выделения_НеАктивная.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\ii_квадрат.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\ii_треугольник.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\ii_круг.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\ii_линия.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\i_удаление_НеАктивная.png" Margin="0,0,0,3"/>
-                <Image Source="Pictures\i_зум_НеАктивная.png" Margin="0,0,0,3"/>
+                <!--<Image Source="Pictures\i_выделения_НеАктивная.png" Margin="0,0,0,3"/>-->
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_квадрат_НеАктивный.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_квадрат_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddRectangleCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_треугольник_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_треугольник_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddTriangleCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_круг_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_круг_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddEllipseCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_удаление_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_удаление_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.DeleteSelectedVisualGeometriesCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
             </StackPanel>
             <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}" 
                         DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding OpenedDocuments}" SelectedItem="{Binding CurrentDocument}">
