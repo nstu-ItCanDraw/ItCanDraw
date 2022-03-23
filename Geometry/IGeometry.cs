@@ -16,7 +16,6 @@ namespace Geometry
         public Vector2 right_top;
     }
 
-
     public interface IGeometry : INotifyPropertyChanged
     {
         protected Dictionary<string, PropertyInfo> ParameterDictionary { get; }
@@ -125,37 +124,5 @@ namespace Geometry
         {
             return ParameterDictionary.ToDictionary(parameter => parameter.Key, parameter => parameter.Value.GetValue(this));
         }
-    }
-
-    public interface IFigure : IGeometry
-    {
-        IReadOnlyCollection<IReadOnlyCollection<double[]>> Curves { get; } // возвращает набор фигур из кривых 2-ого порядка для описания фигуры (для все точек в фигуре выполнено a1*x^2 + a2*y^2 + a3*xy + a4*x + a5*y + a6 <= 0 для всех кривых)
-        IReadOnlyCollection<Vector2> BasicPoints { get; set; }
-    }
-
-    public enum OperatorType
-    {
-        Union,
-        Intersection,
-        Exclusion
-    }
-
-    public interface IOperator : IGeometry
-    {
-        OperatorType Type { get; } // тип оператора
-
-        IReadOnlyCollection<IGeometry> Operands { get; } // возвращает набор фигур операндов
-
-        void AddOperand(IGeometry operand); // добавляет операнд в конец
-        void InsertOperand(int index, IGeometry operand); // вставляет операнд по индексу
-
-        void RemoveOperand(IGeometry operand); // убирает существующий операнд
-        void RemoveOperandAt(int index); // убирает операнд по индексу
-
-        void MakeOperandFirst(IGeometry operand); // делает существующий операнд первым
-        void MakeOperandLast(IGeometry operand); // делает существующий операнд последним
-        void ReplaceOperandTo(int index, IGeometry operand); // перемещает существующий операнд на место {index}
-
-        IReadOnlyCollection<Vector2> BasicPoints { get; }
     }
 }
