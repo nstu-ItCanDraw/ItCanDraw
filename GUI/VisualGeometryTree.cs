@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,16 +17,18 @@ namespace GUI
         public List<VisualGeometryTreeNode> Children { get; } = new List<VisualGeometryTreeNode>();
     }
 
-    internal class VisualGeometryTree
+    internal class VisualGeometryTree : INotifyPropertyChanged
     {
-        public List<VisualGeometryTreeNode> Roots { get; private set; } = new List<VisualGeometryTreeNode>();
+        private List<VisualGeometryTreeNode> roots = new List<VisualGeometryTreeNode>();
+        public IReadOnlyList<VisualGeometryTreeNode> Roots => roots.AsReadOnly();
 
         public void RebuildFromDocument(IDocument document)
         {
-            Roots.Clear();
+            roots.Clear();
 
             List<VisualGeometryTreeNode> nodes = document.VisualGeometries.Select(visualGeometry => new VisualGeometryTreeNode() { VisualGeometry = visualGeometry }).ToList();
-            Roots.AddRange(nodes.Where(node => node.VisualGeometry.Geometry.Transform.Parent == null));
+
+            roots.AddRange(nodes.Where(node => node.VisualGeometry.Geometry.Transform.Parent == null));
             nodes = nodes.Except(Roots).ToList();
 
             int i;
@@ -44,6 +49,15 @@ namespace GUI
                     }
                 }
             }
+
+            OnPropertyChanged("Roots");
         }
+
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

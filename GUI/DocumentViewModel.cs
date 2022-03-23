@@ -104,7 +104,7 @@ namespace GUI
         }
         public DocumentViewModel()
         {
-
+            currentDocumentVisualTree.PropertyChanged += currentDocumentVisualTree_OnPropertyChanged;
         }
         private void checkDocumentNotNull()
         {
@@ -260,12 +260,13 @@ namespace GUI
         private void currentDocument_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(IDocument.VisualGeometries))
-            {
                 currentDocumentVisualTree.RebuildFromDocument(CurrentDocument);
-                OnPropertyChanged("CurrentDocumentVisualTree");
-            }
 
             OnPropertyChanged("CurrentDocument");
+        }
+        private void currentDocumentVisualTree_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged("CurrentDocumentVisualTree");
         }
     }
 }
