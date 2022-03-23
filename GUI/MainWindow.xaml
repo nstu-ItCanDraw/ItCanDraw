@@ -3,12 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
         Title="MainWindow" WindowState="Maximized">
     <Window.Resources>
         <local:Vector2Converter x:Key="vec2conv"/>
         <local:DocumentStateConverter x:Key="docstateconv"/>
+        <local:VisibilityConverter x:Key="visconv"/>
+        <local:BrushConverter x:Key="brushconv"/>
+        <local:ColorConverter x:Key="colorconv"/>
     </Window.Resources>
     
     <Grid Background="#202020">
@@ -114,7 +118,7 @@
                             </ControlTemplate>
                         </GridSplitter.Template>
                     </GridSplitter>
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" DataContext="{Binding ElementName=renderControl, Path=ViewModel.SelectedVisualGeometry}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
@@ -129,10 +133,10 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Margin="5,0,5,0">Name:</TextBlock>
-                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}" Text="{Binding ElementName=renderControl, Path=ViewModel.SelectedVisualGeometry.Name}"></TextBox>
+                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}" Text="{Binding Name}"></TextBox>
                                     </Grid>
                                     <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                                        <Grid DataContext="{Binding ElementName=renderControl, Path=ViewModel.SelectedVisualGeometry.Geometry.Transform}">
+                                        <Grid DataContext="{Binding Geometry.Transform}">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
@@ -197,6 +201,24 @@
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Background="{StaticResource BorderBrush}" Padding="5,0,5,0">Properties</TextBlock>
                                                 <StackPanel Grid.Row="1" Grid.IsSharedSizeScope="True">
+                                                    <Grid Margin="0,3,0,3">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Margin="5,0,5,0" VerticalAlignment="Center">Background color:</TextBlock>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                            <Rectangle Width="20" Height="20" Fill="{Binding BackgroundBrush, Converter={StaticResource brushconv}}"/>
+                                                            <ToggleButton Margin="0,0,20,0" x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press"/>
+                                                        </StackPanel>
+                                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding ElementName=Expander, Path=IsChecked, Converter={StaticResource visconv}}">
+                                                            <colorpicker:StandardColorPicker SelectedColor="{Binding BackgroundBrush, Converter={StaticResource colorconv}, Mode=TwoWay}" Style="{StaticResource DefaultColorPickerStyle}" ShowAlpha="True"/>
+                                                        </Grid>
+                                                    </Grid>
                                                 </StackPanel>
                                             </Grid>
                                         </StackPanel>
