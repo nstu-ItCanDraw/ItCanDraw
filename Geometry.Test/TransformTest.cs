@@ -8,7 +8,7 @@ namespace Geometry.Test
 {
 
     [TestClass]
-    public class TransformTests
+    public class TransformTest
 
     //////////////////////////////////LocalPosition//////////////////////////////////
     {
