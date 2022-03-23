@@ -31,29 +31,29 @@
                         <MenuItem Header="Open" InputGestureText="Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
                         <MenuItem Header="Save" InputGestureText="Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
                         <MenuItem Header="Save As..." InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
-                        <MenuItem Header="Export...">
+                        <!--<MenuItem Header="Export...">
                             <MenuItem Header="SVG"/>
                             <MenuItem Header="HTML"/>
                             <MenuItem Header="PDF"/>
                             <MenuItem Header="PNG"/>
                             <MenuItem Header="JPG"/>
-                        </MenuItem>
+                        </MenuItem>-->
                         <MenuItem Header="Close" Command="{Binding CloseCurrentDocumentCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="Edit">
+                    <!--<MenuItem Header="Edit">-->
                         <!--<MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>-->
                         <!--<MenuItem Header="Redo" InputGestureText="Ctrl+Y"/>-->
-                        <MenuItem Header="Cut" InputGestureText="Ctrl+X"/>
-                        <MenuItem Header="Copy" InputGestureText="Ctrl+C"/>
-                        <MenuItem Header="Paste" InputGestureText="Ctrl+V"/>
+                        <!--<MenuItem Header="Cut" InputGestureText="Ctrl+X"/>-->
+                        <!--<MenuItem Header="Copy" InputGestureText="Ctrl+C"/>-->
+                        <!--<MenuItem Header="Paste" InputGestureText="Ctrl+V"/>-->
                         <!--<MenuItem Header="Settings"/>-->
-                    </MenuItem>
-                    <MenuItem Header="Object">
-                        <MenuItem Header="Move..."/>
-                        <MenuItem Header="Rotate..."/>
-                        <MenuItem Header="Reflect..."/>
+                    <!--</MenuItem>-->
+                    <!--<MenuItem Header="Object">-->
+                        <!--<MenuItem Header="Move..."/>-->
+                        <!--<MenuItem Header="Rotate..."/>-->
+                        <!--<MenuItem Header="Reflect..."/>-->
                         <!--<MenuItem Header="Tilt..."/>-->
-                    </MenuItem>
+                    <!--</MenuItem>-->
                     <MenuItem Header="Selection" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
                         <MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>
                         <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
