@@ -199,7 +199,15 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Margin="5,0,5,0">Name:</TextBlock>
-                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}" Text="{Binding Name}"></TextBox>
+                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}">
+                                            <TextBox.Text>
+                                                <Binding Path="Name" Mode="TwoWay">
+                                                    <Binding.ValidationRules>
+                                                        <local:GeometryNameValidationRule/>
+                                                    </Binding.ValidationRules>                                                    
+                                                </Binding>
+                                            </TextBox.Text>
+                                        </TextBox>
                                     </Grid>
                                     <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
                                         <Grid DataContext="{Binding Geometry.Transform}">
@@ -223,9 +231,25 @@
                                                             <ColumnDefinition Width="1*"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Margin="5,0,2,0">X:</TextBlock>
-                                                        <TextBox Grid.Column="1" Text="{Binding Position, Converter={StaticResource vec2conv}, ConverterParameter=x}"/>
+                                                        <TextBox Grid.Column="1">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
                                                         <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
-                                                        <TextBox Grid.Column="3" Text="{Binding Position, Converter={StaticResource vec2conv}, ConverterParameter=y}"/>
+                                                        <TextBox Grid.Column="3">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
                                                     </Grid>
                                                 </Grid>
                                                 <Grid Margin="0,0,0,3">
@@ -242,9 +266,25 @@
                                                             <ColumnDefinition Width="1*"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Margin="5,0,2,0">X:</TextBlock>
-                                                        <TextBox Grid.Column="1" Text="{Binding LocalScale, Converter={StaticResource vec2conv}, ConverterParameter=x}"/>
+                                                        <TextBox Grid.Column="1">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
                                                         <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
-                                                        <TextBox Grid.Column="3" Text="{Binding LocalScale, Converter={StaticResource vec2conv}, ConverterParameter=y}"/>
+                                                        <TextBox Grid.Column="3">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
                                                     </Grid>
                                                 </Grid>
                                                 <Grid Margin="0,0,0,3">
@@ -253,7 +293,15 @@
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Margin="5,0,5,0">Rotation:</TextBlock>
-                                                    <TextBox Grid.Column="1" Text="{Binding LocalRotationDegrees}"/>
+                                                    <TextBox Grid.Column="1">
+                                                        <TextBox.Text>
+                                                            <Binding Path="LocalRotationDegrees" Mode="TwoWay">
+                                                                <Binding.ValidationRules>
+                                                                    <local:DoubleValidationRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
                                                 </Grid>
                                             </StackPanel>
                                         </Grid>

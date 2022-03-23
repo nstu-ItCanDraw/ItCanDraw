@@ -24,7 +24,7 @@ namespace GUI
         public MainWindow()
         {
             InitializeComponent();
-            //renderControl.Focusable = true;
+            renderControl.Focusable = true;
         }
 
         private void renderControl_Loaded(object sender, RoutedEventArgs e)
