@@ -15,7 +15,7 @@ namespace Logic
         {
             get
             {
-                return isModified ? name + "*" : name;
+                return name;
             }
             set
             {
@@ -113,8 +113,8 @@ namespace Logic
         {
             if (PropertyChanged != null)
             {
-                if(prop != nameof(IsModified))
-                    isModified = true;
+                if (prop != nameof(IsModified))
+                    IsModified = true;
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
             }
         }

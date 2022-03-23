@@ -8,7 +8,9 @@
         Title="MainWindow" WindowState="Maximized">
     <Window.Resources>
         <local:Vector2Converter x:Key="vec2conv"/>
+        <local:DocumentStateConverter x:Key="docstateconv"/>
     </Window.Resources>
+    
     <Grid Background="#202020">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -86,7 +88,10 @@
                         DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding OpenedDocuments}" SelectedItem="{Binding CurrentDocument}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text="{Binding IsModified, Converter={StaticResource docstateconv}}"/>
+                        </StackPanel>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
             </TabControl>
