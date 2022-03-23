@@ -87,6 +87,17 @@ namespace Geometry
             operands.RemoveAt(index);
             OnPropertyChanged("Operands");
         }
+        public void ClearOperands()
+        {
+            foreach (IGeometry operand in operands)
+            {
+                operand.Transform.Parent = null;
+                operand.PropertyChanged -= operand_OnPropertyChanged;
+            }
+
+            operands.Clear();
+            OnPropertyChanged("Operands");
+        }
         public void MakeOperandFirst(IGeometry operand) // делает существующий операнд первым
         {
             int oldIndex = operands.IndexOf(operand);

@@ -29,6 +29,8 @@ namespace Geometry
 
         public void RemoveOperandAt(int index); // убирает операнд по индексу
 
+        public void ClearOperands();
+
         public void MakeOperandFirst(IGeometry operand); // делает существующий операнд первым
 
         public void MakeOperandLast(IGeometry operand); // делает существующий операнд последним
