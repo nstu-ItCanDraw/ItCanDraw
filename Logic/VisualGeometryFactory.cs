@@ -18,7 +18,11 @@ namespace Logic
         /// </summary>
         public static IVisualGeometry CreateVisualGeometry(IGeometry geometry)
         {
-            return new VisualGeometry(geometry);
+            return new VisualGeometry(geometry.GetParameters()["name"] as string, geometry);
+        }
+        public static IVisualGeometry CreateVisualGeometry(string name, IGeometry geometry)
+        {
+            return new VisualGeometry(name, geometry);
         }
     }
 }

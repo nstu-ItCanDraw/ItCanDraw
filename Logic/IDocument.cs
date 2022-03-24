@@ -16,6 +16,7 @@ namespace Logic
         /// Name of this document
         /// </summary>
         public string Name { get; set; }
+        public string Path { get; set; }
         /// <summary>
         /// List view collection of all geometries in document
         /// </summary>
@@ -32,6 +33,10 @@ namespace Logic
         /// Color of document background
         /// </summary>
         public Color BackgroundColor { get; set; }
+        /// <summary>
+        /// Determines document state
+        /// </summary>
+        public bool IsModified { get; set; }
         /// <summary>
         /// Adds given visual geometry to geometries in this document
         /// </summary>

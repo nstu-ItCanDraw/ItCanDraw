@@ -162,7 +162,7 @@ namespace Geometry
 
         public bool IsPointInFigure(Vector2 position, double eps)
         {
-            Vector2 localPosition = (Transform.View * new Vector3(position)).xy;
+            Vector2 localPosition = (Transform.View * new Vector3(position, 1)).xy;
 
             if (localPosition.x * localPosition.x / rx / rx + localPosition.y * localPosition.y / ry /ry - 1 <= eps)
             {

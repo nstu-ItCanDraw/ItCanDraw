@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using Geometry;
+
 namespace Logic
 {
     internal class Document : IDocument
@@ -23,6 +25,21 @@ namespace Logic
                     throw new ArgumentException("Document name can't be empty.");
                 name = value;
                 OnPropertyChanged("Name");
+            }
+        }
+        private string path;
+        public string Path
+        {
+            get
+            {
+                return path;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("Path can't be null.");
+                path = value;
+                OnPropertyChanged("Path");
             }
         }
         private List<IVisualGeometry> visualGeometries = new List<IVisualGeometry>();
@@ -71,6 +88,20 @@ namespace Logic
             }
         }
 
+        private bool isModified;
+        public bool IsModified
+        {
+            get
+            {
+                return isModified;
+            }
+            set
+            {
+                isModified = value;
+                OnPropertyChanged("IsModified");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Document(string name, int width, int height)
@@ -83,7 +114,11 @@ namespace Logic
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             if (PropertyChanged != null)
+            {
+                if (prop != nameof(IsModified))
+                    IsModified = true;
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
         }
         private void visualGeometry_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -101,6 +136,8 @@ namespace Logic
         {
             if (!visualGeometries.Contains(visualGeometry))
                 throw new ArgumentException("This object does not present in this document.");
+            if (visualGeometry.Geometry is IOperator)
+                (visualGeometry.Geometry as IOperator).ClearOperands();
             visualGeometries.Remove(visualGeometry);
             visualGeometry.PropertyChanged -= visualGeometry_OnPropertyChanged;
             OnPropertyChanged("VisualGeometries");

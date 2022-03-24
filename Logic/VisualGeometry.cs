@@ -12,6 +12,22 @@ namespace Logic
 {
     internal class VisualGeometry : IVisualGeometry
     {
+        private string name;
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                if(!string.IsNullOrEmpty(value))
+                {
+                    name = value;
+                    OnPropertyChanged("Name");
+                }
+            }
+        }
         private IGeometry geometry;
         public IGeometry Geometry { get => geometry; }
         private IBrush backgroundBrush = null;
@@ -82,9 +98,10 @@ namespace Logic
         {
             OnPropertyChanged("Geometry");
         }
-        public VisualGeometry(IGeometry geometry)
+        public VisualGeometry(string name, IGeometry geometry)
         {
             this.geometry = geometry;
+            this.name = name;
             BackgroundBrush = new SolidColorBrush(Color.Black);
             BorderBrush = new SolidColorBrush(Color.Black);
             geometry.PropertyChanged += geometry_OnPropertyChanged;

@@ -4,21 +4,111 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-    <PackageReference Include="OpenTK" Version="4.3.0" />
-    <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <None Remove="Pictures\icon_pinc_2.png" />
+    <None Remove="Pictures\ii_квадрат.png" />
+    <None Remove="Pictures\ii_круг.png" />
+    <None Remove="Pictures\ii_линия.png" />
+    <None Remove="Pictures\ii_треугольник.png" />
+    <None Remove="Pictures\i_база_Активная.png" />
+    <None Remove="Pictures\i_база_НеАктивная.png" />
+    <None Remove="Pictures\i_выделения_Активная.png" />
+    <None Remove="Pictures\i_выделения_НеАктивная.png" />
+    <None Remove="Pictures\i_вырезание_Активная.png" />
+    <None Remove="Pictures\i_вырезание_НеАктивная.png" />
+    <None Remove="Pictures\i_зум_Активная.png" />
+    <None Remove="Pictures\i_зум_НеАктивная.png" />
+    <None Remove="Pictures\i_квадрат_Активная.png" />
+    <None Remove="Pictures\i_квадрат_НеАктивный.png" />
+    <None Remove="Pictures\i_круг_Активная.png" />
+    <None Remove="Pictures\i_круг_НеАктивная.png" />
+    <None Remove="Pictures\i_линия_Активная.png" />
+    <None Remove="Pictures\i_линия_НеАктивня.png" />
+    <None Remove="Pictures\i_Объединение_Активная.png" />
+    <None Remove="Pictures\i_объединение_НеАктивная.png" />
+    <None Remove="Pictures\i_пересечение_Активная.png" />
+    <None Remove="Pictures\i_пересечение_НеАктивная.png" />
+    <None Remove="Pictures\i_треугольник_Активная.png" />
+    <None Remove="Pictures\i_треугольник_НеАктивная.png" />
+    <None Remove="Pictures\i_удаление_Активная.png" />
+    <None Remove="Pictures\i_удаление_НеАктивная.png" />
+    <None Remove="Pictures\подложка_под_ii.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Geometry\Geometry.csproj" />
-    <ProjectReference Include="..\LinearAlgebra\LinearAlgebra.csproj" />
-    <ProjectReference Include="..\Logic\Logic.csproj" />
+    <Content Include="icon.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Pictures\icon_pinc_2.png" />
+    <Resource Include="Pictures\ii_квадрат.png" />
+    <Resource Include="Pictures\ii_круг.png" />
+    <Resource Include="Pictures\ii_линия.png" />
+    <Resource Include="Pictures\ii_треугольник.png" />
+    <Resource Include="Pictures\i_вырезание_Активная.png" />
+    <Resource Include="Pictures\i_вырезание_НеАктивная.png" />
+    <Resource Include="Pictures\i_пересечение_Активная.png" />
+    <Resource Include="Pictures\i_пересечение_НеАктивная.png" />
+    <Resource Include="Pictures\i_объединение_Активная.png" />
+    <Resource Include="Pictures\i_база_Активная.png" />
+    <Resource Include="Pictures\i_объединение_НеАктивная.png" />
+    <Resource Include="Pictures\i_выделения_Активная.png" />
+    <Resource Include="Pictures\i_выделения_НеАктивная.png" />
+    <Resource Include="Pictures\i_зум_Активная.png" />
+    <Resource Include="Pictures\i_зум_НеАктивная.png" />
+    <Resource Include="Pictures\i_квадрат_Активная.png" />
+    <Resource Include="Pictures\i_квадрат_НеАктивный.png" />
+    <Resource Include="Pictures\i_круг_Активная.png" />
+    <Resource Include="Pictures\i_база_НеАктивная.png" />
+    <Resource Include="Pictures\i_круг_НеАктивная.png" />
+    <Resource Include="Pictures\i_линия_Активная.png" />
+    <Resource Include="Pictures\i_линия_НеАктивня.png" />
+    <Resource Include="Pictures\i_треугольник_Активная.png" />
+    <Resource Include="Pictures\i_треугольник_НеАктивная.png" />
+    <Resource Include="Pictures\i_удаление_Активная.png" />
+    <Resource Include="Pictures\i_удаление_НеАктивная.png" />
+    <Resource Include="Pictures\подложка_под_ii.png" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+		<PackageReference Include="OpenTK" Version="4.3.0" />
+		<PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
+		<PackageReference Include="PixiEditor.ColorPicker" Version="3.2.0" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Geometry\Geometry.csproj" />
+		<ProjectReference Include="..\IO\IO.csproj" />
+		<ProjectReference Include="..\LinearAlgebra\LinearAlgebra.csproj" />
+		<ProjectReference Include="..\Logic\Logic.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="shaders\documentQuad.vsh">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="shaders\coloring.fsh">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="shaders\texturesExclusion.fsh">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="shaders\texturesIntersection.fsh">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="shaders\curveToTexture.fsh">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="shaders\fullscreenQuad.vsh">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
   <ItemGroup>
     <None Update="shaders\flatColoring.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,7 +128,10 @@
     <None Update="shaders\curveToTexture.fsh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="shaders\textureUnion.fsh">
+    <None Update="shaders\texturesUnion.fsh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Texts\autors.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
