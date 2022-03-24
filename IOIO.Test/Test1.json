@@ -1,0 +1,11 @@
+{
+  "Name": "JSON",
+  "VisualGeometries": [],
+  "Width": 100,
+  "Height": 100,
+  "BackgroundColor": {
+    "r": 255,
+    "g": 255,
+    "b": 255
+  }
+}

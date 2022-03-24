@@ -3,10 +3,475 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="ItCanDraw" WindowState="Maximized">
+    <Window.Resources>
+        <local:Vector2Converter x:Key="vec2conv"/>
+        <local:DocumentStateConverter x:Key="docstateconv"/>
+        <local:VisualGeometryConverter x:Key="vgconv"/>
+        <local:VisibilityConverter x:Key="visconv"/>
+        <local:BrushConverter x:Key="brushconv"/>
+        <local:ColorConverter x:Key="colorconv"/>
+    </Window.Resources>
+    
+    <Grid Background="#202020">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*" MinHeight="100"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Style="{StaticResource ResourceKey=GrayStretch}">
+            <StackPanel Style="{StaticResource ResourceKey=GrayStretch}" Orientation="Horizontal">
+                <Image Style="{StaticResource ResourceKey=GrayStretch}" Source="Pictures\icon_pinc_2.png" Margin="2"/>
+                <Menu Style="{StaticResource ResourceKey=GrayStretch}" VerticalAlignment="Center">
+                    <MenuItem Header="File" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
+                        <MenuItem Header="New" InputGestureText="Ctrl+N" Command="{Binding CreateDocumentCommand}"/>
+                        <MenuItem Header="Open" InputGestureText="Ctrl+O" Command="{Binding OpenDocumentCommand}"/>
+                        <MenuItem Header="Save" InputGestureText="Ctrl+S" Command="{Binding SaveCurrentDocumentCommand}"/>
+                        <MenuItem Header="Save As..." InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCurrentDocumentCommand}"/>
+                        <!--<MenuItem Header="Export...">
+                            <MenuItem Header="SVG"/>
+                            <MenuItem Header="HTML"/>
+                            <MenuItem Header="PDF"/>
+                            <MenuItem Header="PNG"/>
+                            <MenuItem Header="JPG"/>
+                        </MenuItem>-->
+                        <MenuItem Header="Close" Command="{Binding CloseCurrentDocumentCommand}"/>
+                    </MenuItem>
+                    <!--<MenuItem Header="Edit">-->
+                        <!--<MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>-->
+                        <!--<MenuItem Header="Redo" InputGestureText="Ctrl+Y"/>-->
+                        <!--<MenuItem Header="Cut" InputGestureText="Ctrl+X"/>-->
+                        <!--<MenuItem Header="Copy" InputGestureText="Ctrl+C"/>-->
+                        <!--<MenuItem Header="Paste" InputGestureText="Ctrl+V"/>-->
+                        <!--<MenuItem Header="Settings"/>-->
+                    <!--</MenuItem>-->
+                    <!--<MenuItem Header="Object">-->
+                        <!--<MenuItem Header="Move..."/>-->
+                        <!--<MenuItem Header="Rotate..."/>-->
+                        <!--<MenuItem Header="Reflect..."/>-->
+                        <!--<MenuItem Header="Tilt..."/>-->
+                    <!--</MenuItem>-->
+                    <MenuItem Header="Selection" DataContext="{Binding ElementName=renderControl, Path=ViewModel}">
+                        <!--<MenuItem Header="Select all" Command="{Binding SelectAllVisualGeometriesCommand}"/>-->
+                        <MenuItem Header="Deselect" Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
+                        <!--<MenuItem Header="Reselect"/>-->
+                        <!--<MenuItem Header="Invert" Command="{Binding InverseSelectionCommand}"/>-->
+                    </MenuItem>
+                    <MenuItem Header="About">
+                        <MenuItem Header="Developers" Click="MenuItem_Click_Autors"/>
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="5*" MinWidth="100"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="2" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="{StaticResource BackgroundDarkBrush}">
+                <GridSplitter.Template>
+                    <ControlTemplate>
+                        <Grid Background="{TemplateBinding Background}">
+                            <Rectangle Margin="2" Fill="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+            <StackPanel Orientation="Vertical" Margin="3" Background="{StaticResource BackgroundDarkBrush}">
+                <!--<Image Source="Pictures\i_выделения_НеАктивная.png" Margin="0,0,0,3"/>-->
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_квадрат_НеАктивный.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_квадрат_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddRectangleCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_треугольник_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_треугольник_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddTriangleCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_круг_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_круг_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddEllipseCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_объединение_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_объединение_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddUnionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_пересечение_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_пересечение_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddIntersectionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_вырезание_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_вырезание_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.AddExclusionOperatorCommand}" 
+                                                   CommandParameter="{Binding ElementName=renderControl, Path=Camera.Position}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Image Margin="0,0,0,3">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Pictures\i_удаление_НеАктивная.png"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Pictures\i_удаление_Активная.png"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding ElementName=renderControl, Path=ViewModel.DeleteSelectedVisualGeometriesCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+            </StackPanel>
+            <TabControl x:Name="DocumentsTabControl" Grid.Column="1" FontSize="16" Background="{StaticResource BackgroundDarkBrush}" 
+                        DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding OpenedDocuments}" SelectedItem="{Binding CurrentDocument}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text="{Binding IsModified, Converter={StaticResource docstateconv}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+            <Grid Grid.Column="1" Margin="0,29,0,0" MinWidth="100" MinHeight="100">
+                <local:RenderControl x:Name="renderControl" Grid.Column="1" Loaded="renderControl_Loaded"/>
+            </Grid>
+            <Border MinWidth="100" Grid.Column="3" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <GridSplitter Height="7" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{StaticResource BackgroundDarkBrush}" Grid.Row="1">
+                        <GridSplitter.Template>
+                            <ControlTemplate>
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Rectangle Margin="2" Fill="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </GridSplitter.Template>
+                    </GridSplitter>
+                    <Grid Grid.Row="0" DataContext="{Binding ElementName=renderControl, Path=ViewModel.SelectedVisualGeometry}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" FontSize="16" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Object properties</TextBlock>
+                        <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+                                <StackPanel Orientation="Vertical" TextElement.Foreground="{StaticResource ForegroundBrush}">
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Margin="5,0,5,0">Name:</TextBlock>
+                                        <TextBox Grid.Column="1" Background="{StaticResource BackgroundLightBrush}" KeyDown="TextBox_KeyDown">
+                                            <TextBox.Text>
+                                                <Binding Path="Name" Mode="TwoWay">
+                                                    <Binding.ValidationRules>
+                                                        <local:GeometryNameValidationRule/>
+                                                    </Binding.ValidationRules>                                                    
+                                                </Binding>
+                                            </TextBox.Text>
+                                        </TextBox>
+                                    </Grid>
+                                    <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                        <Grid DataContext="{Binding Geometry.Transform}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Background="{StaticResource BorderBrush}" Padding="5,0,5,0">Transform</TextBlock>
+                                            <StackPanel Grid.Row="1" Grid.IsSharedSizeScope="True">
+                                                <Grid Margin="0,3,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Position:</TextBlock>
+                                                    <Grid Grid.Column="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Margin="5,0,2,0">X:</TextBlock>
+                                                        <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
+                                                        <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
+                                                        <TextBox Grid.Column="3" KeyDown="TextBox_KeyDown">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalPosition" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Margin="0,0,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Scale:</TextBlock>
+                                                    <Grid Grid.Column="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Margin="5,0,2,0">X:</TextBlock>
+                                                        <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="x">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
+                                                        <TextBlock Margin="5,0,2,0" Grid.Column="2">Y:</TextBlock>
+                                                        <TextBox Grid.Column="3" KeyDown="TextBox_KeyDown">
+                                                            <TextBox.Text>
+                                                                <Binding Path="LocalScale" Mode="TwoWay" Converter="{StaticResource vec2conv}" ConverterParameter="y">
+                                                                    <Binding.ValidationRules>
+                                                                        <local:DoubleValidationRule/>
+                                                                    </Binding.ValidationRules>
+                                                                </Binding>
+                                                            </TextBox.Text>
+                                                        </TextBox>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Margin="0,0,0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Margin="5,0,5,0">Rotation:</TextBlock>
+                                                    <TextBox Grid.Column="1" KeyDown="TextBox_KeyDown">
+                                                        <TextBox.Text>
+                                                            <Binding Path="LocalRotationDegrees" Mode="TwoWay">
+                                                                <Binding.ValidationRules>
+                                                                    <local:DoubleValidationRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                    <Border Margin="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                        <StackPanel>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Background="{StaticResource BorderBrush}" Padding="5,0,5,0">Properties</TextBlock>
+                                                <StackPanel Grid.Row="1" Grid.IsSharedSizeScope="True">
+                                                    <Grid Margin="0,3,0,3">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" SharedSizeGroup="TransformPropertyNameGroup"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Margin="5,0,5,0" VerticalAlignment="Center">Background color:</TextBlock>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                            <Rectangle Width="20" Height="20" Fill="{Binding BackgroundBrush, Converter={StaticResource brushconv}}"/>
+                                                            <ToggleButton Margin="0,0,20,0" x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press"/>
+                                                        </StackPanel>
+                                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding ElementName=Expander, Path=IsChecked, Converter={StaticResource visconv}}">
+                                                            <colorpicker:StandardColorPicker SelectedColor="{Binding BackgroundBrush, Converter={StaticResource colorconv}, Mode=TwoWay}" Style="{StaticResource DefaultColorPickerStyle}" ShowAlpha="True"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock FontSize="16" Grid.Row="0" Padding="5,1,5,2" Background="{StaticResource BorderBrush}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Stretch">Document explorer</TextBlock>
+                        <Border Margin="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                            <TreeView x:Name="currentDocumentTreeView" FontSize="16"  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="{StaticResource BorderBrush}" 
+                                      DataContext="{Binding ElementName=renderControl, Path=ViewModel}" ItemsSource="{Binding CurrentDocumentVisualTree.Roots}"
+                                      AllowDrop="True" MouseMove="treeView_MouseMove" Drop="treeView_Drop" DragOver="treeView_DragOver">
+                                <i:Interaction.Behaviors>
+                                    <local:BindingSelectedItemBehavior>
+                                        <local:BindingSelectedItemBehavior.SelectedItem>
+                                            <MultiBinding Converter="{StaticResource vgconv}" Mode="TwoWay">
+                                                <Binding Path="CurrentDocumentVisualTree"/>
+                                                <Binding Path="SelectedVisualGeometry"/>
+                                                <Binding ElementName="currentDocumentTreeView"/>
+                                            </MultiBinding>
+                                        </local:BindingSelectedItemBehavior.SelectedItem>
+                                    </local:BindingSelectedItemBehavior>
+                                </i:Interaction.Behaviors>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectedItemChanged">
+                                        <i:InvokeCommandAction Command="{Binding ClearSelectedVisualGeometriesCommand}"/>
+                                        <i:InvokeCommandAction Command="{Binding SelectVisualGeometryCommand}"
+                                                               CommandParameter="{Binding ElementName=currentDocumentTreeView, Path=SelectedItem.VisualGeometry}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type local:VisualGeometryTreeNode}" ItemsSource="{Binding Children}">
+                                        <TextBlock Text="{Binding VisualGeometry.Name}"/>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+            <!--<Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Background ="#2C2C2C" >
+                <TextBlock HorizontalAlignment="Center" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Foreground="#FFFCAEF6"><Run/><LineBreak/><Run Text="     Свойства"/><LineBreak/></TextBlock>
+                <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="18" TextWrapping="Wrap" Width="119" Foreground="#FFFCAEF6" FontSize="14"><Run Text="  "/><Run Text=" "/><Run Text=" Имя "/><Run Text="объекта"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="27" TextWrapping="Wrap" Width="239" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="  "/><Run Text="Трансформирование"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="26" Foreground="#FFFCAEF6"><Run Text="   X:"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="32" Foreground="#FFFCAEF6"><Run Text="  "/><Run Language="ru-ru" Text="  "/><Run Text=" "/><Run Text="Ш"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="56" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text="  "/><Run Text=" "/><Run Language="ru-ru" Text="   "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="27" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" Y:"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="32" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text="  "/><Run Text=" "/><Run Language="ru-ru" Text="В"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+                <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="Угол"/><Run Language="ru-ru" Text=" поворота"/><Run Text=":"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBox Text="TextBox" TextWrapping="Wrap" Width="56" Height="19" BorderBrush="#FFFCAEF6" Background="#FF212121" Foreground="#FFFCAEF6"/>
+                <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="  "/><Run Text="Оформление"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="166" Foreground="#FFFCAEF6" Text=""/>
+                <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <Rectangle Height="24" Stroke="Black" Width="24" Fill="White"/>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Text="   "/><Run Language="ru-ru" Text="Заливка"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="10" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="4" Foreground="#FFFCAEF6"><Run Text="  "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <Rectangle Height="24" Stroke="Black" Width="24" StrokeThickness="7"/>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="99" Foreground="#FFFCAEF6"><Run Language="ru-ru" Text="   Обводка"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="32" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="17" TextWrapping="Wrap" Width="225" Foreground="#FFFCAEF6"><Run Text="   "/><Run Text="  "/><Run Text="О"/><Run Language="ru-ru" Text="бозреватель"/><LineBreak/><Run Language="ru-ru"/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TextBlock Height="6" TextWrapping="Wrap" Width="286" Foreground="#FFFCAEF6"><Run Text="  "/><Run Text=" "/><LineBreak/><Run/><LineBreak/><Run Text="Y:"/><LineBreak/></TextBlock>
+                <TreeView Height="294" Width="284" Background="#FF2F2F2F" BorderBrush="#FFFCAEF6" Foreground="Black"/>
+            </Menu>-->
+        </Grid>
     </Grid>
 </Window>
